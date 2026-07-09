@@ -1,0 +1,14 @@
+{
+  "name": "alomat-static-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static bilingual .alomat editorial signal site.",
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "node preview-server.cjs",
+    "check": "npm run build && node scripts/check-site.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
