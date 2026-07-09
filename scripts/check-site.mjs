@@ -129,6 +129,56 @@ if (fs.existsSync(stylesPath)) {
   if (!timelineHeadlineTextBlock.includes("color: var(--text-strong);")) {
     fail("timeline headline text must use the current palette text color");
   }
+
+  const timelineNodeBlock = /^\.signal-timeline__node\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const loadEarlierBlock = /^\.signal-timeline__load-earlier\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const siteFooterTopBlock = /^\.site-footer__top\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const socialChipBlock = /^\.social-chip\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const orangeLineupCardBlock =
+    /html\[data-page="lineup"\]\[data-palette="4"\] \.lineup-card,[\s\S]*?html\[data-page="lineup-article"\]\[data-palette="4"\] \.lineup-author-card\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+  const orangeSignalDetailBlock =
+    /html:root\[data-page="home"\]\[data-palette="4"\]\[data-theme\] \.signal-detail,[\s\S]*?html:root\[data-page="home"\]\[data-palette="4"\]\[data-theme\] \.signal-detail\.has-story\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+
+  if (!timelineNodeBlock.includes("background: color-mix(in srgb, var(--text) 90%, transparent);")) {
+    fail("timeline nodes must use the active palette text color");
+  }
+  if (!timelineNodeBlock.includes("border: 0.8px solid color-mix(in srgb, var(--bg) 80%, transparent);")) {
+    fail("timeline nodes must use palette-aware borders");
+  }
+  if (!timelineNodeBlock.includes("0 0 0 8px color-mix(in srgb, var(--bg) 80%, transparent)")) {
+    fail("timeline nodes must use palette-aware outer rings");
+  }
+  if (!timelineNodeBlock.includes("0 0 34px color-mix(in srgb, var(--text) 22%, transparent)")) {
+    fail("timeline nodes must use palette-aware glow");
+  }
+  if (!loadEarlierBlock.includes("background: color-mix(in srgb, var(--bg) 62%, transparent);")) {
+    fail("timeline load-earlier button must use a palette-aware background");
+  }
+  if (!orangeSignalDetailBlock.includes("color-mix(in srgb, var(--surface-strong) 95%, transparent) 0%")) {
+    fail("orange home signal detail must keep a light surface top");
+  }
+  if (!orangeSignalDetailBlock.includes("color-mix(in srgb, var(--surface) 93%, transparent) 100%")) {
+    fail("orange home signal detail must keep a light surface bottom");
+  }
+  if (!siteFooterTopBlock.includes("background: color-mix(in srgb, var(--bg) 72%, transparent);")) {
+    fail("footer discovery card must use a palette-aware background");
+  }
+  if (!siteFooterTopBlock.includes("box-shadow: 0 18px 42px color-mix(in srgb, var(--text) 5%, transparent);")) {
+    fail("footer discovery card must use a palette-aware shadow");
+  }
+  if (!socialChipBlock.includes("background: color-mix(in srgb, var(--bg) 62%, transparent);")) {
+    fail("footer social chips must use palette-aware backgrounds");
+  }
+  if (!socialChipBlock.includes("box-shadow: 0 10px 18px color-mix(in srgb, var(--text) 4%, transparent);")) {
+    fail("footer social chips must use palette-aware shadows");
+  }
+  if (!orangeLineupCardBlock.includes("background: color-mix(in srgb, var(--bg) 70%, transparent);")) {
+    fail("orange lineup cards and author cards must use a palette-aware surface");
+  }
 }
 
 const appPath = path.join(projectRoot, "app.js");
