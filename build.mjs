@@ -1360,7 +1360,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
     pageKey === "home"
       ? pages.filter((page) => ["about", "lineup", "library"].includes(page.key))
       : pages.filter((page) => page.key !== "home");
-  const libraryLabel = localeKey === "en" ? "LIBRARY" : "KUTUBHONA";
+  const libraryLabel = localeKey === "en" ? "LIBRARY" : "KUTUBXONA";
 
   if (pageKey === "home") {
     const enHomeHref = relativeHref(currentFile, pageOutputPath("en", "home"));

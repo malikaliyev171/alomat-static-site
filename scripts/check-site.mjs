@@ -79,11 +79,67 @@ for (const relativePath of ["build.mjs", "app.js", "styles.css"]) {
 const stylesPath = path.join(projectRoot, "styles.css");
 if (fs.existsSync(stylesPath)) {
   const styles = fs.readFileSync(stylesPath, "utf8");
+  const bodyBlock = /body\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+  if (!bodyBlock.includes("background-attachment: fixed;")) {
+    fail("body background gradient must stay fixed while scrolling");
+  }
   if (/\.skip-link\s*\{[^}]*left:\s*-999px/s.test(styles)) {
     fail("skip-link hidden state must not create horizontal page overflow");
   }
   if (!/@media\s*\(max-width:\s*780px\)[\s\S]*\.topbar--home\s*\{[\s\S]*grid-template-columns:\s*1fr/s.test(styles)) {
     fail("home topbar must collapse to one column on mobile screens");
+  }
+  const frostedTopbarBackground = "background: color-mix(in srgb, var(--bg-start) 92%, transparent);";
+  const topbarHomeBlock = /\.topbar--home\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+  const lightHomeTopbarBlock =
+    /html:root\[data-page="home"\]\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root\[data-page="home"\]\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+  const themedHomeTopbarBlock =
+    /html:root\[data-page="home"\]\[data-theme\] \.topbar,[\s\S]*?html:root\[data-page="home"\]\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+
+  if (!topbarHomeBlock.includes(frostedTopbarBackground)) {
+    fail("base home topbar must use the frosted background fill");
+  }
+  if (!lightHomeTopbarBlock.includes(frostedTopbarBackground)) {
+    fail("light home topbar override must use the frosted background fill");
+  }
+  if (!themedHomeTopbarBlock.includes(frostedTopbarBackground)) {
+    fail("themed home topbar override must use the frosted background fill");
+  }
+  if (/\.topbar--home\s*\{[^}]*backdrop-filter:\s*none/s.test(styles)) {
+    fail("home topbar must keep blur enabled for the frosted glass effect");
+  }
+
+  const timelineHeadlineButtonBlock =
+    /^\.signal-timeline__headline-button\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelineHeadlineTextBlock =
+    /^\.signal-timeline__headline-text\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  if (!timelineHeadlineButtonBlock.includes("border: 0.8px solid color-mix(in srgb, var(--text) 6%, transparent);")) {
+    fail("timeline headline cards must use palette-aware borders");
+  }
+  if (!timelineHeadlineButtonBlock.includes("background: color-mix(in srgb, var(--bg) 62%, transparent);")) {
+    fail("timeline headline cards must use palette-aware backgrounds");
+  }
+  if (!timelineHeadlineButtonBlock.includes("box-shadow: 0 10px 30px color-mix(in srgb, var(--text) 5%, transparent);")) {
+    fail("timeline headline cards must use palette-aware shadows");
+  }
+  if (!timelineHeadlineTextBlock.includes("color: var(--text-strong);")) {
+    fail("timeline headline text must use the current palette text color");
+  }
+}
+
+const appPath = path.join(projectRoot, "app.js");
+if (fs.existsSync(appPath)) {
+  const app = fs.readFileSync(appPath, "utf8");
+  if (
+    !/function openNameModal\(\)\s*\{[\s\S]*?resetDetailPanel\(\);\s*\n\s*timelineClosed = false;\s*\n\s*nameModal\.hidden = false;/.test(
+      app,
+    )
+  ) {
+    fail("opening the name modal must re-arm timeline scroll effects after resetting the detail panel");
   }
 }
 

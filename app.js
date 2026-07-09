@@ -564,6 +564,7 @@ function openNameModal() {
   }
 
   resetDetailPanel();
+  timelineClosed = false;
   nameModal.hidden = false;
   nameModal.classList.add("is-open");
   document.documentElement.classList.add("modal-open");
