@@ -7,8 +7,8 @@
     <meta name="description" content="A bilingual library page for saved signals, liked stories, and personal collections." />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../../assets/styles.css?v=369ae4f5bb" />
-    <script>(function(){try{var allowed=["0","2","4"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>
+    <link rel="stylesheet" href="../../assets/styles.css?v=8ff8d5027c" />
+    <script>(function(){try{var allowed=["0","2","4","6"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",6:"dark"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>
     <style>
       html[data-page="home"] .signal-reader-gate .eyebrow {
         display: inline-block;
@@ -93,7 +93,7 @@
         top: 118px;
         right: 36px;
         width: 380px;
-        height: min(926px, calc(100vh - 118px));
+        height: min(926px, calc(100vh - 154px));
       }
 
       html[data-page="home"] .signal-detail.has-story .signal-detail__content {
@@ -270,6 +270,6 @@
     </div>
   </footer>
     </div>
-    <script defer src="../../assets/app.js?v=369ae4f5bb"></script>
+    <script defer src="../../assets/app.js?v=8ff8d5027c"></script>
   </body>
 </html>

@@ -1347,7 +1347,7 @@ function renderPalettePicker(localeKey, extraClass = "") {
 }
 
 function renderThemeBootScript() {
-  return `<script>(function(){try{var allowed=["0","2","4"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>`;
+  return `<script>(function(){try{var allowed=["0","2","4","6"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",6:"dark"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>`;
 }
 
 function renderHeader(localeKey, pageKey, currentFile) {
@@ -2412,7 +2412,7 @@ function renderDocument(localeKey, pageKey) {
         top: 118px;
         right: 36px;
         width: 380px;
-        height: min(926px, calc(100vh - 118px));
+        height: min(926px, calc(100vh - 154px));
       }
 
       html[data-page="home"] .signal-detail.has-story .signal-detail__content {

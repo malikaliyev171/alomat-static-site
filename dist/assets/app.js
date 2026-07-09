@@ -1,13 +1,15 @@
-const paletteOrder = ["0", "2", "4"];
+const paletteOrder = ["0", "2", "4", "6"];
 const paletteThemeMap = {
   0: "dark",
   2: "light",
   4: "signal",
+  6: "dark",
 };
 const paletteSwatches = {
   0: { bg: "#05070d", fg: "#ff4d32" },
   2: { bg: "#efeff2", fg: "#05070d" },
   4: { bg: "#ff4d32", fg: "#efeff2" },
+  6: { bg: "#05070d", fg: "#efeff2" },
 };
 
 const locale = document.documentElement.lang === "en" ? "en" : "uz";
@@ -399,6 +401,15 @@ function scheduleActiveStorySync() {
   activeUpdateFrame = window.requestAnimationFrame(syncActiveStory);
 }
 
+function pickPalette(value) {
+  const current = document.documentElement.dataset.palette;
+  let target = String(value);
+  if (target === "2") {
+    target = current === "2" ? "6" : "2";
+  }
+  setPalette(target);
+}
+
 function setPalette(palette) {
   const nextPalette = paletteOrder.includes(String(palette)) ? String(palette) : "2";
   const nextTheme = paletteThemeMap[nextPalette] || "light";
@@ -424,11 +435,11 @@ function setPalette(palette) {
       sample.style.setProperty("--swatch-bg", paletteSwatches[nextPalette].bg);
       sample.style.setProperty("--swatch-fg", paletteSwatches[nextPalette].fg);
     }
-    button.title = `${labelMap[locale].palette}: ${themeLabels[nextPalette]}`;
+    button.title = `${labelMap[locale].palette}: ${themeLabels[nextPalette] || themeLabels["2"]}`;
   });
 
   themeOptions.forEach((option) => {
-    const isActive = option.dataset.paletteOption === nextPalette;
+    const isActive = option.dataset.paletteOption === nextPalette || (option.dataset.paletteOption === "2" && nextPalette === "6");
     option.classList.toggle("is-active", isActive);
     option.setAttribute("aria-pressed", String(isActive));
   });
@@ -481,7 +492,7 @@ function initTheme() {
   themeOptions.forEach((option) => {
     option.addEventListener("click", (event) => {
       event.stopPropagation();
-      setPalette(option.dataset.paletteOption);
+      pickPalette(option.dataset.paletteOption);
       closeMenus();
     });
   });
@@ -493,7 +504,7 @@ function initTheme() {
       if (!option) return;
       event.preventDefault();
       event.stopPropagation();
-      setPalette(option.dataset.paletteOption);
+      pickPalette(option.dataset.paletteOption);
       closeMenus();
     },
     true,
