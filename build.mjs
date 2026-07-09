@@ -1347,7 +1347,7 @@ function renderPalettePicker(localeKey, extraClass = "") {
 }
 
 function renderThemeBootScript() {
-  return `<script>(function(){try{var allowed=["0","2","4","6"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",6:"dark"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>`;
+  return `<script>(function(){try{var allowed=["0","2","4","5","6","7"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",5:"light",6:"dark",7:"signal"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>`;
 }
 
 function renderHeader(localeKey, pageKey, currentFile) {
@@ -1449,8 +1449,16 @@ function renderFooter(localeKey, pageKey, currentFile) {
           <a href="${text(relativeHref(currentFile, homeFile))}">${text(locale.ui.backHome)}</a>
           ${navItems
             .map((item) => {
-              const target = pageOutputPath(localeKey, item.key);
-              return `<a href="${text(relativeHref(currentFile, target))}">${text(locale.nav[item.key])}</a>`;
+              const label = text(locale.nav[item.key]);
+              if (item.key === "about") {
+                const target = pageOutputPath(localeKey, item.key);
+                return `<a href="${text(relativeHref(currentFile, target))}">${label}</a>`;
+              }
+              if (item.key === "library") {
+                const target = pageOutputPath(localeKey, item.key);
+                return `<a href="${text(relativeHref(currentFile, target))}" data-library-gate>${label}</a>`;
+              }
+              return `<a aria-disabled="true">${label}</a>`;
             })
             .join("")}
         </div>

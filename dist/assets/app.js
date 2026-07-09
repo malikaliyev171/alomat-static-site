@@ -1,15 +1,19 @@
-const paletteOrder = ["0", "2", "4", "6"];
+const paletteOrder = ["0", "2", "4", "5", "6", "7"];
 const paletteThemeMap = {
   0: "dark",
   2: "light",
   4: "signal",
+  5: "light",
   6: "dark",
+  7: "signal",
 };
 const paletteSwatches = {
   0: { bg: "#05070d", fg: "#ff4d32" },
   2: { bg: "#efeff2", fg: "#05070d" },
   4: { bg: "#ff4d32", fg: "#efeff2" },
+  5: { bg: "#efeff2", fg: "#ff4d32" },
   6: { bg: "#05070d", fg: "#efeff2" },
+  7: { bg: "#ff4d32", fg: "#05070d" },
 };
 
 const locale = document.documentElement.lang === "en" ? "en" : "uz";
@@ -72,6 +76,8 @@ const themeLabels = {
   0: locale === "en" ? "Palette 1" : "1. palet",
   2: locale === "en" ? "Palette 2" : "2. palet",
   4: locale === "en" ? "Palette 3" : "3. palet",
+  5: locale === "en" ? "Palette 3" : "3. palet",
+  7: locale === "en" ? "Palette 1" : "1. palet",
 };
 
 const detailLabels = {
@@ -406,6 +412,10 @@ function pickPalette(value) {
   let target = String(value);
   if (target === "2") {
     target = current === "2" ? "6" : "2";
+  } else if (target === "0") {
+    target = current === "0" ? "7" : "0";
+  } else if (target === "4") {
+    target = current === "4" ? "5" : "4";
   }
   setPalette(target);
 }
@@ -439,7 +449,7 @@ function setPalette(palette) {
   });
 
   themeOptions.forEach((option) => {
-    const isActive = option.dataset.paletteOption === nextPalette || (option.dataset.paletteOption === "2" && nextPalette === "6");
+    const isActive = option.dataset.paletteOption === nextPalette || (option.dataset.paletteOption === "2" && nextPalette === "6") || (option.dataset.paletteOption === "0" && nextPalette === "7") || (option.dataset.paletteOption === "4" && nextPalette === "5");
     option.classList.toggle("is-active", isActive);
     option.setAttribute("aria-pressed", String(isActive));
   });

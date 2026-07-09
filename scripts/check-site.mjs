@@ -137,7 +137,7 @@ if (fs.existsSync(stylesPath)) {
   const timelineHeadlineTextBlock =
     /^\.signal-timeline__headline-text\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const orangeNavBulletBlock =
-    /^html\[data-palette="4"\] \.nav__item--dot \.nav__bullet\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+    /^html\[data-palette="4"\] \.nav__item--dot \.nav__bullet,[\s\S]*?\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const signalAccentBlock = /^\.signal\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   if (!signalAccentBlock.includes("color: var(--accent);")) {
     fail("inline signal accents must use the current palette accent color");
@@ -183,6 +183,8 @@ if (fs.existsSync(stylesPath)) {
   const darkOrangePaletteBlock = /^body\[data-palette="0"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const darkMonochromePaletteBlock = /^body\[data-palette="6"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const orangePaletteBlock = /^body\[data-palette="4"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const lightOrangeTextPaletteBlock = /^body\[data-palette="5"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const orangeDarkTextPaletteBlock = /^body\[data-palette="7"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const darkNameBackdropBlock =
     /html\[data-page="home"\]\[data-palette="0"\] \.name-auth-backdrop,[\s\S]*?html\[data-page="home"\]\[data-palette="6"\] \.name-auth-backdrop\s*\{[\s\S]*?\n\}/.exec(
       styles,
@@ -192,23 +194,23 @@ if (fs.existsSync(stylesPath)) {
       styles,
     )?.[0] ?? "";
   const orangeLineupCardBlock =
-    /html\[data-page="lineup"\]\[data-palette="4"\] \.lineup-card,[\s\S]*?html\[data-page="lineup-article"\]\[data-palette="4"\] \.lineup-author-card\s*\{[\s\S]*?\n\}/.exec(
+    /html\[data-page="lineup"\]\[data-palette="4"\] \.lineup-card,[\s\S]*?html\[data-page="lineup-article"\]\[data-palette="7"\] \.lineup-author-card\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeSignalDetailBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\]\[data-theme\] \.signal-detail,[\s\S]*?html:root\[data-page="home"\]\[data-palette="4"\]\[data-theme\] \.signal-detail\.has-story\s*\{[\s\S]*?\n\}/.exec(
+    /html:root\[data-page="home"\]\[data-palette="4"\]\[data-theme\] \.signal-detail,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\]\[data-theme\] \.signal-detail\.has-story\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeTimelinePanelControlsBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__lens-button,[\s\S]*?html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
+    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__lens-button,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeTimelinePanelTextBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__hero h2,[\s\S]*?html:root\[data-page="home"\]\[data-palette="4"\] \.signal-detail h2\s*\{[\s\S]*?\n\}/.exec(
+    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__hero h2,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.signal-detail h2\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeTimelinePanelMutedTextBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__meta-grid span,[\s\S]*?html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__lens span\s*\{[\s\S]*?\n\}/.exec(
+    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__meta-grid span,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.timeline-panel__lens span\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const darkMonochromeTimelinePanelTextBlock =
@@ -223,8 +225,20 @@ if (fs.existsSync(stylesPath)) {
     /html\[data-page="home"\]\[data-palette="6"\] \.timeline-panel__body,[\s\S]*?html\[data-page="home"\]\[data-palette="6"\] \.timeline-panel__body p\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
+  const orangeTextTimelinePanelTextBlock =
+    /html\[data-palette="5"\] \.timeline-panel__hero h2,[\s\S]*?html\[data-palette="0"\] \.signal-detail__summary p\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+  const orangeTextTimelinePanelMutedTextBlock =
+    /html\[data-palette="5"\] \.timeline-panel__meta-grid span,[\s\S]*?html\[data-palette="0"\] \.timeline-panel__lens span\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+  const homeOrangeTextTimelinePanelBodyBlock =
+    /html\[data-page="home"\]\[data-palette="5"\] \.timeline-panel__body,[\s\S]*?html\[data-page="home"\]\[data-palette="0"\] \.timeline-panel__body p\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
   const orangeSignalDetailActionBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\] \.signal-detail__action\s*\{[\s\S]*?\n\}/.exec(
+    /html:root\[data-page="home"\]\[data-palette="4"\] \.signal-detail__action,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.signal-detail__action\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeNameModalTextBlock =
@@ -232,13 +246,16 @@ if (fs.existsSync(stylesPath)) {
       styles,
     )?.[0] ?? "";
   const orangeNameModalBlock =
-    /html\[data-page="home"\]\[data-palette="4"\] \.name-auth-modal\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+    /html\[data-page="home"\]\[data-palette="4"\] \.name-auth-modal,[\s\S]*?html\[data-page="home"\]\[data-palette="7"\] \.name-auth-modal\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const orangeNameBackdropBlock =
-    /html\[data-page="home"\]\[data-palette="4"\] \.name-auth-backdrop\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+    /html\[data-page="home"\]\[data-palette="4"\] \.name-auth-backdrop,[\s\S]*?html\[data-page="home"\]\[data-palette="7"\] \.name-auth-backdrop\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const orangeNameInputBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\] \.name-auth-input\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+    /html:root\[data-page="home"\]\[data-palette="4"\] \.name-auth-input,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.name-auth-input\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const themedHomeSocialChipBlock =
     /html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.social-chip\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+  const paletteFourSelectorGroups = Array.from(styles.matchAll(/(^|})\s*([^{}]*\[data-palette="4"\][^{}]*)\s*\{/g))
+    .map((match) => match[2].trim())
+    .filter((selectorGroup) => !selectorGroup.includes(":root[data-palette=\"4\"]") && !selectorGroup.includes("body[data-palette=\"4\"]"));
 
   if (!darkOrangePaletteBlock.includes("--text: #ff4d32;")) {
     fail("dark orange palette must keep orange text");
@@ -272,6 +289,35 @@ if (fs.existsSync(stylesPath)) {
   }
   if (!orangePaletteBlock.includes("--border: rgba(255, 255, 255, 0.2);")) {
     fail("orange palette borders must stay light");
+  }
+  if (!lightOrangeTextPaletteBlock.includes("--bg: #efeff2;")) {
+    fail("light orange-text palette must use the pale background");
+  }
+  if (!lightOrangeTextPaletteBlock.includes("--text: #ff4d32;")) {
+    fail("light orange-text palette must use orange text");
+  }
+  if (!lightOrangeTextPaletteBlock.includes("--muted: rgba(255, 77, 50, 0.72);")) {
+    fail("light orange-text palette muted text must stay orange");
+  }
+  if (!lightOrangeTextPaletteBlock.includes("--border: rgba(255, 77, 50, 0.18);")) {
+    fail("light orange-text palette borders must stay orange");
+  }
+  if (!orangeDarkTextPaletteBlock.includes("--bg: #ff4d32;")) {
+    fail("dark-text orange palette must use the signal orange background");
+  }
+  if (!orangeDarkTextPaletteBlock.includes("--text: #05070d;")) {
+    fail("dark-text orange palette must use dark text");
+  }
+  if (!orangeDarkTextPaletteBlock.includes("--muted: rgba(5, 7, 13, 0.72);")) {
+    fail("dark-text orange palette muted text must stay dark");
+  }
+  if (!orangeDarkTextPaletteBlock.includes("--border: rgba(5, 7, 13, 0.2);")) {
+    fail("dark-text orange palette borders must stay dark");
+  }
+  for (const selectorGroup of paletteFourSelectorGroups) {
+    if (!selectorGroup.includes('[data-palette="7"]')) {
+      fail(`palette 4 selector group must also include palette 7: ${selectorGroup.split("\n")[0]}`);
+    }
   }
   if (!timelineNodeBlock.includes("background: color-mix(in srgb, var(--text) 90%, transparent);")) {
     fail("timeline nodes must use the active palette text color");
@@ -331,17 +377,48 @@ if (fs.existsSync(stylesPath)) {
     fail("orange timeline panel muted text must use translucent white");
   }
   if (!darkMonochromeTimelinePanelTextBlock.includes("color: var(--text);")) {
-    fail("dark monochrome timeline panel text must use white text");
+    fail("dark monochrome timeline panel text must use palette text");
+  }
+  if (darkMonochromeTimelinePanelTextBlock.includes('html[data-palette="5"]')) {
+    fail("dark monochrome timeline panel text block must stay palette-6 only");
   }
   if (
     !darkMonochromeTimelinePanelMutedTextBlock.includes(
       "color: color-mix(in srgb, var(--text) 66%, transparent);",
     )
   ) {
-    fail("dark monochrome timeline panel muted text must use translucent white");
+    fail("dark monochrome timeline panel muted text must use translucent palette text");
+  }
+  if (darkMonochromeTimelinePanelMutedTextBlock.includes('html[data-palette="5"]')) {
+    fail("dark monochrome timeline panel muted text block must stay palette-6 only");
   }
   if (!homeDarkMonochromeTimelinePanelBodyBlock.includes("color: var(--text);")) {
     fail("home dark monochrome timeline body text must override inline dark text");
+  }
+  if (homeDarkMonochromeTimelinePanelBodyBlock.includes('html[data-page="home"][data-palette="5"]')) {
+    fail("home dark monochrome timeline body block must stay palette-6 only");
+  }
+  if (!orangeTextTimelinePanelTextBlock.includes("color: var(--text);")) {
+    fail("palette 5 and 0 timeline panel text must use palette text");
+  }
+  if (!orangeTextTimelinePanelTextBlock.includes('html[data-palette="0"] .timeline-panel__hero h2')) {
+    fail("palette 0 timeline panel text must share the orange text override");
+  }
+  if (
+    !orangeTextTimelinePanelMutedTextBlock.includes(
+      "color: color-mix(in srgb, var(--text) 66%, transparent);",
+    )
+  ) {
+    fail("palette 5 and 0 timeline panel muted text must use translucent palette text");
+  }
+  if (!orangeTextTimelinePanelMutedTextBlock.includes('html[data-palette="0"] .timeline-panel__meta-grid span')) {
+    fail("palette 0 timeline panel muted text must share the orange text override");
+  }
+  if (!homeOrangeTextTimelinePanelBodyBlock.includes("color: var(--text);")) {
+    fail("home palette 5 and 0 timeline body text must override inline dark text");
+  }
+  if (!homeOrangeTextTimelinePanelBodyBlock.includes('html[data-page="home"][data-palette="0"] .timeline-panel__body')) {
+    fail("home palette 0 timeline body text must share the orange text override");
   }
   if (!orangeSignalDetailActionBlock.includes("background: color-mix(in srgb, var(--text) 10%, transparent);")) {
     fail("orange signal detail action must use a translucent white background");
@@ -405,34 +482,58 @@ if (fs.existsSync(buildPath)) {
   if (!build.includes("height: min(926px, calc(100vh - 154px));")) {
     fail("home signal detail inline height must use the 154px viewport offset");
   }
-  if (!build.includes('allowed=["0","2","4","6"]')) {
-    fail("theme boot script must allow the dark monochrome palette");
+  if (!build.includes('allowed=["0","2","4","5","6","7"]')) {
+    fail("theme boot script must allow derived palettes");
   }
-  if (!build.includes('{0:"dark",2:"light",4:"signal",6:"dark"}')) {
-    fail("theme boot script must map dark monochrome to dark theme");
+  if (!build.includes('{0:"dark",2:"light",4:"signal",5:"light",6:"dark",7:"signal"}')) {
+    fail("theme boot script must map derived palettes to their themes");
   }
 }
 
 const appPath = path.join(projectRoot, "app.js");
 if (fs.existsSync(appPath)) {
   const app = fs.readFileSync(appPath, "utf8");
-  if (!app.includes('const paletteOrder = ["0", "2", "4", "6"];')) {
-    fail("app palette order must include dark monochrome");
+  if (!app.includes('const paletteOrder = ["0", "2", "4", "5", "6", "7"];')) {
+    fail("app palette order must include derived palettes");
   }
   if (!app.includes('6: "dark"')) {
     fail("app palette theme map must include dark monochrome");
   }
+  if (!app.includes('7: "signal"')) {
+    fail("app palette theme map must include dark-text orange");
+  }
+  if (!app.includes('5: "light"')) {
+    fail("app palette theme map must include light orange-text");
+  }
   if (!app.includes('6: { bg: "#05070d", fg: "#efeff2" }')) {
     fail("app palette swatches must include dark monochrome");
+  }
+  if (!app.includes('7: { bg: "#ff4d32", fg: "#05070d" }')) {
+    fail("app palette swatches must include dark-text orange");
+  }
+  if (!app.includes('5: { bg: "#efeff2", fg: "#ff4d32" }')) {
+    fail("app palette swatches must include light orange-text");
+  }
+  if (!app.includes('7: locale === "en" ? "Palette 1" : "1. palet"')) {
+    fail("app palette labels must include dark-text orange");
+  }
+  if (!app.includes('5: locale === "en" ? "Palette 3" : "3. palet"')) {
+    fail("app palette labels must include light orange-text");
   }
   if (!/function pickPalette\(value\)\s*\{[\s\S]*?target = current === "2" \? "6" : "2";[\s\S]*?setPalette\(target\);[\s\S]*?\}/.test(app)) {
     fail("monochrome swatch must toggle between light and dark monochrome");
   }
+  if (!/function pickPalette\(value\)\s*\{[\s\S]*?target = current === "0" \? "7" : "0";[\s\S]*?setPalette\(target\);[\s\S]*?\}/.test(app)) {
+    fail("black-orange swatch must toggle between dark and dark-text signal");
+  }
+  if (!/function pickPalette\(value\)\s*\{[\s\S]*?target = current === "4" \? "5" : "4";[\s\S]*?setPalette\(target\);[\s\S]*?\}/.test(app)) {
+    fail("orange swatch must toggle between signal and light orange-text");
+  }
   if (!app.includes('themeLabels[nextPalette] || themeLabels["2"]')) {
     fail("palette button titles must fall back for derived palettes");
   }
-  if (!app.includes('option.dataset.paletteOption === nextPalette || (option.dataset.paletteOption === "2" && nextPalette === "6")')) {
-    fail("monochrome swatch must stay active for dark monochrome");
+  if (!app.includes('option.dataset.paletteOption === nextPalette || (option.dataset.paletteOption === "2" && nextPalette === "6") || (option.dataset.paletteOption === "0" && nextPalette === "7") || (option.dataset.paletteOption === "4" && nextPalette === "5")')) {
+    fail("derived palettes must keep their source swatches active");
   }
   if (app.includes("setPalette(option.dataset.paletteOption);")) {
     fail("palette option handlers must route through pickPalette");

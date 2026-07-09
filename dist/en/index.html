@@ -7,8 +7,8 @@
     <meta name="description" content="A bilingual editorial site that separates useful signals from the noise." />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="../assets/styles.css?v=8ff8d5027c" />
-    <script>(function(){try{var allowed=["0","2","4","6"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",6:"dark"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>
+    <link rel="stylesheet" href="../assets/styles.css?v=4608ec9ded" />
+    <script>(function(){try{var allowed=["0","2","4","5","6","7"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",5:"light",6:"dark",7:"signal"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>
     <style>
       html[data-page="home"] .signal-reader-gate .eyebrow {
         display: inline-block;
@@ -343,7 +343,7 @@
         <p class="eyebrow">Explore</p>
         <div class="footer-nav__links">
           <a href="index.html">Home</a>
-          <a href="about/index.html">About</a><a href="library/index.html">Library</a><a href="relay/index.html">Relay</a><a href="contact/index.html">Contact</a><a href="sponsor/index.html">Sponsor</a><a href="lineup/index.html">Lineup</a><a href="privacy/index.html">Privacy</a>
+          <a href="about/index.html">About</a><a href="library/index.html" data-library-gate>Library</a><a aria-disabled="true">Relay</a><a aria-disabled="true">Contact</a><a aria-disabled="true">Sponsor</a><a aria-disabled="true">Lineup</a><a aria-disabled="true">Privacy</a>
         </div>
       </div>
       <div>
@@ -371,6 +371,6 @@
     </div>
   </footer>
     </div>
-    <script defer src="../assets/app.js?v=8ff8d5027c"></script>
+    <script defer src="../assets/app.js?v=4608ec9ded"></script>
   </body>
 </html>
