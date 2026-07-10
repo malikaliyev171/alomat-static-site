@@ -2545,7 +2545,7 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
         }
 
         html[data-page="home"] .signal-timeline--home {
-          padding-bottom: 58vh;
+          padding-bottom: 24px;
         }
 
         html[data-page="home"] .signal-timeline__line {
