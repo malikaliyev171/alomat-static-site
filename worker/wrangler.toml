@@ -5,5 +5,5 @@ compatibility_date = "2026-07-10"
 [[d1_databases]]
 binding = "DB"
 database_name = "alomat_signals"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "247e9fe2-2744-4662-83f0-18e58719d8d3"
 migrations_dir = "migrations"
