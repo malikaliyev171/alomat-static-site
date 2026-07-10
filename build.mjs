@@ -2451,6 +2451,152 @@ function renderDocument(localeKey, pageKey) {
         font-size: 1rem;
         line-height: 1.5;
       }
+
+      @media (max-width: 780px) {
+        html[data-page="home"] .topbar--home .nav--home {
+          flex-wrap: nowrap;
+          scrollbar-width: none;
+          padding: 0 6px;
+        }
+
+        html[data-page="home"] .topbar--home .nav--home::-webkit-scrollbar {
+          display: none;
+        }
+
+        html[data-page="home"] .topbar--home .nav__item {
+          gap: 5px;
+          padding: 0 6px;
+          font-size: 0.56rem;
+          letter-spacing: 0.09em;
+        }
+
+        html[data-page="home"] .signal-reader-gate {
+          grid-template-columns: 56px minmax(0, 1fr);
+          gap: 16px;
+          margin-left: 0;
+          padding-top: 24px;
+          max-width: 100%;
+          min-height: 0;
+          height: auto;
+        }
+
+        html[data-page="home"] .signal-reader-gate__content,
+        html[data-page="home"] .signal-reader-gate__action {
+          transform: none;
+        }
+
+        html[data-page="home"][data-locale] .signal-reader-gate h1 {
+          font-size: clamp(2.8rem, 14vw, 4.8rem);
+          line-height: 0.92;
+          min-width: 0;
+        }
+
+        html[data-page="home"] .signal-reader-gate .lede {
+          width: auto;
+          max-width: none;
+          min-height: 0;
+          font-size: 0.92rem;
+        }
+
+        html[data-page="home"] .signal-reader-gate__action {
+          grid-column: 1 / -1;
+          width: 100%;
+          min-height: 44px;
+          margin-top: 6px;
+        }
+
+        html[data-page="home"] .signal-timeline--home {
+          padding-bottom: 58vh;
+        }
+
+        html[data-page="home"] .signal-timeline__line {
+          left: 20px;
+        }
+
+        html[data-page="home"] .signal-timeline__day-marker {
+          margin-left: 0;
+          min-height: 0;
+          padding-left: 44px;
+        }
+
+        html[data-page="home"] .signal-timeline__day-marker::before {
+          width: 0;
+        }
+
+        html[data-page="home"] .signal-timeline__item {
+          min-height: 164px;
+        }
+
+        html[data-page="home"] .signal-timeline__node {
+          left: 14px;
+          top: 104px;
+          width: 18px;
+          height: 18px;
+          transform: translate(-9px, -9px);
+        }
+
+        html[data-page="home"] .signal-timeline__headline-button {
+          left: 42px;
+          top: 96px;
+          width: calc(100% - 42px);
+          min-height: 0;
+          padding: 12px 14px;
+          transform: translateY(-28px);
+        }
+
+        html[data-page="home"] .signal-timeline__item.is-active .signal-timeline__headline-button,
+        html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-visible:not(.is-active) .signal-timeline__headline-button {
+          transform: translateY(-28px);
+        }
+
+        html[data-page="home"] .signal-timeline__headline-text {
+          font-size: clamp(1.02rem, 4.4vw, 1.2rem);
+        }
+
+        html[data-page="home"] .signal-detail {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: auto;
+          width: 100%;
+          max-height: 54vh;
+          height: auto;
+          min-height: 0;
+          margin: 0;
+          border-radius: 20px 20px 0 0;
+          z-index: 200;
+          box-shadow: 0 -18px 50px rgba(5, 7, 13, 0.28);
+          background: color-mix(in srgb, var(--bg) 96%, transparent);
+        }
+
+        html[data-page="home"] .signal-detail__visual {
+          display: none;
+          opacity: 0;
+          background-image: none;
+        }
+
+        html[data-page="home"] .signal-timeline__headline-button::after,
+        html[data-page="home"] .signal-timeline__item.is-active .signal-timeline__headline-button::after {
+          background-image: none;
+          opacity: 0;
+        }
+
+        html[data-page="home"] .signal-detail__content {
+          max-height: inherit;
+          height: auto;
+        }
+
+        html[data-page="home"] .signal-detail__content h2 {
+          font-size: clamp(1.7rem, 8.5vw, 2rem);
+          line-height: 1;
+          overflow-wrap: break-word;
+        }
+
+        html[data-page="home"] .page-home.has-detail-open .signal-detail {
+          max-height: 62vh;
+        }
+      }
     </style>
     <link rel="alternate" hreflang="${text(locale.htmlLang)}" href="${text(currentLocaleHref)}" />
     <link rel="alternate" hreflang="${text(otherLocale)}" href="${text(alternateHref)}" />

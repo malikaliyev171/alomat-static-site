@@ -193,8 +193,11 @@ if (fs.existsSync(stylesPath)) {
     /html\[data-page="home"\]\[data-palette="0"\] \.name-auth-modal,[\s\S]*?html\[data-page="home"\]\[data-palette="6"\] \.name-auth-modal\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
+  const lineupAuthorCardBackgrounds = Array.from(
+    styles.matchAll(/(?:^|})\s*([^{}]*\.lineup-author-card[^{}]*)\{([^{}]*)\}/gm),
+  ).flatMap((match) => match[2].match(/background:[^;]+;/g) ?? []);
   const orangeLineupCardBlock =
-    /html\[data-page="lineup"\]\[data-palette="4"\] \.lineup-card,[\s\S]*?html\[data-page="lineup-article"\]\[data-palette="7"\] \.lineup-author-card\s*\{[\s\S]*?\n\}/.exec(
+    /html\[data-page="lineup"\]\[data-palette="4"\] \.lineup-card,\s*\nhtml\[data-page="lineup"\]\[data-palette="7"\] \.lineup-card\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeSignalDetailBlock =
@@ -253,6 +256,12 @@ if (fs.existsSync(stylesPath)) {
     /html:root\[data-page="home"\]\[data-palette="4"\] \.name-auth-input,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.name-auth-input\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const themedHomeSocialChipBlock =
     /html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.social-chip\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+  const themedHomePanelControlsBlock =
+    /html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.signal-detail__action,[\s\S]*?html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
+      styles,
+    )?.[0] ?? "";
+  const mobileDetailFooterBlock =
+    /\.signal-detail \.timeline-panel__footer,\s*\n\s*\.signal-detail__actions--intro\s*\{[\s\S]*?\n\s*\}/.exec(styles)?.[0] ?? "";
   const paletteFourSelectorGroups = Array.from(styles.matchAll(/(^|})\s*([^{}]*\[data-palette="4"\][^{}]*)\s*\{/g))
     .map((match) => match[2].trim())
     .filter((selectorGroup) => !selectorGroup.includes(":root[data-palette=\"4\"]") && !selectorGroup.includes("body[data-palette=\"4\"]"));
@@ -359,7 +368,13 @@ if (fs.existsSync(stylesPath)) {
     fail("home themed social chips must use palette-aware backgrounds");
   }
   if (!orangeLineupCardBlock.includes("background: color-mix(in srgb, var(--bg) 70%, transparent);")) {
-    fail("orange lineup cards and author cards must use a palette-aware surface");
+    fail("orange lineup cards must use a palette-aware surface");
+  }
+  if (!lineupAuthorCardBackgrounds.includes("background: transparent;")) {
+    fail("lineup article author card must reveal the page background");
+  }
+  if (lineupAuthorCardBackgrounds.some((background) => background !== "background: transparent;")) {
+    fail("lineup article author card must not use a separate surface color");
   }
   if (!orangeTimelinePanelControlsBlock.includes("background: color-mix(in srgb, var(--text) 12%, transparent);")) {
     fail("orange timeline panel controls must use translucent white backgrounds");
@@ -470,6 +485,18 @@ if (fs.existsSync(stylesPath)) {
   }
   if (!timelinePanelSourceBlock.includes("color: var(--text);")) {
     fail("timeline panel source button must use palette text");
+  }
+  if (!themedHomePanelControlsBlock.includes("background: transparent;")) {
+    fail("home detail panel controls must reveal the detail panel surface");
+  }
+  if (themedHomePanelControlsBlock.includes("background: color-mix(in srgb, var(--bg)")) {
+    fail("home detail panel controls must not reuse the page background");
+  }
+  if (!mobileDetailFooterBlock.includes("background: transparent;")) {
+    fail("mobile detail footer must reveal the detail panel surface");
+  }
+  if (mobileDetailFooterBlock.includes("background: color-mix(in srgb, var(--bg)")) {
+    fail("mobile detail footer must not reuse the page background");
   }
 }
 
