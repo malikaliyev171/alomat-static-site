@@ -55,6 +55,20 @@ The site reads:
 GET /api/signals?limit=20
 ```
 
+For local Worker development, create `worker/.dev.vars` with the same bearer token the bot will use:
+
+```text
+ALOMAT_SIGNALS_SECRET=local-secret
+```
+
+Then run the Worker locally:
+
+```powershell
+cd worker
+npm run d1:migrate:local
+npm run dev
+```
+
 For local static builds that need a remote Worker URL, set:
 
 ```powershell

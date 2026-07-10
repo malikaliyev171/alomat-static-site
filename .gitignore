@@ -1,4 +1,6 @@
 node_modules/
+worker/.dev.vars
+worker/.wrangler/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -12,4 +14,5 @@ Thumbs.db
 *.tgz
 
 docs/superpowers/
+.superpowers/
 .worktrees/
