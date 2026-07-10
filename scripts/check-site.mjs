@@ -613,6 +613,12 @@ if (fs.existsSync(stylesPath)) {
 const buildPath = path.join(projectRoot, "build.mjs");
 if (fs.existsSync(buildPath)) {
   const build = readText(buildPath);
+  if (!build.includes("data-signal-timeline-items")) {
+    fail("home timeline must expose a container hook for live signal replacement");
+  }
+  if (!build.includes("__ALOMAT_SIGNALS_API_BASE__")) {
+    fail("build output must expose the configurable signals API base URL");
+  }
   if (!build.includes("width: 420px;")) {
     fail("home signal detail inline width must match the approved reading width");
   }
@@ -650,6 +656,18 @@ if (fs.existsSync(buildPath)) {
 const appPath = path.join(projectRoot, "app.js");
 if (fs.existsSync(appPath)) {
   const app = readText(appPath);
+  if (!app.includes("function loadLiveSignals()")) {
+    fail("app.js must load live signals from the API");
+  }
+  if (!app.includes("function replaceTimelineStories(nextStories)")) {
+    fail("app.js must replace fallback timeline cards with live cards");
+  }
+  if (!app.includes("storyMap = new Map(storyData.map((story) => [String(story.id), story]));")) {
+    fail("live timeline replacement must rebuild the detail-panel story map");
+  }
+  if (!app.includes("bindTimelineItemEvents();")) {
+    fail("live timeline replacement must bind click events for right-panel updates");
+  }
   if (!app.includes('const paletteOrder = ["0", "2", "4", "5", "6", "7"];')) {
     fail("app palette order must include derived palettes");
   }
@@ -717,6 +735,17 @@ if (!fs.existsSync(previewServerPath)) {
   const previewServer = readText(previewServerPath);
   if (!previewServer.includes("process.env.PORT")) {
     fail("preview-server.cjs must support PORT so preview can avoid occupied ports");
+  }
+}
+
+for (const relativePath of [
+  "worker/src/index.js",
+  "worker/src/signals.js",
+  "worker/migrations/0001_create_signals.sql",
+  "worker/wrangler.toml",
+]) {
+  if (!fs.existsSync(path.join(projectRoot, relativePath))) {
+    fail(`${relativePath} is missing`);
   }
 }
 

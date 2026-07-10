@@ -28,6 +28,42 @@ npm run check
 
 Builds the site and validates generated pages, local links, and publishing placeholders.
 
+## Live Telegram Signals
+
+The home timeline can load live cards from a Cloudflare Worker API. The browser does not call Telegram directly. The existing Telegram bot sends each new signal to the Worker:
+
+```bash
+curl -X POST "https://signals.example.com/api/signals" \
+  -H "Authorization: Bearer example-secret" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "external_id": "telegram-message-123",
+    "title": "Signal card title",
+    "summary": ["Short explanation 1", "Short explanation 2"],
+    "source": "Source name",
+    "url": "https://example.com/source",
+    "category": "ai",
+    "image": "https://example.com/image.jpg",
+    "language": "uz",
+    "created_at": "2026-07-10T13:20:00.000Z"
+  }'
+```
+
+The site reads:
+
+```text
+GET /api/signals?limit=20
+```
+
+For local static builds that need a remote Worker URL, set:
+
+```powershell
+$env:ALOMAT_SIGNALS_API_BASE="https://signals.example.com"
+npm run build
+```
+
+If the API is unavailable or empty, the generated fallback timeline remains visible.
+
 ## Deploy
 
 Use `dist/` as the static publish directory for GitHub Pages, Cloudflare Pages, Netlify, or any static host.
