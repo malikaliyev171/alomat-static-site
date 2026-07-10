@@ -5265,6 +5265,7 @@ html[data-page="home"] .site-footer__bottom {
     </div>
   </footer>
     </div>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__="";</script>
     <script data-alomat-app>
 const paletteOrder = ["0", "2", "4", "5", "6", "7"];
 const paletteThemeMap = {
@@ -5296,14 +5297,15 @@ const nameModal = document.querySelector("[data-name-modal]");
 const nameModalClose = document.querySelector("[data-name-modal-close]");
 const libraryGateActions = Array.from(document.querySelectorAll("[data-library-gate]"));
 const loadEarlierButton = document.querySelector("[data-load-earlier]");
-const timelineItems = Array.from(document.querySelectorAll(".signal-timeline__item"));
+let timelineItems = Array.from(document.querySelectorAll(".signal-timeline__item"));
 const storyDataElement = document.querySelector("[data-signal-stories]");
 const detailPanel = document.querySelector("[data-signal-detail]");
 const detailContent = detailPanel?.querySelector("[data-signal-detail-content]");
 const detailVisual = detailPanel?.querySelector("[data-signal-detail-visual]");
 const pageMain = document.querySelector(".page-home");
-const storyData = parseStoryData();
-const storyMap = new Map(storyData.map((story) => [String(story.id), story]));
+let storyData = parseStoryData();
+let storyMap = new Map(storyData.map((story) => [String(story.id), story]));
+const timelineItemsContainer = document.querySelector("[data-signal-timeline-items]");
 const detailDefaults = captureDetailDefaults();
 let activeStoryId = null;
 let activeUpdateFrame = 0;
@@ -5397,6 +5399,48 @@ function parseStoryData() {
   }
 }
 
+function getSignalsApiUrl() {
+  const base = String(window.__ALOMAT_SIGNALS_API_BASE__ || "").trim();
+  const path = "/api/signals?limit=20";
+  if (!base) {
+    return path;
+  }
+  return `${base.replace(/\/$/, "")}${path}`;
+}
+
+function normalizeLiveSignal(signal, index) {
+  const id = signal.id ?? signal.external_id ?? `live-${index}`;
+  const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
+  const summary = Array.isArray(signal.summary)
+    ? signal.summary.map(String).filter(Boolean)
+    : typeof signal.summary === "string"
+      ? [signal.summary]
+      : [];
+
+  return {
+    id: `live-${id}`,
+    title: String(signal.title || "").trim(),
+    source: String(signal.source || "").trim(),
+    time: formatSignalTime(createdAt),
+    score: Number.isFinite(signal.score) ? signal.score : 94,
+    url: String(signal.url || "").trim(),
+    image: String(signal.image || "").trim(),
+    category: String(signal.category || "general").trim(),
+    summary,
+  };
+}
+
+function formatSignalTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "uz-UZ", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -5404,6 +5448,10 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value).replaceAll("\"", "&quot;");
 }
 
 function localizeStoryValue(value) {
@@ -5585,6 +5633,48 @@ function updateTimelineActiveState(activeItem) {
     item.classList.toggle("is-active", isActive);
     button?.setAttribute("aria-current", isActive ? "true" : "false");
   });
+}
+
+function renderLiveTimelineItem(story, index) {
+  const shift = ((index % 3) - 1) * 7;
+  const storyImage = story.image || "";
+  return `
+    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">${escapeHtml(story.title)}</span>
+      </button>
+    </article>`;
+}
+
+function replaceTimelineStories(nextStories) {
+  if (!timelineItemsContainer || !nextStories.length) {
+    return;
+  }
+
+  const dayMarker = timelineItemsContainer.querySelector(".signal-timeline__day-marker");
+  const sentinel = timelineItemsContainer.querySelector(".signal-timeline__sentinel");
+  const earlierGate = timelineItemsContainer.querySelector(".signal-timeline__earlier-gate");
+
+  timelineItemsContainer.querySelectorAll(".signal-timeline__item").forEach((item) => item.remove());
+  const html = nextStories.map(renderLiveTimelineItem).join("");
+
+  if (sentinel) {
+    sentinel.insertAdjacentHTML("beforebegin", html);
+  } else if (earlierGate) {
+    earlierGate.insertAdjacentHTML("beforebegin", html);
+  } else if (dayMarker) {
+    dayMarker.insertAdjacentHTML("afterend", html);
+  } else {
+    timelineItemsContainer.insertAdjacentHTML("afterbegin", html);
+  }
+
+  storyData = nextStories;
+  storyMap = new Map(storyData.map((story) => [String(story.id), story]));
+  timelineItems = Array.from(timelineItemsContainer.querySelectorAll(".signal-timeline__item"));
+  bindTimelineItemEvents();
+  initTimelineReveal();
+  resetDetailPanel();
 }
 
 function applyStoryToDetail(story, item, options = {}) {
@@ -5953,6 +6043,19 @@ function initTimelineReveal() {
   timelineItems.forEach((item) => observer.observe(item));
 }
 
+function bindTimelineItemEvents() {
+  timelineItems.forEach((item) => {
+    const button = item.querySelector(".signal-timeline__headline-button");
+    button?.addEventListener("click", () => {
+      const story = storyMap.get(String(item.dataset.storyId));
+      if (!story) {
+        return;
+      }
+      applyStoryToDetail(story, item, { scrollIntoView: true });
+    });
+  });
+}
+
 function initTimelineStories() {
   if (!detailPanel || !detailContent || !storyMap.size) {
     return;
@@ -5968,24 +6071,7 @@ function initTimelineStories() {
     resetDetailPanel();
   });
 
-  timelineItems.forEach((item) => {
-    const activateItem = () => {
-      const story = storyMap.get(String(item.dataset.storyId));
-      if (!story) {
-        return;
-      }
-
-      applyStoryToDetail(story, item, { scrollIntoView: true });
-    };
-
-    item.addEventListener("click", activateItem);
-    item.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        activateItem();
-      }
-    });
-  });
+  bindTimelineItemEvents();
 
   window.addEventListener(
     "scroll",
@@ -6011,12 +6097,39 @@ function initTimelineStories() {
   window.addEventListener("resize", scheduleActiveStorySync);
 }
 
+async function loadLiveSignals() {
+  if (!timelineItemsContainer) {
+    return;
+  }
+
+  try {
+    const response = await fetch(getSignalsApiUrl(), {
+      headers: { accept: "application/json" },
+    });
+    if (!response.ok) {
+      return;
+    }
+
+    const payload = await response.json();
+    const signals = Array.isArray(payload?.signals) ? payload.signals : [];
+    const nextStories = signals.map(normalizeLiveSignal).filter((story) => story.title && story.summary.length);
+    if (!nextStories.length) {
+      return;
+    }
+
+    replaceTimelineStories(nextStories);
+  } catch {
+    // Keep the static fallback timeline.
+  }
+}
+
 initTheme();
 initReaderGateAction();
 initNameForm();
 initTimelineReveal();
 initLoadEarlier();
 initTimelineStories();
+loadLiveSignals();
 
     </script>
   </body>

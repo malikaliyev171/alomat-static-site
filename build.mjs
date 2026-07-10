@@ -1582,7 +1582,7 @@ function renderHome(localeKey, currentFile) {
               </form>
             </div>
           </div>
-          <div class="signal-timeline__items">
+          <div class="signal-timeline__items" data-signal-timeline-items>
             <div class="signal-timeline__day-marker" aria-hidden="true">
               <span class="signal-timeline__day-pill">${text(locale.ui.today)}</span>
             </div>
@@ -2663,6 +2663,7 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       ${renderPage(localeKey, pageKey, currentFile)}
       ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile)}
     </div>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__=${serializeJson(process.env.ALOMAT_SIGNALS_API_BASE ?? "")};</script>
     ${renderInlineApp()}
   </body>
 </html>`;
