@@ -656,10 +656,10 @@ if (fs.existsSync(buildPath)) {
 const appPath = path.join(projectRoot, "app.js");
 if (fs.existsSync(appPath)) {
   const app = readText(appPath);
-  if (!app.includes("function loadLiveSignals()")) {
+  if (!app.includes("function loadLiveSignals(")) {
     fail("app.js must load live signals from the API");
   }
-  if (!app.includes("function replaceTimelineStories(nextStories)")) {
+  if (!app.includes("function replaceTimelineStories(")) {
     fail("app.js must replace fallback timeline cards with live cards");
   }
   if (!app.includes("storyMap = new Map(storyData.map((story) => [String(story.id), story]));")) {

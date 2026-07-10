@@ -1590,7 +1590,7 @@ function renderHome(localeKey, currentFile) {
             <div class="signal-timeline__sentinel" aria-hidden="true"></div>
             <div class="signal-timeline__earlier-gate">
               <span class="signal-timeline__earlier-hint">${text(locale.ui.noMore)}</span>
-              <button class="signal-timeline__load-earlier" type="button" aria-disabled="true" tabindex="-1">
+              <button class="signal-timeline__load-earlier" type="button" data-load-earlier aria-disabled="true" tabindex="-1">
                 <span class="signal-timeline__load-earlier-chevron" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
                     <path fill="none" stroke="currentColor" stroke-width="2" d="m6 9 6 6 6-6"></path>

@@ -159,6 +159,9 @@ function createTimelineEnvironment(stories) {
       if (selector === ".signal-timeline__sentinel") {
         return sentinel;
       }
+      if (selector === ".signal-timeline__earlier-gate") {
+        return earlierGate;
+      }
       return null;
     },
     querySelectorAll(selector) {
@@ -167,16 +170,21 @@ function createTimelineEnvironment(stories) {
       }
       return [];
     },
-    insertAdjacentHTML(_position, html) {
+    insertAdjacentHTML(position, html) {
       const nextItems = parseTimelineItemsFromHtml(html);
       nextItems.forEach((item) => {
         item.remove = () => detach(item);
       });
-      state.items = [...nextItems, ...state.items];
+      state.items = position === "afterbegin" ? [...nextItems, ...state.items] : [...state.items, ...nextItems];
     },
   };
 
   const sentinel = {
+    insertAdjacentHTML(position, html) {
+      container.insertAdjacentHTML(position, html);
+    },
+  };
+  const earlierGate = {
     insertAdjacentHTML(position, html) {
       container.insertAdjacentHTML(position, html);
     },
@@ -199,6 +207,29 @@ function createTimelineEnvironment(stories) {
 function createAppEnvironment({ stories, fetchImpl }) {
   const timeline = createTimelineEnvironment(stories);
   const storyDataElement = { textContent: JSON.stringify(stories) };
+  const loadEarlierButton = {
+    disabled: false,
+    hidden: false,
+    textContent: "",
+    attributes: {},
+    listeners: {},
+    classList: createClassList(),
+    addEventListener(type, listener) {
+      this.listeners[type] = listener;
+    },
+    removeEventListener(type) {
+      delete this.listeners[type];
+    },
+    setAttribute(name, value) {
+      this.attributes[name] = String(value);
+    },
+    getAttribute(name) {
+      return this.attributes[name] ?? null;
+    },
+    click() {
+      this.listeners.click?.({ preventDefault() {} });
+    },
+  };
   const detailContent = {
     innerHTML: "<p>Default detail</p>",
     scrollTop: 0,
@@ -251,6 +282,9 @@ function createAppEnvironment({ stories, fetchImpl }) {
       if (selector === ".page-home") {
         return pageMain;
       }
+      if (selector === "[data-load-earlier]") {
+        return loadEarlierButton;
+      }
       return null;
     },
     querySelectorAll(selector) {
@@ -294,6 +328,7 @@ function createAppEnvironment({ stories, fetchImpl }) {
   return {
     detailContent,
     detailPanel,
+    loadEarlierButton,
     pageMain,
     timeline,
     globals: {
@@ -497,7 +532,7 @@ test("valid live records replace demo cards and hydrate the detail panel", async
             title: "Live signal",
             summary: ["Live summary paragraph."],
             source: "Live Source",
-            created_at: "2026-07-10T10:30:00Z",
+            created_at: "2026-07-11T10:30:00Z",
             url: "https://example.com/live",
             image: "https://example.com/live.png",
           },
@@ -505,7 +540,7 @@ test("valid live records replace demo cards and hydrate the detail panel", async
       }),
     });
 
-    await helpers.loadLiveSignals();
+    await helpers.loadLiveSignals(new Date("2026-07-11T12:00:00Z"));
 
     assert.deepEqual(environment.timeline.getTitles(), ["Live signal"]);
     assert.match(environment.detailContent.innerHTML, /Live signal/);
@@ -514,6 +549,57 @@ test("valid live records replace demo cards and hydrate the detail panel", async
     assert.equal(environment.detailPanel.classList.contains("has-story"), true);
     assert.equal(environment.pageMain.classList.contains("has-detail-open"), true);
     assert.equal(environment.timeline.getFirstItem()?.__button.getAttribute("aria-current"), "true");
+  } finally {
+    cleanup();
+  }
+});
+
+test("live records show today's cards first and reveal older days from the load earlier button", async () => {
+  const fallbackStories = [
+    {
+      id: "fallback-1",
+      title: { en: "Fallback story" },
+      summary: { en: ["Static summary"] },
+      source: "Fallback Source",
+      time: "09:00",
+      url: "https://example.com/fallback",
+      image: "https://example.com/fallback.png",
+    },
+  ];
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [
+          {
+            id: 401,
+            title: "Today signal",
+            summary: ["Today summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-11T10:30:00Z",
+          },
+          {
+            id: 402,
+            title: "Yesterday signal",
+            summary: ["Yesterday summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-10T20:30:00Z",
+          },
+        ],
+      }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-11T12:00:00Z"));
+
+    assert.deepEqual(environment.timeline.getTitles(), ["Today signal"]);
+    assert.equal(environment.loadEarlierButton.disabled, false);
+    assert.equal(environment.loadEarlierButton.hidden, false);
+
+    environment.loadEarlierButton.click();
+
+    assert.deepEqual(environment.timeline.getTitles(), ["Today signal", "Yesterday signal"]);
+    assert.equal(environment.loadEarlierButton.disabled, true);
   } finally {
     cleanup();
   }

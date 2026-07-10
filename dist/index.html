@@ -5284,7 +5284,7 @@ html[data-page="home"] .site-footer__bottom {
             <div class="signal-timeline__sentinel" aria-hidden="true"></div>
             <div class="signal-timeline__earlier-gate">
               <span class="signal-timeline__earlier-hint">Bugungi signallar tugadi</span>
-              <button class="signal-timeline__load-earlier" type="button" aria-disabled="true" tabindex="-1">
+              <button class="signal-timeline__load-earlier" type="button" data-load-earlier aria-disabled="true" tabindex="-1">
                 <span class="signal-timeline__load-earlier-chevron" aria-hidden="true">
                   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
                     <path fill="none" stroke="currentColor" stroke-width="2" d="m6 9 6 6 6-6"></path>
@@ -5405,6 +5405,7 @@ let timelineArmed = false;
 let timelineClosed = false;
 let lastScrollY = window.scrollY || 0;
 let timelineRevealObserver = null;
+let earlierLiveStories = [];
 
 document.documentElement.classList.add("js-ready");
 
@@ -5547,6 +5548,8 @@ function normalizeLiveSignal(signal, index) {
     id: `live-${id}`,
     title: String(signal.title || "").trim(),
     source: String(signal.source || "").trim(),
+    createdAt,
+    dayKey: getLocalDayKey(createdAt),
     time: formatSignalTime(createdAt),
     score: Number.isFinite(signal.score) ? signal.score : 94,
     url: sanitizeStoryUrl(signal.url),
@@ -5554,6 +5557,37 @@ function normalizeLiveSignal(signal, index) {
     category: String(signal.category || "general").trim(),
     summary,
   };
+}
+
+function getLocalDayKey(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function partitionStoriesByToday(stories, now = new Date()) {
+  const todayKey = getLocalDayKey(now);
+  if (!todayKey) {
+    return { todayStories: stories, earlierStories: [] };
+  }
+
+  return stories.reduce(
+    (groups, story) => {
+      if (!story.dayKey || story.dayKey === todayKey) {
+        groups.todayStories.push(story);
+      } else {
+        groups.earlierStories.push(story);
+      }
+      return groups;
+    },
+    { todayStories: [], earlierStories: [] },
+  );
 }
 
 function formatSignalTime(value) {
@@ -5792,17 +5826,15 @@ function renderLiveTimelineItem(story, index) {
     </article>`;
 }
 
-function replaceTimelineStories(nextStories) {
-  if (!timelineItemsContainer || !nextStories.length) {
+function insertLiveTimelineStories(stories, startIndex = 0) {
+  if (!timelineItemsContainer || !stories.length) {
     return;
   }
 
   const dayMarker = timelineItemsContainer.querySelector(".signal-timeline__day-marker");
   const sentinel = timelineItemsContainer.querySelector(".signal-timeline__sentinel");
   const earlierGate = timelineItemsContainer.querySelector(".signal-timeline__earlier-gate");
-
-  timelineItemsContainer.querySelectorAll(".signal-timeline__item").forEach((item) => item.remove());
-  const html = nextStories.map(renderLiveTimelineItem).join("");
+  const html = stories.map((story, index) => renderLiveTimelineItem(story, startIndex + index)).join("");
 
   if (sentinel) {
     sentinel.insertAdjacentHTML("beforebegin", html);
@@ -5813,12 +5845,41 @@ function replaceTimelineStories(nextStories) {
   } else {
     timelineItemsContainer.insertAdjacentHTML("afterbegin", html);
   }
+}
 
-  storyData = nextStories;
+function updateLoadEarlierButton(hasEarlierStories) {
+  if (!loadEarlierButton) {
+    return;
+  }
+
+  loadEarlierButton.hidden = !hasEarlierStories;
+  loadEarlierButton.disabled = !hasEarlierStories;
+  if (!hasEarlierStories) {
+    loadEarlierButton.textContent = labelMap[locale].reveal;
+  }
+  loadEarlierButton.setAttribute("aria-disabled", hasEarlierStories ? "false" : "true");
+  loadEarlierButton.setAttribute("tabindex", hasEarlierStories ? "0" : "-1");
+}
+
+function refreshTimelineStoryBindings() {
   storyMap = new Map(storyData.map((story) => [String(story.id), story]));
   timelineItems = Array.from(timelineItemsContainer.querySelectorAll(".signal-timeline__item"));
   bindTimelineItemEvents();
   initTimelineReveal();
+}
+
+function replaceTimelineStories(todayStories, olderStories = []) {
+  if (!timelineItemsContainer || (!todayStories.length && !olderStories.length)) {
+    return;
+  }
+
+  timelineItemsContainer.querySelectorAll(".signal-timeline__item").forEach((item) => item.remove());
+  insertLiveTimelineStories(todayStories);
+
+  storyData = [...todayStories];
+  earlierLiveStories = [...olderStories];
+  refreshTimelineStoryBindings();
+  updateLoadEarlierButton(earlierLiveStories.length > 0);
   const firstItem = timelineItems[0];
   const firstStory = firstItem ? storyMap.get(String(firstItem.dataset.storyId)) : null;
   if (firstStory && firstItem) {
@@ -6154,13 +6215,23 @@ function initReaderGateAction() {
 
 function initLoadEarlier() {
   loadEarlierButton?.addEventListener("click", () => {
-    const hiddenCards = document.querySelectorAll('[data-older="true"]');
-    hiddenCards.forEach((card) => {
-      card.hidden = false;
-      card.classList.add("is-visible");
-    });
+    if (earlierLiveStories.length) {
+      const nextStories = [...earlierLiveStories];
+      earlierLiveStories = [];
+      insertLiveTimelineStories(nextStories, storyData.length);
+      storyData = [...storyData, ...nextStories];
+      refreshTimelineStoryBindings();
+    } else {
+      const hiddenCards = document.querySelectorAll('[data-older="true"]');
+      hiddenCards.forEach((card) => {
+        card.hidden = false;
+        card.classList.add("is-visible");
+      });
+    }
     loadEarlierButton.disabled = true;
     loadEarlierButton.textContent = labelMap[locale].reveal;
+    loadEarlierButton.setAttribute("aria-disabled", "true");
+    loadEarlierButton.setAttribute("tabindex", "-1");
     scheduleActiveStorySync();
   });
 }
@@ -6262,7 +6333,7 @@ function initTimelineStories() {
   window.addEventListener("resize", scheduleActiveStorySync);
 }
 
-async function loadLiveSignals() {
+async function loadLiveSignals(now = new Date()) {
   if (!timelineItemsContainer) {
     return;
   }
@@ -6284,7 +6355,8 @@ async function loadLiveSignals() {
       return;
     }
 
-    replaceTimelineStories(nextStories);
+    const { todayStories, earlierStories } = partitionStoriesByToday(nextStories, now);
+    replaceTimelineStories(todayStories, earlierStories);
   } catch {
     // Keep the static fallback timeline.
   }
@@ -6301,6 +6373,8 @@ loadLiveSignals();
 globalThis.__ALOMAT_APP_TEST__ = {
   sanitizeStoryUrl,
   sanitizeStoryImage,
+  getLocalDayKey,
+  partitionStoriesByToday,
   createBackgroundImageValue,
   loadLiveSignals,
   normalizeLiveSignal,
