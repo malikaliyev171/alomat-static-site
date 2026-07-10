@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build.mjs",
     "preview": "node preview-server.cjs",
-    "check": "npm run build && node scripts/check-site.mjs"
+    "check": "npm run build && node scripts/check-site.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "engines": {
     "node": ">=20"

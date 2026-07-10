@@ -129,6 +129,54 @@ test("normalizeSignalInput rejects empty summary", () => {
   });
 });
 
+test("normalizeSignalInput keeps valid http and https url fields unchanged", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "Signal card title",
+      summary: ["Short explanation 1"],
+      url: "https://example.com/source?ref=signals",
+      image: "http://cdn.example.com/image.jpg",
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.url, "https://example.com/source?ref=signals");
+  assert.equal(result.value.image, "http://cdn.example.com/image.jpg");
+});
+
+test("normalizeSignalInput blanks unsafe url and image fields", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "Signal card title",
+      summary: ["Short explanation 1"],
+      url: "javascript:alert(1)",
+      image: 'https://example.com/image.jpg") ; background-image:url(javascript:alert(1))',
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.url, "");
+  assert.equal(result.value.image, "");
+});
+
+test("normalizeSignalInput blanks control-character and data url fields", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "Signal card title",
+      summary: ["Short explanation 1"],
+      url: " \u0000https://example.com/source",
+      image: "data:image/svg+xml,<svg></svg>",
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.url, "");
+  assert.equal(result.value.image, "");
+});
+
 test("parseLimit clamps to the public read range", () => {
   assert.equal(parseLimit(null), 20);
   assert.equal(parseLimit("0"), 1);

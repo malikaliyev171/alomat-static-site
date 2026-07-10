@@ -5501,6 +5501,32 @@ function getSignalsApiUrl() {
   return `${base.replace(/\/$/, "")}${path}`;
 }
 
+function sanitizeHttpUrl(value, fallback = "") {
+  const normalized = String(value ?? "").trim();
+  if (!normalized || /[\u0000-\u001F\u007F]/.test(normalized)) {
+    return fallback;
+  }
+
+  if (/[<>"'`\\\s;]/.test(normalized)) {
+    return fallback;
+  }
+
+  try {
+    const parsed = new URL(normalized);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? normalized : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function sanitizeStoryUrl(value) {
+  return sanitizeHttpUrl(value, "#");
+}
+
+function sanitizeStoryImage(value) {
+  return sanitizeHttpUrl(value, timelineFallbackImage || "#");
+}
+
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
@@ -5516,8 +5542,8 @@ function normalizeLiveSignal(signal, index) {
     source: String(signal.source || "").trim(),
     time: formatSignalTime(createdAt),
     score: Number.isFinite(signal.score) ? signal.score : 94,
-    url: String(signal.url || "").trim(),
-    image: String(signal.image || "").trim(),
+    url: sanitizeStoryUrl(signal.url),
+    image: sanitizeStoryImage(signal.image),
     category: String(signal.category || "general").trim(),
     summary,
   };
@@ -5552,7 +5578,7 @@ function getTimelineFallbackImage() {
 }
 
 function getStoryImageUrl(story) {
-  return String(story?.image || "").trim() || timelineFallbackImage;
+  return sanitizeStoryImage(story?.image);
 }
 
 function escapeCssUrl(value) {
@@ -5562,7 +5588,8 @@ function escapeCssUrl(value) {
 }
 
 function createBackgroundImageValue(imageUrl) {
-  return imageUrl ? `url("${escapeCssUrl(imageUrl)}")` : "";
+  const safeImageUrl = sanitizeStoryImage(imageUrl);
+  return safeImageUrl ? `url("${escapeCssUrl(safeImageUrl)}")` : "";
 }
 
 function localizeStoryValue(value) {
@@ -5656,7 +5683,7 @@ function renderStoryMarkup(story) {
   const summaryHtml = summary
     .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
     .join("");
-  const sourceHref = escapeHtml(story.url ?? "#");
+  const sourceHref = sanitizeStoryUrl(story.url);
   const sourceTarget = sourceHref === "#" ? "" : ' target="_blank" rel="noreferrer"';
   const imageButton = (label, symbol) =>
     `<button class="timeline-panel__lens-button" type="button" aria-label="${escapeHtml(label)}">${symbol}</button>`;
@@ -5700,7 +5727,7 @@ function renderStoryMarkup(story) {
       </div>
     </div>
     <div class="timeline-panel__footer">
-      <a class="timeline-panel__source" href="${sourceHref}"${sourceTarget}>
+      <a class="timeline-panel__source" href="${escapeAttribute(sourceHref)}"${sourceTarget}>
         ${escapeHtml(labels.originalSource)}
         <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
           <path fill="none" stroke="currentColor" stroke-width="2" d="M14 3h7v7"></path>
@@ -6254,6 +6281,12 @@ initTimelineReveal();
 initLoadEarlier();
 initTimelineStories();
 loadLiveSignals();
+
+globalThis.__ALOMAT_APP_TEST__ = {
+  sanitizeStoryUrl,
+  sanitizeStoryImage,
+  createBackgroundImageValue,
+};
 
     </script>
   </body>

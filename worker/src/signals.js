@@ -51,9 +51,9 @@ export function normalizeSignalInput(input, nowIso) {
       title,
       summary_json: JSON.stringify(summary),
       source: normalizeOptionalText(input.source),
-      url: normalizeOptionalText(input.url),
+      url: normalizeOptionalUrl(input.url),
       category: normalizeOptionalText(input.category) || "general",
-      image: normalizeOptionalText(input.image),
+      image: normalizeOptionalUrl(input.image),
       language: normalizeOptionalText(input.language) || "uz",
       created_at: createdAt,
     },
@@ -86,6 +86,15 @@ function normalizeOptionalText(value) {
   return normalizeText(value);
 }
 
+function normalizeOptionalUrl(value) {
+  const normalized = normalizeText(value);
+  if (!normalized || !isSafeHttpUrl(normalized)) {
+    return "";
+  }
+
+  return normalized;
+}
+
 function normalizeSummary(value) {
   const items = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
   return items.map(normalizeText).filter(Boolean).slice(0, 6);
@@ -111,4 +120,23 @@ function parseSummaryJson(value) {
   } catch {
     return [];
   }
+}
+
+function isSafeHttpUrl(value) {
+  if (!value || /[\u0000-\u001F\u007F]/.test(value)) {
+    return false;
+  }
+
+  if (/[<>"'`\\\s;]/.test(value)) {
+    return false;
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(value);
+  } catch {
+    return false;
+  }
+
+  return parsed.protocol === "http:" || parsed.protocol === "https:";
 }

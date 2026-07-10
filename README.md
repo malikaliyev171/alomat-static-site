@@ -80,4 +80,35 @@ If the API is unavailable or empty, the generated fallback timeline remains visi
 
 ## Deploy
 
-Use `dist/` as the static publish directory for GitHub Pages, Cloudflare Pages, Netlify, or any static host.
+Deploy the Worker before building the static site against it:
+
+1. Create the D1 database, for example `wrangler d1 create alomat_signals`.
+2. Copy the returned D1 id into `worker/wrangler.toml` by replacing the placeholder `database_id = "00000000-0000-0000-0000-000000000000"`.
+3. Set the Worker secret that the Telegram bot will use:
+
+```powershell
+cd worker
+npx wrangler secret put ALOMAT_SIGNALS_SECRET
+```
+
+4. Apply the remote D1 migrations:
+
+```powershell
+npm run d1:migrate:remote
+```
+
+5. Deploy the Worker:
+
+```powershell
+npm run deploy
+```
+
+6. Build the static site with the deployed Worker base URL:
+
+```powershell
+cd ..
+$env:ALOMAT_SIGNALS_API_BASE="https://signals.example.com"
+npm run build
+```
+
+7. Deploy `dist/` to GitHub Pages, Cloudflare Pages, Netlify, or any static host.
