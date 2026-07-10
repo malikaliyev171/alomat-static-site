@@ -1,4 +1,5 @@
 import { jsonResponse, normalizeSignalInput, parseLimit, rowToSignal } from "./signals.js";
+import { normalizeTelegramUpdate } from "./telegram.js";
 
 export default {
   fetch(request, env) {
@@ -8,6 +9,10 @@ export default {
 
 export async function handleRequest(request, env, now = new Date()) {
   const url = new URL(request.url);
+
+  if (url.pathname === "/api/telegram-webhook") {
+    return handleTelegramWebhook(request, env, now);
+  }
 
   if (url.pathname !== "/api/signals") {
     return jsonResponse({ error: "not found" }, 404);
@@ -66,35 +71,90 @@ async function createSignal(request, env, now) {
     return jsonResponse({ error: normalized.error }, normalized.status);
   }
 
+  const stored = await insertSignal(env, normalized.value);
+  if (!stored.ok) {
+    return jsonResponse({ error: stored.error }, stored.status);
+  }
+
+  return jsonResponse({ ok: true }, 201);
+}
+
+async function handleTelegramWebhook(request, env, now) {
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "method not allowed" }, 405, { allow: "POST" });
+  }
+
+  if (!isTelegramWebhookAuthorized(request, env)) {
+    return jsonResponse({ error: "unauthorized" }, 401);
+  }
+
+  let update;
+  try {
+    update = await request.json();
+  } catch {
+    return jsonResponse({ error: "invalid JSON body" }, 400);
+  }
+
+  const telegram = normalizeTelegramUpdate(update, now.toISOString());
+  if (!telegram.ok) {
+    return jsonResponse({ error: telegram.error }, telegram.status);
+  }
+  if (telegram.ignored) {
+    return jsonResponse({ ok: true, ignored: true, reason: telegram.reason });
+  }
+
+  const normalized = normalizeSignalInput(telegram.value, now.toISOString());
+  if (!normalized.ok) {
+    return jsonResponse({ ok: true, ignored: true, reason: normalized.error });
+  }
+
+  const stored = await insertSignal(env, normalized.value);
+  if (!stored.ok && stored.status === 409) {
+    return jsonResponse({ ok: true, duplicate: true });
+  }
+  if (!stored.ok) {
+    return jsonResponse({ error: stored.error }, stored.status);
+  }
+
+  return jsonResponse({ ok: true }, 201);
+}
+
+async function insertSignal(env, signal) {
   try {
     await env.DB.prepare(
       `INSERT INTO signals (external_id, title, summary_json, source, url, category, image, language, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
       .bind(
-        normalized.value.external_id || null,
-        normalized.value.title,
-        normalized.value.summary_json,
-        normalized.value.source,
-        normalized.value.url,
-        normalized.value.category,
-        normalized.value.image,
-        normalized.value.language,
-        normalized.value.created_at,
+        signal.external_id || null,
+        signal.title,
+        signal.summary_json,
+        signal.source,
+        signal.url,
+        signal.category,
+        signal.image,
+        signal.language,
+        signal.created_at,
       )
       .run();
   } catch (error) {
     if (String(error?.message ?? "").includes("UNIQUE constraint failed")) {
-      return jsonResponse({ error: "duplicate external_id" }, 409);
+      return { ok: false, status: 409, error: "duplicate external_id" };
     }
-    return jsonResponse({ error: "storage error" }, 500);
+    return { ok: false, status: 500, error: "storage error" };
   }
 
-  return jsonResponse({ ok: true }, 201);
+  return { ok: true };
 }
 
 function isAuthorized(request, env) {
   const expected = env.ALOMAT_SIGNALS_SECRET;
   const actual = request.headers.get("authorization") ?? "";
   return Boolean(expected) && actual === `Bearer ${expected}`;
+}
+
+function isTelegramWebhookAuthorized(request, env) {
+  const expected = env.TELEGRAM_WEBHOOK_SECRET;
+  const actual = request.headers.get("x-telegram-bot-api-secret-token") ?? "";
+  return Boolean(expected) && actual === expected;
 }

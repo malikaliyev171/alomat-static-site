@@ -55,10 +55,19 @@ The site reads:
 GET /api/signals?limit=20
 ```
 
+Telegram can also send bot updates directly to the Worker webhook:
+
+```text
+POST https://habar.alomat.workers.dev/api/telegram-webhook
+```
+
+The Worker accepts `message` and `channel_post` updates. The first non-empty line becomes the card title. Remaining non-empty lines become the timeline/detail text. If the message contains an `http` or `https` link, the first link becomes the source URL.
+
 For local Worker development, create `worker/.dev.vars` with the same bearer token the bot will use:
 
 ```text
 ALOMAT_SIGNALS_SECRET=local-secret
+TELEGRAM_WEBHOOK_SECRET=local-telegram-secret
 ```
 
 Then run the Worker locally:
@@ -89,6 +98,7 @@ Deploy the Worker before building the static site against it:
 ```powershell
 cd worker
 npx wrangler secret put ALOMAT_SIGNALS_SECRET
+npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
 ```
 
 4. Apply the remote D1 migrations:
@@ -103,7 +113,25 @@ npm run d1:migrate:remote
 npm run deploy
 ```
 
-6. Build the static site with the deployed Worker base URL:
+6. Set the Telegram webhook after deploy. Use the real bot token from BotFather and the same webhook secret stored in Cloudflare:
+
+```powershell
+$env:TELEGRAM_BOT_TOKEN="<bot-token>"
+$env:TELEGRAM_WEBHOOK_SECRET="<same-secret-used-above>"
+$body = @{
+  url = "https://habar.alomat.workers.dev/api/telegram-webhook"
+  secret_token = $env:TELEGRAM_WEBHOOK_SECRET
+  allowed_updates = @("message", "channel_post")
+  drop_pending_updates = $false
+} | ConvertTo-Json -Compress
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "https://api.telegram.org/bot$env:TELEGRAM_BOT_TOKEN/setWebhook" `
+  -ContentType "application/json" `
+  -Body $body
+```
+
+7. Build the static site with the deployed Worker base URL:
 
 ```powershell
 cd ..
@@ -111,4 +139,4 @@ $env:ALOMAT_SIGNALS_API_BASE="https://habar.alomat.workers.dev"
 npm run build
 ```
 
-7. Deploy `dist/` to GitHub Pages, Cloudflare Pages, Netlify, or any static host.
+8. Deploy `dist/` to GitHub Pages, Cloudflare Pages, Netlify, or any static host.

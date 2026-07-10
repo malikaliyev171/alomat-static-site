@@ -8,6 +8,7 @@ import {
   parseLimit,
   rowToSignal,
 } from "../src/signals.js";
+import { normalizeTelegramUpdate } from "../src/telegram.js";
 
 class FakeD1 {
   constructor() {
@@ -76,8 +77,44 @@ function testEnv() {
   return {
     DB: new FakeD1(),
     ALOMAT_SIGNALS_SECRET: "secret-for-tests",
+    TELEGRAM_WEBHOOK_SECRET: "telegram-secret-for-tests",
   };
 }
+
+test("normalizeTelegramUpdate converts a text message to signal input", () => {
+  const result = normalizeTelegramUpdate(
+    {
+      update_id: 10,
+      message: {
+        message_id: 77,
+        date: 1783701546,
+        text: "Telegramdan kelgan habar\nIkkinchi satir timeline summary boladi\nhttps://example.com/source",
+        from: { language_code: "tr" },
+        chat: { id: 12345, type: "private", first_name: "Malik" },
+      },
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.value, {
+    external_id: "telegram:12345:77",
+    title: "Telegramdan kelgan habar",
+    summary: ["Ikkinchi satir timeline summary boladi", "https://example.com/source"],
+    source: "Malik",
+    url: "https://example.com/source",
+    category: "telegram",
+    image: "",
+    language: "tr",
+    created_at: "2026-07-10T16:39:06.000Z",
+  });
+});
+
+test("normalizeTelegramUpdate ignores unsupported updates", () => {
+  const result = normalizeTelegramUpdate({ update_id: 11, callback_query: {} }, "2026-07-10T14:00:00.000Z");
+
+  assert.deepEqual(result, { ok: true, ignored: true, reason: "unsupported update" });
+});
 
 test("normalizeSignalInput accepts the bot payload and fills defaults", () => {
   const result = normalizeSignalInput(
@@ -262,6 +299,72 @@ test("POST /api/signals inserts a valid signal", async () => {
   assert.deepEqual(await response.json(), { ok: true });
   assert.equal(env.DB.rows.length, 1);
   assert.equal(env.DB.rows[0].title, "Live card");
+});
+
+test("POST /api/telegram-webhook rejects missing Telegram secret", async () => {
+  const response = await handleRequest(
+    new Request("https://habar.alomat.workers.dev/api/telegram-webhook", {
+      method: "POST",
+      body: JSON.stringify({ update_id: 10 }),
+    }),
+    testEnv(),
+    new Date("2026-07-10T14:00:00.000Z"),
+  );
+
+  assert.equal(response.status, 401);
+  assert.deepEqual(await response.json(), { error: "unauthorized" });
+});
+
+test("POST /api/telegram-webhook inserts a Telegram message", async () => {
+  const env = testEnv();
+  const response = await handleRequest(
+    new Request("https://habar.alomat.workers.dev/api/telegram-webhook", {
+      method: "POST",
+      headers: { "x-telegram-bot-api-secret-token": "telegram-secret-for-tests" },
+      body: JSON.stringify({
+        update_id: 10,
+        message: {
+          message_id: 77,
+          date: 1783701546,
+          text: "Telegramdan kelgan habar\nIkkinchi satir timeline summary boladi",
+          chat: { id: 12345, type: "private", first_name: "Malik" },
+        },
+      }),
+    }),
+    env,
+    new Date("2026-07-10T14:00:00.000Z"),
+  );
+
+  assert.equal(response.status, 201);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.equal(env.DB.rows.length, 1);
+  assert.equal(env.DB.rows[0].external_id, "telegram:12345:77");
+  assert.equal(env.DB.rows[0].title, "Telegramdan kelgan habar");
+});
+
+test("POST /api/telegram-webhook treats duplicate Telegram retries as ok", async () => {
+  const env = testEnv();
+  const request = () =>
+    new Request("https://habar.alomat.workers.dev/api/telegram-webhook", {
+      method: "POST",
+      headers: { "x-telegram-bot-api-secret-token": "telegram-secret-for-tests" },
+      body: JSON.stringify({
+        update_id: 10,
+        message: {
+          message_id: 77,
+          date: 1783701546,
+          text: "Telegramdan kelgan habar\nIkkinchi satir timeline summary boladi",
+          chat: { id: 12345, type: "private", first_name: "Malik" },
+        },
+      }),
+    });
+
+  await handleRequest(request(), env, new Date("2026-07-10T14:00:00.000Z"));
+  const duplicate = await handleRequest(request(), env, new Date("2026-07-10T14:00:01.000Z"));
+
+  assert.equal(duplicate.status, 200);
+  assert.deepEqual(await duplicate.json(), { ok: true, duplicate: true });
+  assert.equal(env.DB.rows.length, 1);
 });
 
 test("POST /api/signals rejects duplicate external_id", async () => {
