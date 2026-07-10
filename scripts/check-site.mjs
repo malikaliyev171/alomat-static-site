@@ -33,9 +33,45 @@ if (!fs.existsSync(distRoot)) {
     fail(`expected at least 20 generated HTML files, found ${htmlFiles.length}`);
   }
 
+  for (const fallbackPage of ["en.html", "about.html", "lineup.html", "en-about.html", "en-lineup.html"]) {
+    if (!fs.existsSync(path.join(distRoot, fallbackPage))) {
+      fail(`${fallbackPage} must exist as a flat Cloudflare fallback page`);
+    }
+  }
+
+  const homeHtmlPath = path.join(distRoot, "index.html");
+  if (fs.existsSync(homeHtmlPath)) {
+    const homeHtml = fs.readFileSync(homeHtmlPath, "utf8");
+    if (!homeHtml.includes('href="about.html"')) {
+      fail("home Manifesto link must use about.html for Cloudflare upload reliability");
+    }
+    if (!homeHtml.includes('href="lineup.html"')) {
+      fail("home Lineup link must use lineup.html for Cloudflare upload reliability");
+    }
+    if (!homeHtml.includes('href="en.html"')) {
+      fail("home EN link must use en.html for Cloudflare upload reliability");
+    }
+  }
+
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
-    const localRefs = html.matchAll(/(?:href|src)="([^"]+)"/g);
+    const htmlWithoutInlineAssets = html
+      .replace(/<style\b[\s\S]*?<\/style>/gi, "")
+      .replace(/<script\b[\s\S]*?<\/script>/gi, "");
+    const localRefs = htmlWithoutInlineAssets.matchAll(/(?:href|src)="([^"]+)"/g);
+
+    if (!html.includes("<style data-alomat-styles>")) {
+      fail(`${path.relative(distRoot, file)} must inline the site styles for Cloudflare upload reliability`);
+    }
+    if (!html.includes("<script data-alomat-app>")) {
+      fail(`${path.relative(distRoot, file)} must inline the site script for Cloudflare upload reliability`);
+    }
+    if (/rel="stylesheet"\s+href="[^"]*assets\/styles\.css/.test(html)) {
+      fail(`${path.relative(distRoot, file)} must not depend on an external stylesheet`);
+    }
+    if (/<script\s+defer\s+src="[^"]*assets\/app\.js/.test(html)) {
+      fail(`${path.relative(distRoot, file)} must not depend on an external app script`);
+    }
 
     for (const [, rawRef] of localRefs) {
       if (
@@ -180,6 +216,13 @@ if (fs.existsSync(stylesPath)) {
   const timelinePanelButtonBlock =
     /^\.timeline-panel__lens-button,\s*\n\.timeline-panel__icon-button\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const timelinePanelSourceBlock = /^\.timeline-panel__source\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const signalDetailBlock = /^\.signal-detail\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const signalDetailStoryContentBlock = /^\.signal-detail\.has-story \.signal-detail__content\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelTitleBlock = /^\.timeline-panel__hero h2\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelMetaBlock = /^\.timeline-panel__meta-grid\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelBodyBlock = /^\.timeline-panel__body\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelActionsBlock = /^\.timeline-panel__actions\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelLensButtonBlock = /^\.timeline-panel__lens-button\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const darkOrangePaletteBlock = /^body\[data-palette="0"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const darkMonochromePaletteBlock = /^body\[data-palette="6"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const orangePaletteBlock = /^body\[data-palette="4"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
@@ -498,16 +541,99 @@ if (fs.existsSync(stylesPath)) {
   if (mobileDetailFooterBlock.includes("background: color-mix(in srgb, var(--bg)")) {
     fail("mobile detail footer must not reuse the page background");
   }
+  if (!signalDetailBlock.includes("width: 420px;")) {
+    fail("desktop signal detail panel must use the approved 420px reading width");
+  }
+  if (!signalDetailBlock.includes("height: min(946px, calc(100vh - 128px));")) {
+    fail("desktop signal detail panel must extend closer to the viewport bottom");
+  }
+  if (!signalDetailStoryContentBlock.includes("grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;")) {
+    fail("story detail content must reserve a flexible row for the explanation");
+  }
+  if (!signalDetailStoryContentBlock.includes("overflow-y: hidden;")) {
+    fail("story detail content must keep scrolling inside the explanation row");
+  }
+  if (!timelinePanelTitleBlock.includes("margin: 6px 0 0;")) {
+    fail("detail title must sit close to the active signal label");
+  }
+  if (!timelinePanelTitleBlock.includes("font-size: 1.18rem;")) {
+    fail("detail title must use the compact reference-inspired size");
+  }
+  if (!timelinePanelMetaBlock.includes("margin: 8px 0 0;")) {
+    fail("detail metadata must sit close to the title");
+  }
+  if (!timelinePanelBodyBlock.includes("min-height: 0;")) {
+    fail("detail explanation must be allowed to shrink inside the panel grid");
+  }
+  if (!timelinePanelBodyBlock.includes("max-height: none;")) {
+    fail("detail explanation height must be controlled by the panel grid");
+  }
+  if (!timelinePanelBodyBlock.includes("scrollbar-width: thin;")) {
+    fail("detail explanation must use a panel-appropriate thin scrollbar");
+  }
+  if (!timelinePanelActionsBlock.includes("margin-top: 8px;")) {
+    fail("detail AI section must use compact spacing");
+  }
+  if (!timelinePanelLensButtonBlock.includes("width: 40px;") || !timelinePanelLensButtonBlock.includes("height: 40px;")) {
+    fail("detail AI provider buttons must use the compact 40px size");
+  }
+  if (!timelineHeadlineButtonBlock.includes("--timeline-widget-width, 500px")) {
+    fail("desktop timeline cards must leave more room for the detail panel");
+  }
+  if (
+    !styles.includes(
+      ".signal-detail.has-story .signal-detail__content {\n    display: flex;\n    overflow-y: auto;\n  }",
+    )
+  ) {
+    fail("mobile story detail content must return to a scrollable vertical flow");
+  }
+  if (!styles.includes("transform: translateY(calc(100% + 28px));")) {
+    fail("mobile detail panel must hide below the viewport when closed");
+  }
+  if (
+    !styles.includes(
+      ".page-home.has-detail-open .signal-detail {\n    max-height: 62vh;\n    transform: translateY(0);\n    pointer-events: auto;\n  }",
+    )
+  ) {
+    fail("mobile detail panel must slide back into view when a story is open");
+  }
+  if (
+    !styles.includes(
+      ".signal-detail.has-story .timeline-panel__close {\n    display: grid;\n    z-index: 4;\n  }",
+    )
+  ) {
+    fail("mobile story sheet must expose a tappable close button");
+  }
 }
 
 const buildPath = path.join(projectRoot, "build.mjs");
 if (fs.existsSync(buildPath)) {
   const build = fs.readFileSync(buildPath, "utf8");
-  if (build.includes("height: min(926px, calc(100vh - 118px));")) {
-    fail("home signal detail inline height must leave bottom breathing room");
+  if (!build.includes("width: 420px;")) {
+    fail("home signal detail inline width must match the approved reading width");
   }
-  if (!build.includes("height: min(926px, calc(100vh - 154px));")) {
-    fail("home signal detail inline height must use the 154px viewport offset");
+  if (!build.includes("height: min(946px, calc(100vh - 128px));")) {
+    fail("home signal detail inline height must use the expanded viewport fit");
+  }
+  if (!build.includes("width: min(100%, 500px);")) {
+    fail("home timeline inline card width must leave room for the detail panel");
+  }
+  if (
+    !build.includes(
+      'html[data-page="home"] .signal-detail.has-story .signal-detail__content {\n          display: flex;\n          overflow-y: auto;\n        }',
+    )
+  ) {
+    fail("home mobile inline styles must keep story content scrollable");
+  }
+  if (!build.includes("transform: translateY(calc(100% + 28px));")) {
+    fail("home mobile inline styles must hide the closed detail sheet");
+  }
+  if (
+    !build.includes(
+      "html[data-page=\"home\"] .page-home.has-detail-open .signal-detail {\n          max-height: 62vh;\n          transform: translateY(0);\n          pointer-events: auto;\n        }",
+    )
+  ) {
+    fail("home mobile inline styles must reveal the sheet when a story is open");
   }
   if (!build.includes('allowed=["0","2","4","5","6","7"]')) {
     fail("theme boot script must allow derived palettes");
@@ -564,6 +690,12 @@ if (fs.existsSync(appPath)) {
   }
   if (app.includes("setPalette(option.dataset.paletteOption);")) {
     fail("palette option handlers must route through pickPalette");
+  }
+  if (!app.includes('detailPanel.classList.add("has-story");')) {
+    fail("opening a timeline story must enable the story detail layout");
+  }
+  if (!app.includes('detailPanel?.classList.remove("has-story");')) {
+    fail("resetting the detail panel must restore the intro layout");
   }
   if (
     !/function openNameModal\(\)\s*\{[\s\S]*?resetDetailPanel\(\);\s*\n\s*timelineClosed = false;\s*\n\s*nameModal\.hidden = false;/.test(

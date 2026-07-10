@@ -303,6 +303,7 @@ function resetDetailPanel() {
   }
   resetDetailScroll();
   detailPanel?.classList.remove("has-background-image");
+  detailPanel?.classList.remove("has-story");
   detailPanel?.classList.add("signal-detail--intro");
   pageMain?.classList.remove("has-detail-open");
   updateTimelineActiveState(null);
@@ -339,6 +340,7 @@ function applyStoryToDetail(story, item, options = {}) {
   }
   resetDetailScroll();
   detailPanel.classList.remove("signal-detail--intro");
+  detailPanel.classList.add("has-story");
   pageMain?.classList.add("has-detail-open");
   updateTimelineActiveState(item);
   if (scrollIntoView) {

@@ -1444,7 +1444,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   top: 121.5px;
   display: flex;
   align-items: center;
-  width: min(100%, var(--timeline-widget-width, 520px));
+  width: min(100%, var(--timeline-widget-width, 500px));
   min-height: 73.0944px;
   padding: var(--timeline-widget-pad-y, 13.6px) var(--timeline-widget-pad-x, 19.4px);
   border-radius: 8px;
@@ -1907,10 +1907,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 .signal-detail {
   position: fixed;
-  top: 118px;
+  top: 108px;
   right: 28.8px;
-  width: 380px;
-  height: min(926px, calc(100vh - 154px));
+  width: 420px;
+  height: min(946px, calc(100vh - 128px));
   box-sizing: border-box;
   border-radius: 8px;
   border: 0.8px solid rgba(22, 29, 39, 0.12);
@@ -1926,10 +1926,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 @media (min-width: 1200px) {
   .signal-detail {
-    top: 118px;
+    top: 108px;
     right: 36px;
-    width: 380px;
-    height: min(926px, calc(100vh - 154px));
+    width: 420px;
+    height: min(946px, calc(100vh - 128px));
   }
 }
 
@@ -1960,7 +1960,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   width: 100%;
   min-height: 0;
   height: 100%;
-  padding: 18px;
+  padding: 14px;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
@@ -1969,7 +1969,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail.has-story .signal-detail__content {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
   gap: 8px;
+  overflow-y: hidden;
 }
 
 .signal-detail__topline {
@@ -2069,7 +2072,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 .timeline-panel__hero-top {
   position: relative;
-  min-height: 21px;
+  min-height: 18px;
   justify-content: space-between;
   gap: 12px;
   color: var(--muted);
@@ -2093,12 +2096,12 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .timeline-panel__hero h2 {
-  margin: 18px 0 0;
+  margin: 6px 0 0;
   max-width: 100%;
   padding-bottom: 0;
   font-family: var(--font-display);
-  font-size: 1.36rem;
-  line-height: 1;
+  font-size: 1.18rem;
+  line-height: 1.03;
   letter-spacing: 0;
   color: #171a20;
 }
@@ -2106,9 +2109,9 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 .timeline-panel__meta-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin: 16px 0 0;
-  padding: 14px 0 14px;
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 9px 0;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -2122,7 +2125,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 .timeline-panel__lens span {
   display: block;
   color: #7a808c;
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -2130,9 +2133,9 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 .timeline-panel__meta-grid strong,
 .timeline-panel__lens strong {
   display: block;
-  margin-top: 6px;
+  margin-top: 4px;
   color: #21242a;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1.15;
 }
 
@@ -2196,17 +2199,34 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .timeline-panel__body {
-  max-height: 500px;
-  margin-top: 14px;
+  min-height: 0;
+  max-height: none;
+  margin-top: 0;
   padding-right: 8px;
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent;
   color: rgba(5, 7, 13, 0.96);
-  font-size: 1rem;
+  font-size: 1.02rem;
   line-height: 1.5;
 }
 
+.timeline-panel__body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.timeline-panel__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.timeline-panel__body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 28%, transparent);
+}
+
 .timeline-panel__body p {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
 }
 
 .timeline-panel__body p:last-child {
@@ -2215,9 +2235,9 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 .timeline-panel__actions {
   justify-content: space-between;
-  gap: 16px;
-  margin-top: 14px;
-  padding-top: 14px;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid var(--border);
 }
 
@@ -2242,22 +2262,22 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .timeline-panel__lens-button {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
 }
 
 .timeline-panel__icon-button {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
 }
 
 .timeline-panel__footer {
   justify-content: space-between;
   gap: 12px;
-  margin-top: 14px;
-  padding-top: 14px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid var(--border);
 }
 
@@ -2266,8 +2286,8 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   align-items: center;
   justify-content: center;
   flex: 1 1 auto;
-  min-height: 40px;
-  padding: 10px 16px;
+  min-height: 36px;
+  padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--text) 13%, transparent);
   background: color-mix(in srgb, var(--surface-strong) 82%, transparent);
@@ -3802,7 +3822,7 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
   }
 
   .signal-detail {
-    height: min(926px, calc(100vh - 154px));
+    height: min(946px, calc(100vh - 128px));
   }
 
   .timeline-panel--home {
@@ -4109,6 +4129,19 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
     z-index: 200;
     box-shadow: 0 -18px 50px rgba(5, 7, 13, 0.28);
     background: color-mix(in srgb, var(--bg) 96%, transparent);
+    transform: translateY(calc(100% + 28px));
+    pointer-events: none;
+    transition: transform 220ms ease;
+  }
+
+  .signal-detail.has-story .signal-detail__content {
+    display: flex;
+    overflow-y: auto;
+  }
+
+  .signal-detail.has-story .timeline-panel__close {
+    display: grid;
+    z-index: 4;
   }
 
   .timeline-panel--home {
@@ -4145,6 +4178,8 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
 
   .page-home.has-detail-open .signal-detail {
     max-height: 62vh;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
   .social-grid,

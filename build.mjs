@@ -17,6 +17,8 @@ const assetVersion = createHash("sha256")
   .update(readFileSync(path.join(sourceRoot, "app.js")))
   .digest("hex")
   .slice(0, 10);
+const inlineStyles = readFileSync(path.join(sourceRoot, "styles.css"), "utf8").replace(/<\/style/gi, "<\\/style");
+const inlineApp = readFileSync(path.join(sourceRoot, "app.js"), "utf8").replace(/<\/script/gi, "<\\/script");
 const fallbackLogoImage = `data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100" rx="24" fill="#05070d"/><circle cx="45" cy="50" r="22" fill="#ff4d32"/><path d="M28 50h34" stroke="#efeff2" stroke-width="8" stroke-linecap="round"/><text x="78" y="56" fill="#efeff2" font-family="Arial, sans-serif" font-size="19" font-weight="700">.alomat</text></svg>`,
 )}`;
@@ -1267,6 +1269,26 @@ function pageOutputPath(localeKey, pageKey) {
   return path.join(outputRoot, ...segments);
 }
 
+function flatPageOutputPath(localeKey, pageKey) {
+  const page = pages.find((entry) => entry.key === pageKey);
+  const slug = pageKey === "home" ? "index" : page?.slug || "index";
+  if (localeKey === "en" && pageKey === "home") {
+    return path.join(outputRoot, "en.html");
+  }
+  if (localeKey === "uz" && pageKey === "home") {
+    return path.join(outputRoot, "index.html");
+  }
+  const fileName = localeKey === "en" ? `en-${slug}.html` : `${slug}.html`;
+  return path.join(outputRoot, fileName);
+}
+
+function navigationPageOutputPath(localeKey, pageKey) {
+  if (pageKey === "home" || pageKey === "about" || pageKey === "lineup") {
+    return flatPageOutputPath(localeKey, pageKey);
+  }
+  return pageOutputPath(localeKey, pageKey);
+}
+
 function lineupArticleOutputPath(localeKey, article) {
   const segments = [];
   if (localeKey === "en") {
@@ -1352,9 +1374,9 @@ function renderThemeBootScript() {
 
 function renderHeader(localeKey, pageKey, currentFile) {
   const locale = locales[localeKey];
-  const homeFile = pageOutputPath(localeKey, "home");
+  const homeFile = navigationPageOutputPath(localeKey, "home");
   const otherLocale = localeKey === "en" ? "uz" : "en";
-  const currentPageOtherLocale = pageOutputPath(otherLocale, pageKey);
+  const currentPageOtherLocale = navigationPageOutputPath(otherLocale, pageKey);
   const localeSwitchHref = relativeHref(currentFile, currentPageOtherLocale);
   const navItems =
     pageKey === "home"
@@ -1363,8 +1385,8 @@ function renderHeader(localeKey, pageKey, currentFile) {
   const libraryLabel = localeKey === "en" ? "LIBRARY" : "KUTUBXONA";
 
   if (pageKey === "home") {
-    const enHomeHref = relativeHref(currentFile, pageOutputPath("en", "home"));
-    const uzHomeHref = relativeHref(currentFile, pageOutputPath("uz", "home"));
+    const enHomeHref = relativeHref(currentFile, navigationPageOutputPath("en", "home"));
+    const uzHomeHref = relativeHref(currentFile, navigationPageOutputPath("uz", "home"));
 
     return `
     <a class="skip-link" href="#content">${text(locale.ui.skipLink)}</a>
@@ -1381,15 +1403,15 @@ function renderHeader(localeKey, pageKey, currentFile) {
 
       <div class="controls controls--home">
         <nav class="nav nav--home signal-topbar-controls__group signal-topbar-controls__group--reader" aria-label="Primary">
-        <a class="nav__item nav__item--dot" href="${text(relativeHref(currentFile, pageOutputPath(localeKey, "about")))}">
+        <a class="nav__item nav__item--dot" href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "about")))}">
           <span class="nav__bullet" aria-hidden="true">•</span>
           <span>MANIFESTO</span>
         </a>
-        <a class="nav__item nav__item--dot" href="${text(relativeHref(currentFile, pageOutputPath(localeKey, "lineup")))}">
+        <a class="nav__item nav__item--dot" href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup")))}">
           <span class="nav__bullet" aria-hidden="true">•</span>
           <span>LINEUP</span>
         </a>
-        <a class="nav__item nav__item--library" data-library-gate href="${text(relativeHref(currentFile, pageOutputPath(localeKey, "library")))}">
+        <a class="nav__item nav__item--library" data-library-gate href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "library")))}">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M4 4.5C4 3.1 5.1 2 6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15Z"></path>
             <path fill="#fff" d="M7.25 5.5h10.5v1.6H7.25zM7.25 9.1h10.5v1.6H7.25zM7.25 12.7h7.8v1.6h-7.8z"></path>
@@ -1421,7 +1443,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
     <nav class="nav" aria-label="Primary">
       ${navItems
         .map((item) => {
-          const target = pageOutputPath(localeKey, item.key);
+          const target = navigationPageOutputPath(localeKey, item.key);
           return `<a href="${text(relativeHref(currentFile, target))}">${text(locale.nav[item.key])}</a>`;
         })
         .join("")}
@@ -1438,7 +1460,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
 function renderFooter(localeKey, pageKey, currentFile) {
   const locale = locales[localeKey];
   const navItems = pages.filter((page) => page.key !== "home");
-  const homeFile = pageOutputPath(localeKey, "home");
+  const homeFile = navigationPageOutputPath(localeKey, "home");
 
   return `
   <footer class="site-footer">
@@ -1451,11 +1473,11 @@ function renderFooter(localeKey, pageKey, currentFile) {
             .map((item) => {
               const label = text(locale.nav[item.key]);
               if (item.key === "about") {
-                const target = pageOutputPath(localeKey, item.key);
+                const target = navigationPageOutputPath(localeKey, item.key);
                 return `<a href="${text(relativeHref(currentFile, target))}">${label}</a>`;
               }
               if (item.key === "library") {
-                const target = pageOutputPath(localeKey, item.key);
+                const target = navigationPageOutputPath(localeKey, item.key);
                 return `<a href="${text(relativeHref(currentFile, target))}" data-library-gate>${label}</a>`;
               }
               return `<a aria-disabled="true">${label}</a>`;
@@ -1480,8 +1502,8 @@ function renderFooter(localeKey, pageKey, currentFile) {
 function renderHome(localeKey, currentFile) {
   const locale = locales[localeKey];
   const home = locale.home;
-  const aboutFile = pageOutputPath(localeKey, "about");
-  const libraryFile = pageOutputPath(localeKey, "library");
+  const aboutFile = navigationPageOutputPath(localeKey, "about");
+  const libraryFile = navigationPageOutputPath(localeKey, "library");
   const timelineSource = home.timeline ?? [];
   const timelineCards = timelineSource.slice(0, 7);
   const olderCards = [];
@@ -1822,7 +1844,7 @@ function getLineupArticleById(id) {
 
 function renderAbout(localeKey, currentFile) {
   const manifesto = getManifesto(localeKey);
-  const homeHref = relativeHref(currentFile, pageOutputPath(localeKey, "home"));
+  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
   return `
   <main id="content" class="static-page manifesto-page">
     <header class="static-header">
@@ -1897,7 +1919,7 @@ function renderAbout(localeKey, currentFile) {
 function renderLibrary(localeKey, currentFile) {
   const locale = locales[localeKey];
   const library = locale.library;
-  const homeHref = relativeHref(currentFile, pageOutputPath(localeKey, "home"));
+  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
   return `
   <main id="content" class="page page-detail">
     <section class="page-hero page-hero--two-col">
@@ -2066,8 +2088,8 @@ function renderSponsor(localeKey) {
 function renderLineup(localeKey, currentFile) {
   const locale = locales[localeKey];
   const lineup = locale.lineup;
-  const homeHref = relativeHref(currentFile, pageOutputPath(localeKey, "home"));
-  const lineupHref = relativeHref(currentFile, pageOutputPath(localeKey, "lineup"));
+  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
+  const lineupHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup"));
   const articleHref = "#lineup-articles";
   const applyHref = "mailto:editor@alomat.uz";
   const featuredArticle = getLineupArticleById("fable-5");
@@ -2170,8 +2192,8 @@ function renderLineup(localeKey, currentFile) {
 }
 
 function renderLineupTopbar(localeKey, currentFile) {
-  const homeHref = relativeHref(currentFile, pageOutputPath(localeKey, "home"));
-  const lineupHref = relativeHref(currentFile, pageOutputPath(localeKey, "lineup"));
+  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
+  const lineupHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup"));
   const labels =
     localeKey === "en"
       ? { brand: "alomat", writings: "Writings", login: "Login" }
@@ -2192,7 +2214,7 @@ function renderLineupTopbar(localeKey, currentFile) {
 
 function renderLineupArticle(localeKey, currentFile, article) {
   const locale = locales[localeKey];
-  const lineupHref = relativeHref(currentFile, pageOutputPath(localeKey, "lineup"));
+  const lineupHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup"));
   const author = locale.lineup.authors.find((entry) => entry.initials === article.author.initials) ?? locale.lineup.authors[0];
   const labels =
     localeKey === "en"
@@ -2311,15 +2333,25 @@ function renderPage(localeKey, pageKey, currentFile) {
   }
 }
 
-function renderDocument(localeKey, pageKey) {
+function renderInlineStyles() {
+  return `<style data-alomat-styles>
+${inlineStyles}
+    </style>`;
+}
+
+function renderInlineApp() {
+  return `<script data-alomat-app>
+${inlineApp}
+    </script>`;
+}
+
+function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKey, pageKey)) {
   const locale = locales[localeKey];
   const pageMeta = pages.find((entry) => entry.key === pageKey);
-  const currentFile = pageOutputPath(localeKey, pageKey);
-  const assetHref = relativeHref(currentFile, path.join(assetRoot, versionedStylesFile));
-  const appHref = relativeHref(currentFile, path.join(assetRoot, versionedAppFile));
-  const homeFile = pageOutputPath(localeKey, "home");
+  const currentFile = outputFile;
+  const homeFile = navigationPageOutputPath(localeKey, "home");
   const otherLocale = localeKey === "en" ? "uz" : "en";
-  const otherLocaleFile = pageOutputPath(otherLocale, pageKey);
+  const otherLocaleFile = navigationPageOutputPath(otherLocale, pageKey);
   const currentLocaleHref = relativeHref(currentFile, currentFile);
   const alternateHref = relativeHref(currentFile, otherLocaleFile);
   const skipSiteHeader = pageKey === "about" || pageKey === "lineup";
@@ -2334,7 +2366,7 @@ function renderDocument(localeKey, pageKey) {
     <meta name="description" content="${text(pageMeta.description[localeKey])}" />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="${text(`${assetHref}?v=${assetVersion}`)}" />
+    ${renderInlineStyles()}
     ${renderThemeBootScript()}
     <style>
       html[data-page="home"] .signal-reader-gate .eyebrow {
@@ -2405,7 +2437,7 @@ function renderDocument(localeKey, pageKey) {
       html[data-page="home"] .signal-timeline__headline-button {
         left: 198.39px;
         top: 121.5px;
-        width: min(100%, 520px);
+        width: min(100%, 500px);
         min-height: 73.0944px;
         padding: 13.6px 19.4px;
         transform: translateY(-36.8438px);
@@ -2417,14 +2449,16 @@ function renderDocument(localeKey, pageKey) {
       }
 
       html[data-page="home"] .signal-detail {
-        top: 118px;
+        top: 108px;
         right: 36px;
-        width: 380px;
-        height: min(926px, calc(100vh - 154px));
+        width: 420px;
+        height: min(946px, calc(100vh - 128px));
       }
 
       html[data-page="home"] .signal-detail.has-story .signal-detail__content {
         gap: 8px;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+        overflow-y: hidden;
       }
 
       html[data-page="home"] .timeline-panel__hero-top {
@@ -2439,16 +2473,21 @@ function renderDocument(localeKey, pageKey) {
       }
 
       html[data-page="home"] .timeline-panel__hero h2 {
+        margin-top: 6px;
         max-width: 100%;
-        font-size: 1.36rem;
-        line-height: 1;
+        font-size: 1.18rem;
+        line-height: 1.03;
         letter-spacing: 0;
       }
 
       html[data-page="home"] .timeline-panel__body {
-        max-height: 500px;
+        min-height: 0;
+        max-height: none;
+        margin-top: 0;
+        overflow: auto;
+        scrollbar-width: thin;
         color: rgba(5, 7, 13, 0.96);
-        font-size: 1rem;
+        font-size: 1.02rem;
         line-height: 1.5;
       }
 
@@ -2568,6 +2607,9 @@ function renderDocument(localeKey, pageKey) {
           z-index: 200;
           box-shadow: 0 -18px 50px rgba(5, 7, 13, 0.28);
           background: color-mix(in srgb, var(--bg) 96%, transparent);
+          transform: translateY(calc(100% + 28px));
+          pointer-events: none;
+          transition: transform 220ms ease;
         }
 
         html[data-page="home"] .signal-detail__visual {
@@ -2587,6 +2629,16 @@ function renderDocument(localeKey, pageKey) {
           height: auto;
         }
 
+        html[data-page="home"] .signal-detail.has-story .signal-detail__content {
+          display: flex;
+          overflow-y: auto;
+        }
+
+        html[data-page="home"] .signal-detail.has-story .timeline-panel__close {
+          display: grid;
+          z-index: 4;
+        }
+
         html[data-page="home"] .signal-detail__content h2 {
           font-size: clamp(1.7rem, 8.5vw, 2rem);
           line-height: 1;
@@ -2595,6 +2647,8 @@ function renderDocument(localeKey, pageKey) {
 
         html[data-page="home"] .page-home.has-detail-open .signal-detail {
           max-height: 62vh;
+          transform: translateY(0);
+          pointer-events: auto;
         }
       }
     </style>
@@ -2609,15 +2663,13 @@ function renderDocument(localeKey, pageKey) {
       ${renderPage(localeKey, pageKey, currentFile)}
       ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile)}
     </div>
-    <script defer src="${text(`${appHref}?v=${assetVersion}`)}"></script>
+    ${renderInlineApp()}
   </body>
 </html>`;
 }
 
 function renderLineupArticleDocument(localeKey, article) {
   const currentFile = lineupArticleOutputPath(localeKey, article);
-  const assetHref = relativeHref(currentFile, path.join(assetRoot, versionedStylesFile));
-  const appHref = relativeHref(currentFile, path.join(assetRoot, versionedAppFile));
   const otherLocale = localeKey === "en" ? "uz" : "en";
   const alternateFile = lineupArticleOutputPath(otherLocale, article);
   const title = `${localizeStoryValue(article.title, localeKey)} | .alomat Lineup`;
@@ -2632,7 +2684,7 @@ function renderLineupArticleDocument(localeKey, article) {
     <meta name="description" content="${text(description)}" />
     <meta name="theme-color" content="#efeff2" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="${text(`${assetHref}?v=${assetVersion}`)}" />
+    ${renderInlineStyles()}
     ${renderThemeBootScript()}
     <link rel="alternate" hreflang="${text(locales[localeKey].htmlLang)}" href="${text(relativeHref(currentFile, currentFile))}" />
     <link rel="alternate" hreflang="${text(otherLocale)}" href="${text(relativeHref(currentFile, alternateFile))}" />
@@ -2643,7 +2695,7 @@ function renderLineupArticleDocument(localeKey, article) {
       ${renderLineupArticle(localeKey, currentFile, article)}
       ${renderFooter(localeKey, "lineup", currentFile)}
     </div>
-    <script defer src="${text(`${appHref}?v=${assetVersion}`)}"></script>
+    ${renderInlineApp()}
   </body>
 </html>`;
 }
@@ -2666,6 +2718,14 @@ async function buildSite() {
       const outputFile = pageOutputPath(localeKey, page.key);
       await ensureDir(path.dirname(outputFile));
       await writeFile(outputFile, renderDocument(localeKey, page.key), "utf8");
+
+      if (page.key === "home" || page.key === "about" || page.key === "lineup") {
+        const fallbackFile = navigationPageOutputPath(localeKey, page.key);
+        if (fallbackFile !== outputFile) {
+          await ensureDir(path.dirname(fallbackFile));
+          await writeFile(fallbackFile, renderDocument(localeKey, page.key, fallbackFile), "utf8");
+        }
+      }
     }
 
     for (const article of lineupArticleDetails) {
