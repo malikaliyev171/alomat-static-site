@@ -6135,7 +6135,7 @@ async function loadLiveSignals() {
 
     const payload = await response.json();
     const signals = Array.isArray(payload?.signals) ? payload.signals : [];
-    const nextStories = signals.map(normalizeLiveSignal).filter((story) => story.title && story.summary.length);
+    const nextStories = signals.map(normalizeLiveSignal).filter((story) => story.title);
     if (!nextStories.length) {
       return;
     }

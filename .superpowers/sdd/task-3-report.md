@@ -54,3 +54,17 @@
   - clicking the live article surface updated the detail panel with the mocked live title and summary,
   - clicking the live headline button still updated the detail panel correctly,
   - the detail visual used the same non-empty fallback artwork instead of a blank background.
+
+## Final reviewer fix
+
+- Relaxed the live-signal gate in `loadLiveSignals()` so a normalized live story with a usable title is enough to replace the demo timeline, even when `summary` is empty or missing.
+- Kept blank or unusable entries out by relying on `normalizeLiveSignal()` to trim titles before the replacement filter runs.
+
+### Final verification
+
+- Ran `npm run check`: passed.
+- Ran a focused Node harness against the real `app.js` with a mocked live `/api/signals` payload that had a title but no `summary`:
+  - the demo timeline was replaced by one live card,
+  - the live card id and `storyMap` were refreshed,
+  - clicking the live headline button updated the right-side detail panel,
+  - the detail panel rendered the synthesized fallback body text for the sparse live signal.
