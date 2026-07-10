@@ -5426,14 +5426,18 @@ function sanitizeStoryImage(value) {
   return sanitizeHttpUrl(value, timelineFallbackImage || "#");
 }
 
+function normalizeLiveSignalSummary(summary) {
+  if (!Array.isArray(summary)) {
+    return [];
+  }
+
+  return summary.map((entry) => String(entry).trim()).filter(Boolean);
+}
+
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
-  const summary = Array.isArray(signal.summary)
-    ? signal.summary.map(String).filter(Boolean)
-    : typeof signal.summary === "string"
-      ? [signal.summary]
-      : [];
+  const summary = normalizeLiveSignalSummary(signal.summary);
 
   return {
     id: `live-${id}`,
@@ -5711,6 +5715,13 @@ function replaceTimelineStories(nextStories) {
   timelineItems = Array.from(timelineItemsContainer.querySelectorAll(".signal-timeline__item"));
   bindTimelineItemEvents();
   initTimelineReveal();
+  const firstItem = timelineItems[0];
+  const firstStory = firstItem ? storyMap.get(String(firstItem.dataset.storyId)) : null;
+  if (firstStory && firstItem) {
+    applyStoryToDetail(firstStory, firstItem, { behavior: "auto" });
+    return;
+  }
+
   resetDetailPanel();
 }
 
@@ -6162,7 +6173,9 @@ async function loadLiveSignals() {
 
     const payload = await response.json();
     const signals = Array.isArray(payload?.signals) ? payload.signals : [];
-    const nextStories = signals.map(normalizeLiveSignal).filter((story) => story.title);
+    const nextStories = signals
+      .map(normalizeLiveSignal)
+      .filter((story) => story.title && Array.isArray(story.summary) && story.summary.length);
     if (!nextStories.length) {
       return;
     }
@@ -6185,6 +6198,8 @@ globalThis.__ALOMAT_APP_TEST__ = {
   sanitizeStoryUrl,
   sanitizeStoryImage,
   createBackgroundImageValue,
+  loadLiveSignals,
+  normalizeLiveSignal,
 };
 
     </script>
