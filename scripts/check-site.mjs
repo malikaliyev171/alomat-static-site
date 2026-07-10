@@ -23,6 +23,10 @@ function stripUrlNoise(value) {
   return value.split("#")[0].split("?")[0];
 }
 
+function readText(file) {
+  return fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+}
+
 if (!fs.existsSync(distRoot)) {
   fail("dist directory is missing. Run the build before checking the site.");
 } else {
@@ -41,7 +45,7 @@ if (!fs.existsSync(distRoot)) {
 
   const homeHtmlPath = path.join(distRoot, "index.html");
   if (fs.existsSync(homeHtmlPath)) {
-    const homeHtml = fs.readFileSync(homeHtmlPath, "utf8");
+    const homeHtml = readText(homeHtmlPath);
     if (!homeHtml.includes('href="about.html"')) {
       fail("home Manifesto link must use about.html for Cloudflare upload reliability");
     }
@@ -54,7 +58,7 @@ if (!fs.existsSync(distRoot)) {
   }
 
   for (const file of htmlFiles) {
-    const html = fs.readFileSync(file, "utf8");
+    const html = readText(file);
     const htmlWithoutInlineAssets = html
       .replace(/<style\b[\s\S]*?<\/style>/gi, "")
       .replace(/<script\b[\s\S]*?<\/script>/gi, "");
@@ -103,7 +107,7 @@ for (const relativePath of ["build.mjs", "app.js", "styles.css"]) {
     continue;
   }
 
-  const contents = fs.readFileSync(fullPath, "utf8");
+  const contents = readText(fullPath);
   if (contents.includes("https://example.com")) {
     fail(`${relativePath} still contains https://example.com`);
   }
@@ -114,7 +118,7 @@ for (const relativePath of ["build.mjs", "app.js", "styles.css"]) {
 
 const stylesPath = path.join(projectRoot, "styles.css");
 if (fs.existsSync(stylesPath)) {
-  const styles = fs.readFileSync(stylesPath, "utf8");
+  const styles = readText(stylesPath);
   const htmlBlock = /^html\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const bodyBlock = /body\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   if (!htmlBlock.includes("scrollbar-width: none;")) {
@@ -608,7 +612,7 @@ if (fs.existsSync(stylesPath)) {
 
 const buildPath = path.join(projectRoot, "build.mjs");
 if (fs.existsSync(buildPath)) {
-  const build = fs.readFileSync(buildPath, "utf8");
+  const build = readText(buildPath);
   if (!build.includes("width: 420px;")) {
     fail("home signal detail inline width must match the approved reading width");
   }
@@ -645,7 +649,7 @@ if (fs.existsSync(buildPath)) {
 
 const appPath = path.join(projectRoot, "app.js");
 if (fs.existsSync(appPath)) {
-  const app = fs.readFileSync(appPath, "utf8");
+  const app = readText(appPath);
   if (!app.includes('const paletteOrder = ["0", "2", "4", "5", "6", "7"];')) {
     fail("app palette order must include derived palettes");
   }
@@ -710,7 +714,7 @@ const previewServerPath = path.join(projectRoot, "preview-server.cjs");
 if (!fs.existsSync(previewServerPath)) {
   fail("preview-server.cjs is missing");
 } else {
-  const previewServer = fs.readFileSync(previewServerPath, "utf8");
+  const previewServer = readText(previewServerPath);
   if (!previewServer.includes("process.env.PORT")) {
     fail("preview-server.cjs must support PORT so preview can avoid occupied ports");
   }
