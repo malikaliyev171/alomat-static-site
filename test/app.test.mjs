@@ -554,7 +554,7 @@ test("valid live records replace demo cards and hydrate the detail panel", async
   }
 });
 
-test("live records show today's cards first and reveal older days from the load earlier button", async () => {
+test("live records show today's cards first and reveal one older day per load earlier click", async () => {
   const fallbackStories = [
     {
       id: "fallback-1",
@@ -586,6 +586,20 @@ test("live records show today's cards first and reveal older days from the load 
             source: "Live Source",
             created_at: "2026-07-10T20:30:00Z",
           },
+          {
+            id: 403,
+            title: "Two days ago signal",
+            summary: ["Two days ago summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-09T20:30:00Z",
+          },
+          {
+            id: 404,
+            title: "Second yesterday signal",
+            summary: ["Second yesterday summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-10T18:30:00Z",
+          },
         ],
       }),
     });
@@ -598,7 +612,17 @@ test("live records show today's cards first and reveal older days from the load 
 
     environment.loadEarlierButton.click();
 
-    assert.deepEqual(environment.timeline.getTitles(), ["Today signal", "Yesterday signal"]);
+    assert.deepEqual(environment.timeline.getTitles(), ["Today signal", "Yesterday signal", "Second yesterday signal"]);
+    assert.equal(environment.loadEarlierButton.disabled, false);
+
+    environment.loadEarlierButton.click();
+
+    assert.deepEqual(environment.timeline.getTitles(), [
+      "Today signal",
+      "Yesterday signal",
+      "Second yesterday signal",
+      "Two days ago signal",
+    ]);
     assert.equal(environment.loadEarlierButton.disabled, true);
   } finally {
     cleanup();

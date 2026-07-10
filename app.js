@@ -45,7 +45,7 @@ let timelineArmed = false;
 let timelineClosed = false;
 let lastScrollY = window.scrollY || 0;
 let timelineRevealObserver = null;
-let earlierLiveStories = [];
+let earlierLiveStoryGroups = [];
 
 document.documentElement.classList.add("js-ready");
 
@@ -214,20 +214,27 @@ function getLocalDayKey(value) {
 function partitionStoriesByToday(stories, now = new Date()) {
   const todayKey = getLocalDayKey(now);
   if (!todayKey) {
-    return { todayStories: stories, earlierStories: [] };
+    return { todayStories: stories, earlierStoryGroups: [] };
   }
 
-  return stories.reduce(
+  const groups = stories.reduce(
     (groups, story) => {
       if (!story.dayKey || story.dayKey === todayKey) {
         groups.todayStories.push(story);
       } else {
-        groups.earlierStories.push(story);
+        const dayStories = groups.earlierStoriesByDay.get(story.dayKey) || [];
+        dayStories.push(story);
+        groups.earlierStoriesByDay.set(story.dayKey, dayStories);
       }
       return groups;
     },
-    { todayStories: [], earlierStories: [] },
+    { todayStories: [], earlierStoriesByDay: new Map() },
   );
+
+  return {
+    todayStories: groups.todayStories,
+    earlierStoryGroups: Array.from(groups.earlierStoriesByDay.values()),
+  };
 }
 
 function formatSignalTime(value) {
@@ -508,8 +515,8 @@ function refreshTimelineStoryBindings() {
   initTimelineReveal();
 }
 
-function replaceTimelineStories(todayStories, olderStories = []) {
-  if (!timelineItemsContainer || (!todayStories.length && !olderStories.length)) {
+function replaceTimelineStories(todayStories, olderStoryGroups = []) {
+  if (!timelineItemsContainer || (!todayStories.length && !olderStoryGroups.length)) {
     return;
   }
 
@@ -517,9 +524,9 @@ function replaceTimelineStories(todayStories, olderStories = []) {
   insertLiveTimelineStories(todayStories);
 
   storyData = [...todayStories];
-  earlierLiveStories = [...olderStories];
+  earlierLiveStoryGroups = olderStoryGroups.map((group) => [...group]);
   refreshTimelineStoryBindings();
-  updateLoadEarlierButton(earlierLiveStories.length > 0);
+  updateLoadEarlierButton(earlierLiveStoryGroups.length > 0);
   const firstItem = timelineItems[0];
   const firstStory = firstItem ? storyMap.get(String(firstItem.dataset.storyId)) : null;
   if (firstStory && firstItem) {
@@ -855,12 +862,12 @@ function initReaderGateAction() {
 
 function initLoadEarlier() {
   loadEarlierButton?.addEventListener("click", () => {
-    if (earlierLiveStories.length) {
-      const nextStories = [...earlierLiveStories];
-      earlierLiveStories = [];
+    if (earlierLiveStoryGroups.length) {
+      const nextStories = earlierLiveStoryGroups.shift() || [];
       insertLiveTimelineStories(nextStories, storyData.length);
       storyData = [...storyData, ...nextStories];
       refreshTimelineStoryBindings();
+      updateLoadEarlierButton(earlierLiveStoryGroups.length > 0);
     } else {
       const hiddenCards = document.querySelectorAll('[data-older="true"]');
       hiddenCards.forEach((card) => {
@@ -868,10 +875,12 @@ function initLoadEarlier() {
         card.classList.add("is-visible");
       });
     }
-    loadEarlierButton.disabled = true;
-    loadEarlierButton.textContent = labelMap[locale].reveal;
-    loadEarlierButton.setAttribute("aria-disabled", "true");
-    loadEarlierButton.setAttribute("tabindex", "-1");
+    if (!earlierLiveStoryGroups.length) {
+      loadEarlierButton.disabled = true;
+      loadEarlierButton.textContent = labelMap[locale].reveal;
+      loadEarlierButton.setAttribute("aria-disabled", "true");
+      loadEarlierButton.setAttribute("tabindex", "-1");
+    }
     scheduleActiveStorySync();
   });
 }
@@ -995,8 +1004,8 @@ async function loadLiveSignals(now = new Date()) {
       return;
     }
 
-    const { todayStories, earlierStories } = partitionStoriesByToday(nextStories, now);
-    replaceTimelineStories(todayStories, earlierStories);
+    const { todayStories, earlierStoryGroups } = partitionStoriesByToday(nextStories, now);
+    replaceTimelineStories(todayStories, earlierStoryGroups);
   } catch {
     // Keep the static fallback timeline.
   }
