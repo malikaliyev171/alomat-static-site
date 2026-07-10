@@ -5532,7 +5532,10 @@ function normalizeLiveSignalSummary(summary) {
     return [];
   }
 
-  return summary.map((entry) => String(entry).trim()).filter(Boolean);
+  return summary
+    .filter((entry) => typeof entry === "string")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
 }
 
 function normalizeLiveSignal(signal, index) {
