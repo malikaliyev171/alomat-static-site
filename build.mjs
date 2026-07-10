@@ -2663,7 +2663,7 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       ${renderPage(localeKey, pageKey, currentFile)}
       ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile)}
     </div>
-    <script>window.__ALOMAT_SIGNALS_API_BASE__=${serializeJson(process.env.ALOMAT_SIGNALS_API_BASE ?? "")};</script>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__=${serializeJson(process.env.ALOMAT_SIGNALS_API_BASE ?? "")};window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__=${serializeJson(fallbackLogoImage)};</script>
     ${renderInlineApp()}
   </body>
 </html>`;

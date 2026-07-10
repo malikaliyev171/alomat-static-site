@@ -5265,7 +5265,7 @@ html[data-page="home"] .site-footer__bottom {
     </div>
   </footer>
     </div>
-    <script>window.__ALOMAT_SIGNALS_API_BASE__="";</script>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__="";window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20100%22%3E%3Crect%20width%3D%22160%22%20height%3D%22100%22%20rx%3D%2224%22%20fill%3D%22%2305070d%22%2F%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2250%22%20r%3D%2222%22%20fill%3D%22%23ff4d32%22%2F%3E%3Cpath%20d%3D%22M28%2050h34%22%20stroke%3D%22%23efeff2%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%2F%3E%3Ctext%20x%3D%2278%22%20y%3D%2256%22%20fill%3D%22%23efeff2%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22700%22%3E.alomat%3C%2Ftext%3E%3C%2Fsvg%3E";</script>
     <script data-alomat-app>
 const paletteOrder = ["0", "2", "4", "5", "6", "7"];
 const paletteThemeMap = {
@@ -5306,12 +5306,14 @@ const pageMain = document.querySelector(".page-home");
 let storyData = parseStoryData();
 let storyMap = new Map(storyData.map((story) => [String(story.id), story]));
 const timelineItemsContainer = document.querySelector("[data-signal-timeline-items]");
+const timelineFallbackImage = getTimelineFallbackImage();
 const detailDefaults = captureDetailDefaults();
 let activeStoryId = null;
 let activeUpdateFrame = 0;
 let timelineArmed = false;
 let timelineClosed = false;
 let lastScrollY = window.scrollY || 0;
+let timelineRevealObserver = null;
 
 document.documentElement.classList.add("js-ready");
 
@@ -5452,6 +5454,24 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value).replaceAll("\"", "&quot;");
+}
+
+function getTimelineFallbackImage() {
+  return String(window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__ || "").trim();
+}
+
+function getStoryImageUrl(story) {
+  return String(story?.image || "").trim() || timelineFallbackImage;
+}
+
+function escapeCssUrl(value) {
+  return String(value ?? "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"');
+}
+
+function createBackgroundImageValue(imageUrl) {
+  return imageUrl ? `url("${escapeCssUrl(imageUrl)}")` : "";
 }
 
 function localizeStoryValue(value) {
@@ -5637,7 +5657,7 @@ function updateTimelineActiveState(activeItem) {
 
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
-  const storyImage = story.image || "";
+  const storyImage = getStoryImageUrl(story);
   return `
     <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
@@ -5691,7 +5711,7 @@ function applyStoryToDetail(story, item, options = {}) {
   if (isNewStory || detailContent.innerHTML === detailDefaults?.html) {
     detailContent.innerHTML = renderStoryMarkup(story);
     if (detailVisual) {
-      const background = story.image ? `url("${story.image}")` : "";
+      const background = createBackgroundImageValue(getStoryImageUrl(story));
       detailVisual.style.backgroundImage = background;
       detailPanel.classList.toggle("has-background-image", Boolean(background));
     }
@@ -6018,12 +6038,15 @@ function initTimelineReveal() {
     return;
   }
 
+  timelineRevealObserver?.disconnect();
+  timelineRevealObserver = null;
+
   if (!("IntersectionObserver" in window)) {
     timelineItems.forEach((item) => item.classList.add("is-visible"));
     return;
   }
 
-  const observer = new IntersectionObserver(
+  timelineRevealObserver = new IntersectionObserver(
     (entries, currentObserver) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) {
@@ -6040,11 +6063,21 @@ function initTimelineReveal() {
     },
   );
 
-  timelineItems.forEach((item) => observer.observe(item));
+  timelineItems.forEach((item) => timelineRevealObserver?.observe(item));
 }
 
 function bindTimelineItemEvents() {
   timelineItems.forEach((item) => {
+    item.addEventListener("click", (event) => {
+      if (event.target.closest(".signal-timeline__headline-button")) {
+        return;
+      }
+      const story = storyMap.get(String(item.dataset.storyId));
+      if (!story) {
+        return;
+      }
+      applyStoryToDetail(story, item, { scrollIntoView: true });
+    });
     const button = item.querySelector(".signal-timeline__headline-button");
     button?.addEventListener("click", () => {
       const story = storyMap.get(String(item.dataset.storyId));

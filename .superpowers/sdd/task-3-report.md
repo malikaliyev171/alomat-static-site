@@ -39,3 +39,18 @@
 - Preserved the static fallback path when `/api/signals` is unavailable or unusable.
 - Kept the existing visual structure intact while refreshing the timeline/detail data flow for live cards.
 - Observed CRLF warnings during diff output on Windows; they did not affect build or verification results.
+
+## Reviewer fix addendum
+
+- Widened live timeline selection so the card/article surface triggers the same detail-panel update as the headline button, while keeping the button path intact for keyboard/accessible activation.
+- Reused the existing `.alomat` fallback artwork for image-less live signals in both the live timeline card background and the right-side detail visual.
+- Added a small observer cleanup so replacing timeline stories disconnects any prior reveal observer before wiring the new live items.
+
+### Addendum verification
+
+- Ran `npm run check`: passed.
+- Ran a focused `jsdom` DOM harness against built `dist/index.html` with a mocked live `/api/signals` payload containing an empty `image`:
+  - the live card rendered a non-empty `--signal-story-image` fallback containing the existing SVG fallback artwork,
+  - clicking the live article surface updated the detail panel with the mocked live title and summary,
+  - clicking the live headline button still updated the detail panel correctly,
+  - the detail visual used the same non-empty fallback artwork instead of a blank background.
