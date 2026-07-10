@@ -33,7 +33,7 @@ Builds the site and validates generated pages, local links, and publishing place
 The home timeline can load live cards from a Cloudflare Worker API. The browser does not call Telegram directly. The existing Telegram bot sends each new signal to the Worker:
 
 ```bash
-curl -X POST "https://signals.example.com/api/signals" \
+curl -X POST "https://habar.alomat.workers.dev/api/signals" \
   -H "Authorization: Bearer example-secret" \
   -H "Content-Type: application/json" \
   -d '{
@@ -72,7 +72,7 @@ npm run dev
 For local static builds that need a remote Worker URL, set:
 
 ```powershell
-$env:ALOMAT_SIGNALS_API_BASE="https://signals.example.com"
+$env:ALOMAT_SIGNALS_API_BASE="https://habar.alomat.workers.dev"
 npm run build
 ```
 
@@ -107,7 +107,7 @@ npm run deploy
 
 ```powershell
 cd ..
-$env:ALOMAT_SIGNALS_API_BASE="https://signals.example.com"
+$env:ALOMAT_SIGNALS_API_BASE="https://habar.alomat.workers.dev"
 npm run build
 ```
 

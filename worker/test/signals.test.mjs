@@ -226,7 +226,7 @@ test("jsonResponse returns JSON with CORS headers", async () => {
 
 test("POST /api/signals rejects missing bearer token", async () => {
   const response = await handleRequest(
-    new Request("https://signals.example.com/api/signals", {
+    new Request("https://habar.alomat.workers.dev/api/signals", {
       method: "POST",
       body: JSON.stringify({ title: "Title", summary: ["Summary"] }),
     }),
@@ -241,7 +241,7 @@ test("POST /api/signals rejects missing bearer token", async () => {
 test("POST /api/signals inserts a valid signal", async () => {
   const env = testEnv();
   const response = await handleRequest(
-    new Request("https://signals.example.com/api/signals", {
+    new Request("https://habar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: {
         authorization: "Bearer secret-for-tests",
@@ -273,7 +273,7 @@ test("POST /api/signals rejects duplicate external_id", async () => {
   };
 
   await handleRequest(
-    new Request("https://signals.example.com/api/signals", {
+    new Request("https://habar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: { authorization: "Bearer secret-for-tests" },
       body: JSON.stringify(requestBody),
@@ -282,7 +282,7 @@ test("POST /api/signals rejects duplicate external_id", async () => {
     new Date("2026-07-10T14:00:00.000Z"),
   );
   const duplicate = await handleRequest(
-    new Request("https://signals.example.com/api/signals", {
+    new Request("https://habar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: { authorization: "Bearer secret-for-tests" },
       body: JSON.stringify(requestBody),
@@ -302,7 +302,7 @@ test("GET /api/signals returns newest-first rows", async () => {
     ["Newer", "2026-07-10T12:00:00.000Z"],
   ]) {
     await handleRequest(
-      new Request("https://signals.example.com/api/signals", {
+      new Request("https://habar.alomat.workers.dev/api/signals", {
         method: "POST",
         headers: { authorization: "Bearer secret-for-tests" },
         body: JSON.stringify({ title, summary: [`${title} summary`], created_at }),
@@ -312,7 +312,7 @@ test("GET /api/signals returns newest-first rows", async () => {
     );
   }
 
-  const response = await handleRequest(new Request("https://signals.example.com/api/signals?limit=1"), env);
+  const response = await handleRequest(new Request("https://habar.alomat.workers.dev/api/signals?limit=1"), env);
   const body = await response.json();
 
   assert.equal(response.status, 200);
@@ -321,7 +321,7 @@ test("GET /api/signals returns newest-first rows", async () => {
 });
 
 test("OPTIONS /api/signals returns CORS preflight headers", async () => {
-  const response = await handleRequest(new Request("https://signals.example.com/api/signals", { method: "OPTIONS" }), testEnv());
+  const response = await handleRequest(new Request("https://habar.alomat.workers.dev/api/signals", { method: "OPTIONS" }), testEnv());
 
   assert.equal(response.status, 204);
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
