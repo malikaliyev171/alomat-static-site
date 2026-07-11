@@ -1421,8 +1421,8 @@ function renderHeader(localeKey, pageKey, currentFile) {
       </nav>
 
         <div class="language-switch" role="group" aria-label="Dil">
-          <a class="language-switch__button${localeKey === "en" ? " is-active" : " is-inactive"}" href="${text(enHomeHref)}">EN</a>
-          <a class="language-switch__button${localeKey === "uz" ? " is-active" : " is-inactive"}" href="${text(uzHomeHref)}">UZ</a>
+          <button class="language-switch__button${localeKey === "en" ? " is-active" : " is-inactive"} is-disabled" type="button" disabled aria-disabled="true">EN</button>
+          <button class="language-switch__button${localeKey === "uz" ? " is-active" : " is-inactive"} is-disabled" type="button" disabled aria-disabled="true">UZ</button>
         </div>
 
         ${renderPalettePicker(localeKey)}
@@ -2663,7 +2663,7 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       ${renderPage(localeKey, pageKey, currentFile)}
       ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile)}
     </div>
-    <script>window.__ALOMAT_SIGNALS_API_BASE__=${serializeJson(process.env.ALOMAT_SIGNALS_API_BASE ?? "")};window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__=${serializeJson(fallbackLogoImage)};</script>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__=${serializeJson(process.env.ALOMAT_SIGNALS_API_BASE ?? "")};</script>
     ${renderInlineApp()}
   </body>
 </html>`;

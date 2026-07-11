@@ -328,6 +328,7 @@ function createAppEnvironment({ stories, fetchImpl }) {
   return {
     detailContent,
     detailPanel,
+    detailVisual,
     loadEarlierButton,
     pageMain,
     timeline,
@@ -396,16 +397,17 @@ test("client helpers keep valid http and https urls unchanged", async () => {
   }
 });
 
-test("client helpers fall back for unsafe href and image values", async () => {
+test("client helpers reject unsafe href and image values", async () => {
   const { helpers, cleanup } = await loadAppModule();
   try {
     assert.equal(helpers.sanitizeStoryUrl("javascript:alert(1)"), "#");
     assert.equal(helpers.sanitizeStoryUrl("\u0000https://example.com/source"), "#");
     assert.equal(
       helpers.sanitizeStoryImage('https://example.com/image.jpg") ; background-image:url(javascript:alert(1))'),
-      "https://safe.example/fallback.png",
+      "",
     );
-    assert.equal(helpers.sanitizeStoryImage("data:image/svg+xml,<svg></svg>"), "https://safe.example/fallback.png");
+    assert.equal(helpers.sanitizeStoryImage("data:image/svg+xml,<svg></svg>"), "");
+    assert.equal(helpers.sanitizeStoryImage(""), "");
   } finally {
     cleanup();
   }
@@ -416,9 +418,9 @@ test("client background-image helper never returns raw unsafe css", async () => 
   try {
     assert.equal(
       helpers.createBackgroundImageValue('https://example.com/image.jpg") ; background-image:url(javascript:alert(1))'),
-      'url("https://safe.example/fallback.png")',
+      "",
     );
-    assert.equal(helpers.createBackgroundImageValue("javascript:alert(1)"), 'url("https://safe.example/fallback.png")');
+    assert.equal(helpers.createBackgroundImageValue("javascript:alert(1)"), "");
   } finally {
     cleanup();
   }
@@ -554,6 +556,46 @@ test("valid live records replace demo cards and hydrate the detail panel", async
     assert.equal(environment.detailPanel.classList.contains("has-story"), true);
     assert.equal(environment.pageMain.classList.contains("has-detail-open"), true);
     assert.equal(environment.timeline.getFirstItem()?.__button.getAttribute("aria-current"), "true");
+  } finally {
+    cleanup();
+  }
+});
+
+test("imageless live records do not use fallback backgrounds", async () => {
+  const fallbackStories = [
+    {
+      id: "fallback-1",
+      title: { en: "Fallback story" },
+      summary: { en: ["Static summary"] },
+      source: "Fallback Source",
+      time: "09:00",
+      url: "https://example.com/fallback",
+      image: "https://example.com/fallback.png",
+    },
+  ];
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [
+          {
+            id: 303,
+            title: "Imageless signal",
+            summary: ["Live summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-11T10:30:00Z",
+            url: "https://example.com/live",
+          },
+        ],
+      }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-11T12:00:00Z"));
+
+    assert.equal(helpers.normalizeLiveSignal({ title: "No image", summary: ["Text"] }, 0).image, "");
+    assert.equal(environment.detailVisual.style.backgroundImage, "");
+    assert.equal(environment.detailPanel.classList.contains("has-background-image"), false);
   } finally {
     cleanup();
   }

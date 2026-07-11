@@ -676,8 +676,11 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
   min-width: 40px;
   height: 30px;
   padding: 0 12px;
+  border: 0;
   border-radius: 999px;
+  background: transparent;
   color: var(--text-medium);
+  font: inherit;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -692,6 +695,16 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 
 .language-switch__button.is-inactive {
   color: var(--text-faint);
+}
+
+.language-switch__button:disabled,
+.language-switch__button[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.language-switch__button.is-disabled {
+  opacity: 0.54;
+  pointer-events: none;
 }
 
 .palette-rail,
@@ -1499,6 +1512,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   color: var(--text-strong);
   font-family: var(--font-display);
   font-size: var(--timeline-headline-size, 1.420rem);
+  font-weight: 800;
   line-height: 0.98;
   letter-spacing: normal;
   transform: translateX(var(--timeline-headline-shift, 0));
@@ -1956,7 +1970,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail.has-background-image .signal-detail__visual {
-  opacity: 0.18;
+  opacity: 0.1;
 }
 
 .signal-detail.has-story {
@@ -5269,7 +5283,7 @@ html[data-page="home"] .site-footer__bottom {
     </div>
   </footer>
     </div>
-    <script>window.__ALOMAT_SIGNALS_API_BASE__="https://habar.alomat.workers.dev";window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20100%22%3E%3Crect%20width%3D%22160%22%20height%3D%22100%22%20rx%3D%2224%22%20fill%3D%22%2305070d%22%2F%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2250%22%20r%3D%2222%22%20fill%3D%22%23ff4d32%22%2F%3E%3Cpath%20d%3D%22M28%2050h34%22%20stroke%3D%22%23efeff2%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%2F%3E%3Ctext%20x%3D%2278%22%20y%3D%2256%22%20fill%3D%22%23efeff2%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22700%22%3E.alomat%3C%2Ftext%3E%3C%2Fsvg%3E";</script>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__="https://habar.alomat.workers.dev";</script>
     <script data-alomat-app>
 const paletteOrder = ["0", "2", "4", "5", "6", "7"];
 const paletteThemeMap = {
@@ -5310,7 +5324,6 @@ const pageMain = document.querySelector(".page-home");
 let storyData = parseStoryData();
 let storyMap = new Map(storyData.map((story) => [String(story.id), story]));
 const timelineItemsContainer = document.querySelector("[data-signal-timeline-items]");
-const timelineFallbackImage = getTimelineFallbackImage();
 const detailDefaults = captureDetailDefaults();
 let activeStoryId = null;
 let activeUpdateFrame = 0;
@@ -5438,7 +5451,7 @@ function sanitizeStoryUrl(value) {
 }
 
 function sanitizeStoryImage(value) {
-  return sanitizeHttpUrl(value, timelineFallbackImage || "#");
+  return sanitizeHttpUrl(value, "");
 }
 
 function normalizeLiveSignalSummary(summary) {
@@ -5532,10 +5545,6 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value).replaceAll("\"", "&quot;");
-}
-
-function getTimelineFallbackImage() {
-  return String(window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__ || "").trim();
 }
 
 function getStoryImageUrl(story) {
@@ -5737,8 +5746,9 @@ function updateTimelineActiveState(activeItem) {
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
   const storyImage = getStoryImageUrl(story);
+  const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
   return `
-    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${escapeHtml(story.title)}</span>

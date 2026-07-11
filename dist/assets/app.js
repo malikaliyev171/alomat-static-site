@@ -37,7 +37,6 @@ const pageMain = document.querySelector(".page-home");
 let storyData = parseStoryData();
 let storyMap = new Map(storyData.map((story) => [String(story.id), story]));
 const timelineItemsContainer = document.querySelector("[data-signal-timeline-items]");
-const timelineFallbackImage = getTimelineFallbackImage();
 const detailDefaults = captureDetailDefaults();
 let activeStoryId = null;
 let activeUpdateFrame = 0;
@@ -165,7 +164,7 @@ function sanitizeStoryUrl(value) {
 }
 
 function sanitizeStoryImage(value) {
-  return sanitizeHttpUrl(value, timelineFallbackImage || "#");
+  return sanitizeHttpUrl(value, "");
 }
 
 function normalizeLiveSignalSummary(summary) {
@@ -259,10 +258,6 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value).replaceAll("\"", "&quot;");
-}
-
-function getTimelineFallbackImage() {
-  return String(window.__ALOMAT_SIGNAL_FALLBACK_IMAGE__ || "").trim();
 }
 
 function getStoryImageUrl(story) {
@@ -464,8 +459,9 @@ function updateTimelineActiveState(activeItem) {
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
   const storyImage = getStoryImageUrl(story);
+  const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
   return `
-    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${escapeHtml(story.title)}</span>
