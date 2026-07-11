@@ -204,7 +204,7 @@ function createTimelineEnvironment(stories) {
   };
 }
 
-function createAppEnvironment({ stories, fetchImpl }) {
+function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
   const timeline = createTimelineEnvironment(stories);
   const storyDataElement = { textContent: JSON.stringify(stories) };
   const loadEarlierButton = {
@@ -234,6 +234,12 @@ function createAppEnvironment({ stories, fetchImpl }) {
     innerHTML: "<p>Default detail</p>",
     scrollTop: 0,
   };
+  const signalStatusTime = {
+    textContent: "FAOL SIGNAL",
+  };
+  const signalStatusCount = {
+    textContent: "10 signal",
+  };
   const detailVisual = {
     style: {
       backgroundImage: 'url("https://safe.example/fallback.png")',
@@ -257,7 +263,7 @@ function createAppEnvironment({ stories, fetchImpl }) {
     classList: createClassList(),
   };
   const documentElement = {
-    lang: "en",
+    lang,
     dataset: {},
     classList: createClassList(),
   };
@@ -284,6 +290,12 @@ function createAppEnvironment({ stories, fetchImpl }) {
       }
       if (selector === "[data-load-earlier]") {
         return loadEarlierButton;
+      }
+      if (selector === "[data-signal-status-time]") {
+        return signalStatusTime;
+      }
+      if (selector === "[data-signal-status-count]") {
+        return signalStatusCount;
       }
       return null;
     },
@@ -331,6 +343,8 @@ function createAppEnvironment({ stories, fetchImpl }) {
     detailVisual,
     loadEarlierButton,
     pageMain,
+    signalStatusCount,
+    signalStatusTime,
     timeline,
     globals: {
       window: windowStub,
@@ -369,6 +383,7 @@ async function loadAppModule(options = {}) {
   const environment = createAppEnvironment({
     stories: options.stories ?? [],
     fetchImpl: options.fetchImpl ?? (async () => ({ ok: false, json: async () => ({}) })),
+    lang: options.lang ?? "en",
   });
 
   Object.assign(globalThis, environment.globals);
@@ -477,7 +492,7 @@ test("malformed live summary arrays preserve the fallback timeline", async () =>
       image: "https://example.com/fallback.png",
     },
   ];
-  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories });
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories, lang: "uz" });
   try {
     globalThis.fetch = async () => ({
       ok: true,
@@ -747,6 +762,58 @@ test("live records show today's cards first and reveal one older day per load ea
       "Two days ago signal",
     ]);
     assert.equal(environment.loadEarlierButton.disabled, true);
+  } finally {
+    cleanup();
+  }
+});
+
+test("live records update the topbar latest time and today count", async () => {
+  const fallbackStories = [
+    {
+      id: "fallback-1",
+      title: { en: "Fallback story" },
+      summary: { en: ["Static summary"] },
+      source: "Fallback Source",
+      time: "09:00",
+      url: "https://example.com/fallback",
+      image: "https://example.com/fallback.png",
+    },
+  ];
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories, lang: "uz" });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [
+          {
+            id: 501,
+            title: "Morning signal",
+            summary: ["Morning summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-11T08:15:00",
+          },
+          {
+            id: 502,
+            title: "Latest signal",
+            summary: ["Latest summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-11T12:45:00",
+          },
+          {
+            id: 503,
+            title: "Older signal",
+            summary: ["Older summary paragraph."],
+            source: "Live Source",
+            created_at: "2026-07-10T20:30:00",
+          },
+        ],
+      }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-11T14:00:00"));
+
+    assert.equal(environment.signalStatusTime.textContent, "12:45");
+    assert.equal(environment.signalStatusCount.textContent, "2 signal");
   } finally {
     cleanup();
   }

@@ -5021,6 +5021,8 @@ const nameModal = document.querySelector("[data-name-modal]");
 const nameModalClose = document.querySelector("[data-name-modal-close]");
 const libraryGateActions = Array.from(document.querySelectorAll("[data-library-gate]"));
 const loadEarlierButton = document.querySelector("[data-load-earlier]");
+const signalStatusTime = document.querySelector("[data-signal-status-time]");
+const signalStatusCount = document.querySelector("[data-signal-status-count]");
 let timelineItems = Array.from(document.querySelectorAll(".signal-timeline__item"));
 const storyDataElement = document.querySelector("[data-signal-stories]");
 const detailPanel = document.querySelector("[data-signal-detail]");
@@ -5298,6 +5300,38 @@ function formatSignalTime(value) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function formatSignalCount(count) {
+  if (locale === "en") {
+    return `${count} ${count === 1 ? "signal" : "signals"}`;
+  }
+  return `${count} signal`;
+}
+
+function findLatestStory(stories) {
+  return stories.reduce((latest, story) => {
+    const storyDate = new Date(story?.createdAt || "");
+    if (Number.isNaN(storyDate.getTime())) {
+      return latest;
+    }
+    if (!latest) {
+      return story;
+    }
+    const latestDate = new Date(latest.createdAt || "");
+    return Number.isNaN(latestDate.getTime()) || storyDate > latestDate ? story : latest;
+  }, null);
+}
+
+function updateSignalTopbarStatus(todayStories, allStories = todayStories) {
+  if (signalStatusCount) {
+    signalStatusCount.textContent = formatSignalCount(todayStories.length);
+  }
+
+  const latestStory = findLatestStory(todayStories.length ? todayStories : allStories);
+  if (signalStatusTime && latestStory?.createdAt) {
+    signalStatusTime.textContent = formatSignalTime(latestStory.createdAt);
+  }
 }
 
 function escapeHtml(value) {
@@ -6054,6 +6088,7 @@ async function loadLiveSignals(now = new Date()) {
     }
 
     const { todayStories, earlierStoryGroups } = partitionStoriesByToday(nextStories, now);
+    updateSignalTopbarStatus(todayStories, nextStories);
     replaceTimelineStories(todayStories, earlierStoryGroups);
   } catch {
     // Keep the static fallback timeline.

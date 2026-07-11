@@ -581,7 +581,7 @@ const locales = {
       askAi: "AI so'rash",
       originalSource: "Asl manba",
       signalCount: "10 signal",
-      topbarStatus: "BUGUNGI CHIZIQ • FAOL SIGNAL 19:01 • 10 SIGNAL",
+      topbarToday: "Bugungi chiziq",
       thresholdLabel: "Eshik",
       heroTitle: "Xush kelibsiz, begona.",
       heroBody: "Qator sizni nima deb atasin? Ismingizni qoldiring.",
@@ -926,7 +926,7 @@ const locales = {
       askAi: "Ask AI",
       originalSource: "Original source",
       signalCount: "10 signals",
-      topbarStatus: "TODAY'S LINE • ACTIVE SIGNAL 19:01 • 10 SIGNALS",
+      topbarToday: "Today's line",
       thresholdLabel: "Threshold",
       heroTitle: "Welcome, stranger.",
       heroBody: "What should the line call you? Keep it saved.",
@@ -1397,7 +1397,14 @@ function renderHeader(localeKey, pageKey, currentFile) {
             <span class="brand__name">.alomat</span>
             <span class="brand__sub">SIGNAL TIMELINE</span>
           </span>
-          <span class="brand__status">${text(locale.ui.topbarStatus)}</span>
+          <span class="brand__status">
+            <span>${text(locale.ui.topbarToday)}</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>${text(locale.ui.activeSignal)}</span>
+            <span data-signal-status-time>19:01</span>
+            <span aria-hidden="true">&middot;</span>
+            <span data-signal-status-count>${text(locale.ui.signalCount)}</span>
+          </span>
         </span>
       </a>
 

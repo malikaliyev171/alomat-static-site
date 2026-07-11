@@ -625,6 +625,9 @@ if (fs.existsSync(buildPath)) {
   if (!build.includes("data-signal-timeline-items")) {
     fail("home timeline must expose a container hook for live signal replacement");
   }
+  if (!build.includes("data-signal-status-time") || !build.includes("data-signal-status-count")) {
+    fail("home topbar must expose status hooks for the latest signal time and today's count");
+  }
   if (!build.includes("__ALOMAT_SIGNALS_API_BASE__")) {
     fail("build output must expose the configurable signals API base URL");
   }
