@@ -3723,6 +3723,192 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
   background: rgba(15, 23, 42, 0.035);
 }
 
+.page-library {
+  padding: clamp(40px, 7vw, 96px) 0 clamp(56px, 8vw, 112px);
+}
+
+.library-shell {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(22px, 3vw, 34px);
+}
+
+.library-shell > *,
+.library-signal-row > * {
+  min-width: 0;
+}
+
+.library-hero {
+  display: grid;
+  gap: 14px;
+  padding-bottom: clamp(18px, 2.8vw, 28px);
+  border-bottom: 1px solid color-mix(in srgb, var(--text) 11%, transparent);
+}
+
+.library-kicker,
+.library-memory__label,
+.library-signal-row__meta {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.library-hero h1 {
+  margin: 0;
+  max-width: 10ch;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 13vw, 8.75rem);
+  line-height: 0.82;
+  letter-spacing: 0;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.library-hero p:not(.library-kicker) {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--text-medium);
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.library-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.library-status-strip__item {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-strong) 72%, transparent);
+}
+
+.library-status-strip__item strong {
+  color: var(--text-strong);
+  font-size: 0.96rem;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.library-status-strip__item span {
+  color: var(--text-medium);
+  font-size: 0.64rem;
+  line-height: 1;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.library-signal-list {
+  display: grid;
+  border-top: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.library-signal-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) max-content;
+  gap: clamp(14px, 2vw, 24px);
+  align-items: start;
+  padding: clamp(18px, 2.8vw, 26px) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.library-signal-row__index {
+  color: color-mix(in srgb, var(--text) 42%, transparent);
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  font-weight: 900;
+}
+
+.library-signal-row__body {
+  display: grid;
+  gap: 8px;
+}
+
+.library-signal-row h2 {
+  margin: 0;
+  max-width: 24ch;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: clamp(1.72rem, 3.6vw, 3.05rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.library-signal-row p {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--text-medium);
+  font-size: 0.96rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.library-signal-row__meta {
+  justify-self: end;
+  color: color-mix(in srgb, var(--text) 48%, var(--accent) 30%);
+  white-space: nowrap;
+}
+
+.library-memory {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: end;
+  padding-top: clamp(6px, 1vw, 12px);
+}
+
+.library-memory h2 {
+  margin: 8px 0 10px;
+  max-width: 24ch;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.8vw, 3.5rem);
+  line-height: 0.96;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.library-memory p:not(.library-memory__label) {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--text-medium);
+  line-height: 1.7;
+}
+
+.library-memory__action {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-strong) 80%, var(--accent-soft) 20%);
+  color: var(--text-strong);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
 .relay-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -4151,6 +4337,46 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
   .policy-grid,
   .essay-grid {
     grid-template-columns: 1fr;
+  }
+
+  .page-library {
+    padding: 30px 0 54px;
+  }
+
+  .library-shell {
+    gap: 22px;
+  }
+
+  .library-hero h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem);
+  }
+
+  .library-status-strip {
+    gap: 6px;
+  }
+
+  .library-status-strip__item {
+    min-height: 34px;
+    padding: 7px 10px;
+  }
+
+  .library-signal-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 10px 14px;
+  }
+
+  .library-signal-row__meta {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .library-memory {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .library-memory__action {
+    width: 100%;
   }
 
   .hero__copy,
@@ -5260,23 +5486,50 @@ html[data-page="home"] .site-footer__bottom {
     <div class="page-backdrop"></div>
     <div class="page-shell">
       
-  <a class="skip-link" href="#content">Kontentga o‘tish</a>
-  <header class="topbar">
-    <a class="brand" href="../index.html">
-      <span class="brand__dot"></span>
-      <span class="brand__stack">
-        <span class="brand__name">.alomat</span>
-        <span class="brand__sub">.alomat signal vaqt jadvali</span>
-      </span>
-    </a>
-    <nav class="nav" aria-label="Primary">
-      <a href="../about.html">Haqida</a><a href="index.html">Kutubhona</a><a href="../relay/index.html">Relay</a><a href="../contact/index.html">Aloqa</a><a href="../sponsor/index.html">Homiylik</a><a href="../lineup.html">Lineup</a><a href="../privacy/index.html">Maxfiylik</a>
-    </nav>
-    <div class="controls">
-      <a class="locale-switch" href="../en/library/index.html" aria-label="Switch locale">
-        EN
+    <a class="skip-link" href="#content">Kontentga o‘tish</a>
+    <header class="topbar topbar--home">
+      <a class="brand brand--home" href="../index.html">
+        <span class="brand__stack">
+          <span class="brand__topline">
+            <span class="brand__name">.alomat</span>
+            <span class="brand__sub">SIGNAL TIMELINE</span>
+          </span>
+          <span class="brand__status">
+            <span>Bugungi chiziq</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Faol signal</span>
+            <span data-signal-status-time>19:01</span>
+            <span aria-hidden="true">&middot;</span>
+            <span data-signal-status-count>10 signal</span>
+          </span>
+        </span>
       </a>
-      
+
+      <div class="controls controls--home">
+        <nav class="nav nav--home signal-topbar-controls__group signal-topbar-controls__group--reader" aria-label="Primary">
+        <a class="nav__item nav__item--dot" href="../about.html">
+          <span class="nav__bullet" aria-hidden="true">•</span>
+          <span>MANIFESTO</span>
+        </a>
+        <a class="nav__item nav__item--dot" href="../lineup.html">
+          <span class="nav__bullet" aria-hidden="true">•</span>
+          <span>LINEUP</span>
+        </a>
+        <a class="nav__item nav__item--library is-active" href="index.html">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M4 4.5C4 3.1 5.1 2 6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15Z"></path>
+            <path fill="#fff" d="M7.25 5.5h10.5v1.6H7.25zM7.25 9.1h10.5v1.6H7.25zM7.25 12.7h7.8v1.6h-7.8z"></path>
+          </svg>
+          <span>KUTUBXONA</span>
+        </a>
+      </nav>
+
+        <div class="language-switch" role="group" aria-label="Dil">
+          <button class="language-switch__button is-inactive is-disabled" type="button" disabled aria-disabled="true">EN</button>
+          <button class="language-switch__button is-active is-disabled" type="button" disabled aria-disabled="true">UZ</button>
+        </div>
+
+        
       <div class="palette-rail" data-palette-picker role="group" aria-label="Rang tanla">
         <button class="palette-rail__trigger" type="button" data-palette-toggle aria-label="Rang tanla" title="Rang tanla" aria-expanded="false">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
@@ -5296,72 +5549,71 @@ html[data-page="home"] .site-footer__bottom {
           <button class="palette-dock-swatch" type="button" data-palette-option="4" aria-label="Rang tanla: 3. palet" aria-pressed="false" style="--swatch-bg:#ff4d32;--swatch-fg:#efeff2"></button>
         </div>
       </div>
-    </div>
-  </header>
-      
-  <main id="content" class="page page-detail">
-    <section class="page-hero page-hero--two-col">
-      <div>
-        <p class="eyebrow">Kutubhona</p>
-        <h1>Kutubhona</h1>
-        <p class="lede">Saqlangan signallar, yoqtirilgan hikoyalar va shaxsiy ro‘yxatlar bitta tartiblangan joyda.</p>
       </div>
-      <div class="metric-grid">
+    </header>
+      
+  <main id="content" class="page page-library">
+    <section class="library-shell" aria-labelledby="library-title">
+      <div class="library-hero">
+        <p class="library-kicker">Kutubhona</p>
+        <h1 id="library-title">Kutubhona</h1>
+        <p>Saqlangan signallar, yoqtirilgan hikoyalar va shaxsiy ro‘yxatlar bitta tartiblangan joyda.</p>
+      </div>
+
+      <div class="library-status-strip" aria-label="Saqlangan signal arxivi">
         
-          <article class="metric-card">
-            <span>Saqlangan</span>
+          <span class="library-status-strip__item">
             <strong>128</strong>
-          </article>
-          <article class="metric-card">
-            <span>Yoqtirilgan</span>
+            <span>Saqlangan</span>
+          </span>
+          <span class="library-status-strip__item">
             <strong>42</strong>
-          </article>
-          <article class="metric-card">
-            <span>To‘plamlar</span>
+            <span>Yoqtirilgan</span>
+          </span>
+          <span class="library-status-strip__item">
             <strong>9</strong>
-          </article>
+            <span>To‘plamlar</span>
+          </span>
       </div>
-    </section>
-    <section class="content-grid content-grid--library">
-      <article class="info-panel info-panel--accent">
-        <h2>Kutubxonani yig‘ish uchun kirish kerak emas.</h2>
-        <p>Biroq ism qoldirsangiz, saqlash va yoqtirishlar bir joyda yuradi.</p>
-        <a class="button button--primary" href="../index.html">
-          Ism qoldirish
-        </a>
-      </article>
-      <div class="stack-columns">
+
+      <section class="library-signal-list" aria-label="Saqlangan signal arxivi">
         
-          <article class="mini-card">
-            <h3>Shaxsiy signallar</h3>
-            <p>Sizga kerak bo‘lgan hikoyalar, kategoriyalar va qayta ko‘rish uchun saqlangan kartalar.</p>
-          </article>
-          <article class="mini-card">
-            <h3>Xotira rejimi</h3>
-            <p>Qayerda to‘xtaganingizni unutmang. O‘qilgan, yoqtirilgan va saqlangan holat birga yuradi.</p>
-          </article>
-          <article class="mini-card">
-            <h3>Bir qarashda</h3>
-            <p>Sarlavha, qisqa izoh va manbani bir qatorda ko‘rsatadigan pok ko‘rinish.</p>
-          </article>
-      </div>
+        <article class="library-signal-row">
+          <span class="library-signal-row__index">01</span>
+          <div class="library-signal-row__body">
+            <h2>Bugun saqlangan</h2>
+            <p>Eng so‘nggi signallar bir qarashda.</p>
+          </div>
+          <span class="library-signal-row__meta">bugun saqlandi</span>
+        </article>
+        <article class="library-signal-row">
+          <span class="library-signal-row__index">02</span>
+          <div class="library-signal-row__body">
+            <h2>Qaytib o‘qiladiganlar</h2>
+            <p>Uzunroq o‘qish uchun belgilangan hikoyalar.</p>
+          </div>
+          <span class="library-signal-row__meta">bugun saqlandi</span>
+        </article>
+        <article class="library-signal-row">
+          <span class="library-signal-row__index">03</span>
+          <div class="library-signal-row__body">
+            <h2>O‘zim uchun</h2>
+            <p>Shaxsiy, sokin va kam shovqinli ro‘yxatlar.</p>
+          </div>
+          <span class="library-signal-row__meta">bugun saqlandi</span>
+        </article>
+      </section>
+
+      <section class="library-memory">
+        <div>
+          <p class="library-memory__label">Kutubxona holati</p>
+          <h2>Kutubxonani yig‘ish uchun kirish kerak emas.</h2>
+          <p>Biroq ism qoldirsangiz, saqlash va yoqtirishlar bir joyda yuradi. Saqlash va yoqtirishlar ulanganda, bu joy o&#39;quvchining shaxsiy signal tarixini ana sahifa ritmini buzmasdan ushlab turadi.</p>
+        </div>
+        <a class="library-memory__action" href="../index.html">Ism qoldirish</a>
+      </section>
     </section>
-    <section class="collection-grid">
-      
-        <article class="collection-card">
-          <h3>Bugun saqlangan</h3>
-          <p>Eng so‘nggi signallar bir qarashda.</p>
-        </article>
-        <article class="collection-card">
-          <h3>Qaytib o‘qiladiganlar</h3>
-          <p>Uzunroq o‘qish uchun belgilangan hikoyalar.</p>
-        </article>
-        <article class="collection-card">
-          <h3>O‘zim uchun</h3>
-          <p>Shaxsiy, sokin va kam shovqinli ro‘yxatlar.</p>
-        </article>
-    </section>
-  </main>
+    </main>
       
   <footer class="site-footer">
     <div class="site-footer__top">

@@ -40,3 +40,13 @@ test("auth code controls keep hidden elements hidden despite field display style
   assert.match(styles, /\.name-auth-field\[hidden\][\s\S]*display:\s*none;/);
   assert.match(styles, /\.name-auth-input\[hidden\][\s\S]*display:\s*none;/);
 });
+
+test("library page uses the home signal archive layout instead of generic cards", () => {
+  const build = readProjectFile("dist/library/index.html");
+
+  assert.match(build, /topbar topbar--home/);
+  assert.match(build, /class="library-shell"/);
+  assert.match(build, /class="library-signal-row"/);
+  assert.doesNotMatch(build, /class="metric-grid"/);
+  assert.doesNotMatch(build, /class="content-grid content-grid--library"/);
+});

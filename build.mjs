@@ -1386,15 +1386,17 @@ function renderHeader(localeKey, pageKey, currentFile) {
   const otherLocale = localeKey === "en" ? "uz" : "en";
   const currentPageOtherLocale = navigationPageOutputPath(otherLocale, pageKey);
   const localeSwitchHref = relativeHref(currentFile, currentPageOtherLocale);
+  const isSignalChrome = pageKey === "home" || pageKey === "library";
   const navItems =
-    pageKey === "home"
+    isSignalChrome
       ? pages.filter((page) => ["about", "lineup", "library"].includes(page.key))
       : pages.filter((page) => page.key !== "home");
   const libraryLabel = localeKey === "en" ? "LIBRARY" : "KUTUBXONA";
 
-  if (pageKey === "home") {
+  if (isSignalChrome) {
     const enHomeHref = relativeHref(currentFile, navigationPageOutputPath("en", "home"));
     const uzHomeHref = relativeHref(currentFile, navigationPageOutputPath("uz", "home"));
+    const libraryGateAttr = pageKey === "home" ? " data-library-gate" : "";
 
     return `
     <a class="skip-link" href="#content">${text(locale.ui.skipLink)}</a>
@@ -1426,7 +1428,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
           <span class="nav__bullet" aria-hidden="true">•</span>
           <span>LINEUP</span>
         </a>
-        <a class="nav__item nav__item--library" data-library-gate href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "library")))}">
+        <a class="nav__item nav__item--library${pageKey === "library" ? " is-active" : ""}"${libraryGateAttr} href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "library")))}">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M4 4.5C4 3.1 5.1 2 6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15Z"></path>
             <path fill="#fff" d="M7.25 5.5h10.5v1.6H7.25zM7.25 9.1h10.5v1.6H7.25zM7.25 12.7h7.8v1.6h-7.8z"></path>
@@ -1982,58 +1984,60 @@ function renderLibrary(localeKey, currentFile) {
   const locale = locales[localeKey];
   const library = locale.library;
   const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
+  const archiveLabel = localeKey === "en" ? "Saved signal archive" : "Saqlangan signal arxivi";
+  const rowMeta = localeKey === "en" ? "saved today" : "bugun saqlandi";
+  const noteLabel = localeKey === "en" ? "Library state" : "Kutubxona holati";
+  const emptyNote =
+    localeKey === "en"
+      ? "When saves and likes are connected, this area will hold the reader's own signal history without changing the homepage rhythm."
+      : "Saqlash va yoqtirishlar ulanganda, bu joy o'quvchining shaxsiy signal tarixini ana sahifa ritmini buzmasdan ushlab turadi.";
   return `
-  <main id="content" class="page page-detail">
-    <section class="page-hero page-hero--two-col">
-      <div>
-        <p class="eyebrow">${text(locale.nav.library)}</p>
-        <h1>${text(library.title)}</h1>
-        <p class="lede">${text(library.lead)}</p>
+  <main id="content" class="page page-library">
+    <section class="library-shell" aria-labelledby="library-title">
+      <div class="library-hero">
+        <p class="library-kicker">${text(locale.nav.library)}</p>
+        <h1 id="library-title">${text(library.title)}</h1>
+        <p>${text(library.lead)}</p>
       </div>
-      <div class="metric-grid">
+
+      <div class="library-status-strip" aria-label="${text(archiveLabel)}">
         ${library.stats
           .map(
             (metric) => `
-          <article class="metric-card">
-            <span>${text(metric.label)}</span>
+          <span class="library-status-strip__item">
             <strong>${text(metric.value)}</strong>
-          </article>`,
+            <span>${text(metric.label)}</span>
+          </span>`,
           )
           .join("")}
       </div>
-    </section>
-    <section class="content-grid content-grid--library">
-      <article class="info-panel info-panel--accent">
-        <h2>${text(library.ctaTitle)}</h2>
-        <p>${text(library.ctaBody)}</p>
-        <a class="button button--primary" href="${text(homeHref)}">
-          ${text(library.ctaAction)}
-        </a>
-      </article>
-      <div class="stack-columns">
-        ${library.highlights
+
+      <section class="library-signal-list" aria-label="${text(archiveLabel)}">
+        ${library.collections
           .map(
-            (item) => `
-          <article class="mini-card">
-            <h3>${text(item.title)}</h3>
+            (item, index) => `
+        <article class="library-signal-row">
+          <span class="library-signal-row__index">${String(index + 1).padStart(2, "0")}</span>
+          <div class="library-signal-row__body">
+            <h2>${text(item.title)}</h2>
             <p>${text(item.summary)}</p>
-          </article>`,
+          </div>
+          <span class="library-signal-row__meta">${text(rowMeta)}</span>
+        </article>`,
           )
           .join("")}
-      </div>
+      </section>
+
+      <section class="library-memory">
+        <div>
+          <p class="library-memory__label">${text(noteLabel)}</p>
+          <h2>${text(library.ctaTitle)}</h2>
+          <p>${text(library.ctaBody)} ${text(emptyNote)}</p>
+        </div>
+        <a class="library-memory__action" href="${text(homeHref)}">${text(library.ctaAction)}</a>
+      </section>
     </section>
-    <section class="collection-grid">
-      ${library.collections
-        .map(
-          (item) => `
-        <article class="collection-card">
-          <h3>${text(item.title)}</h3>
-          <p>${text(item.summary)}</p>
-        </article>`,
-        )
-        .join("")}
-    </section>
-  </main>`;
+    </main>`;
 }
 
 function renderRelay(localeKey) {
