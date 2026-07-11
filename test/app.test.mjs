@@ -228,6 +228,14 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     focus() {},
   });
   const nameInput = createInput();
+  const firstNameInput = createInput();
+  const lastNameInput = createInput();
+  const emailStep = {
+    hidden: false,
+  };
+  const profileStep = {
+    hidden: true,
+  };
   const nameCodeInput = createInput();
   nameCodeInput.hidden = true;
   const nameCodeField = {
@@ -247,6 +255,26 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     querySelector(selector) {
       return selector === "[data-name-submit-label]" ? nameSubmitLabel : null;
     },
+  };
+  const heroTitle = {
+    textContent: "Welcome, stranger.",
+  };
+  const heroBody = {
+    textContent: "What should the line call you? Keep it saved.",
+  };
+  const nameDisplay = {
+    textContent: "",
+  };
+  const readerGateAction = {
+    hidden: false,
+    attributes: {},
+    setAttribute(name, value) {
+      this.attributes[name] = String(value);
+    },
+    getAttribute(name) {
+      return this.attributes[name] ?? null;
+    },
+    addEventListener() {},
   };
   const nameForm = {
     listeners: {},
@@ -370,6 +398,18 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
       if (selector === "[data-name-input]") {
         return nameInput;
       }
+      if (selector === "[data-name-first-input]") {
+        return firstNameInput;
+      }
+      if (selector === "[data-name-last-input]") {
+        return lastNameInput;
+      }
+      if (selector === "[data-name-email-step]") {
+        return emailStep;
+      }
+      if (selector === "[data-name-profile-step]") {
+        return profileStep;
+      }
       if (selector === "[data-name-code-input]") {
         return nameCodeInput;
       }
@@ -387,6 +427,18 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
       }
       if (selector === "[data-name-modal]") {
         return nameModal;
+      }
+      if (selector === "[data-name-display]") {
+        return nameDisplay;
+      }
+      if (selector === ".signal-reader-gate__action") {
+        return readerGateAction;
+      }
+      if (selector === "[data-hero-title]") {
+        return heroTitle;
+      }
+      if (selector === "[data-hero-body]") {
+        return heroBody;
       }
       return null;
     },
@@ -436,13 +488,21 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     detailContent,
     detailPanel,
     detailVisual,
+    emailStep,
+    firstNameInput,
+    heroBody,
+    heroTitle,
     loadEarlierButton,
     nameAuthStatus,
     nameCodeField,
     nameCodeInput,
+    nameDisplay,
     nameForm,
     nameInput,
     nameModal,
+    lastNameInput,
+    profileStep,
+    readerGateAction,
     nameSubmitButton,
     nameSubmitLabel,
     pageMain,
@@ -924,29 +984,46 @@ test("live records update the topbar latest time and today count", async () => {
   }
 });
 
-test("name auth form saves the email locally without requesting a code", async () => {
+test("name auth form sends a welcome email before collecting first and last name", async () => {
+  const requests = [];
   const { environment, cleanup } = await loadAppModule({
-    fetchImpl: async () => ({ ok: false, json: async () => ({}) }),
+    fetchImpl: async (url, init = {}) => {
+      requests.push({ url: String(url), init });
+      return { ok: true, json: async () => ({ ok: true }) };
+    },
     lang: "en",
   });
   try {
-    const requests = [];
-    globalThis.window.__ALOMAT_SIGNALS_API_BASE__ = "https://xabar.alomat.workers.dev";
-    globalThis.fetch = async (url, init = {}) => {
-      requests.push({ url: String(url), init });
-      return { ok: false, json: async () => ({}) };
-    };
+    globalThis.window.__ALOMAT_SIGNALS_API_BASE__ = "https://alomat.ai";
+    requests.length = 0;
 
     environment.nameInput.value = " Malik@example.COM ";
     await environment.nameForm.submit();
 
-    assert.equal(requests.length, 0);
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].url, "https://alomat.ai/api/auth/welcome-email");
+    assert.deepEqual(JSON.parse(requests[0].init.body), { email: "malik@example.com" });
+    assert.equal(environment.emailStep.hidden, true);
+    assert.equal(environment.profileStep.hidden, false);
     assert.equal(environment.nameCodeField.hidden, true);
     assert.equal(environment.nameCodeInput.hidden, true);
-    assert.equal(environment.nameSubmitLabel.textContent, "Save email");
-    assert.equal(globalThis.localStorage.getItem("alomat-name"), "malik@example.com");
+    assert.equal(environment.nameSubmitLabel.textContent, "Save name");
+    assert.equal(globalThis.localStorage.getItem("alomat-email"), "malik@example.com");
     assert.equal(environment.nameModal.hidden, false);
     assert.equal(environment.nameAuthStatus.textContent, "Mail saqlap qolindi");
+
+    environment.firstNameInput.value = " Malik ";
+    environment.lastNameInput.value = " Aliyev ";
+    await environment.nameForm.submit();
+
+    assert.equal(globalThis.localStorage.getItem("alomat-name"), "Malik Aliyev");
+    assert.equal(environment.nameModal.hidden, true);
+    assert.equal(environment.readerGateAction.hidden, true);
+    assert.equal(environment.heroTitle.textContent, "Welcome, Malik Aliyev.");
+    assert.equal(
+      environment.heroBody.textContent,
+      "The day's most important shifts sit on one line with time, source, and relevance. Open a signal and see why it matters fast.",
+    );
   } finally {
     cleanup();
   }

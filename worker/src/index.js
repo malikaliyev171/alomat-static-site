@@ -14,6 +14,10 @@ export async function handleRequest(request, env, now = new Date(), services = {
     return handleTelegramWebhook(request, env, now);
   }
 
+  if (url.pathname === "/api/auth/welcome-email") {
+    return handleWelcomeEmail(request, env, services);
+  }
+
   if (url.pathname !== "/api/signals") {
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
@@ -122,6 +126,62 @@ async function handleTelegramWebhook(request, env, now) {
   return jsonResponse({ ok: true }, 201);
 }
 
+async function handleWelcomeEmail(request, env, services = {}) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "access-control-allow-origin": "*",
+        "access-control-allow-methods": "POST, OPTIONS",
+        "access-control-allow-headers": "content-type",
+      },
+    });
+  }
+
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "method not allowed" }, 405, { allow: "POST" });
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonResponse({ error: "invalid JSON body" }, 400);
+  }
+
+  const email = normalizeEmail(body?.email);
+  if (!email) {
+    return jsonResponse({ error: "valid email is required" }, 400);
+  }
+
+  if (!env.RESEND_API_KEY || !env.AUTH_FROM_EMAIL) {
+    return jsonResponse({ error: "email is not configured" }, 503);
+  }
+
+  const fetchImpl = services.fetch ?? fetch;
+  const message = welcomeEmailMessage();
+  const response = await fetchImpl("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      from: env.AUTH_FROM_EMAIL,
+      to: email,
+      subject: ".alomatga xush kelibsiz",
+      text: message.text,
+      html: message.html,
+    }),
+  });
+
+  if (!response.ok) {
+    return jsonResponse({ error: "email delivery failed" }, 502);
+  }
+
+  return jsonResponse({ ok: true });
+}
+
 async function insertSignal(env, signal) {
   try {
     await env.DB.prepare(
@@ -160,4 +220,28 @@ function isTelegramWebhookAuthorized(request, env) {
   const expected = env.TELEGRAM_WEBHOOK_SECRET;
   const actual = request.headers.get("x-telegram-bot-api-secret-token") ?? "";
   return Boolean(expected) && actual === expected;
+}
+
+function normalizeEmail(value) {
+  const email = String(value ?? "").trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
+}
+
+function welcomeEmailMessage() {
+  const text = [
+    "Salom,",
+    "",
+    ".alomatga xush kelibsiz.",
+    "",
+    "Bu yerda kunning eng muhim signallari vaqt, manba va dolzarbligi bilan bitta chiziqda jamlanadi. Har bir signalni ochib, nima o'zgarganini va nima uchun muhimligini tezda ko'rasiz.",
+    "",
+    "Shovqinsiz, qisqa va aniq.",
+    "",
+    ".alomat",
+  ].join("\n");
+
+  return {
+    text,
+    html: `<p>Salom,</p><p><strong>.alomatga xush kelibsiz.</strong></p><p>Bu yerda kunning eng muhim signallari vaqt, manba va dolzarbligi bilan bitta chiziqda jamlanadi. Har bir signalni ochib, nima o'zgarganini va nima uchun muhimligini tezda ko'rasiz.</p><p>Shovqinsiz, qisqa va aniq.</p><p>.alomat</p>`,
+  };
 }

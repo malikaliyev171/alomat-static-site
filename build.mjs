@@ -593,8 +593,11 @@ const locales = {
       authTitle: "Signallaringizni saqlang.",
       authBody: "Saqlagan va yoqtirgan signallaringiz .alomat hisobingizda tursin.",
       authEmail: "E-pochta",
+      authFirstName: "Ism",
+      authLastName: "Familiya",
       authCode: "Tasdiqlash kodi",
       authSubmit: "Mailni saqlash",
+      authNameSubmit: "Ismni saqlash",
       close: "Yopish",
       loadEarlier: "Oldingi kunlarni yuklash",
       loadedEarlier: "Oldingi kunlar ochildi",
@@ -938,8 +941,11 @@ const locales = {
       authTitle: "Save your signals.",
       authBody: "Keep your saved and liked signals in your .alomat account.",
       authEmail: "Email",
+      authFirstName: "First name",
+      authLastName: "Last name",
       authCode: "Verification code",
       authSubmit: "Save email",
+      authNameSubmit: "Save name",
       close: "Close",
       loadEarlier: "Load earlier days",
       loadedEarlier: "Earlier days revealed",
@@ -1541,12 +1547,16 @@ function renderHome(localeKey, currentFile) {
           <div class="signal-timeline__line" aria-hidden="true"></div>
           <header class="signal-reader-gate is-guest">
             <span class="signal-reader-gate__axis" aria-hidden="true">
-              <span class="signal-reader-gate__sigil">?</span>
+              <span class="signal-reader-gate__sigil">
+                <span class="signal-reader-gate__broadcast" aria-hidden="true">
+                  <span></span>
+                </span>
+              </span>
             </span>
             <div class="signal-reader-gate__content">
               <p class="eyebrow">${text(locale.ui.thresholdLabel)}</p>
-              <h1>${text(locale.ui.heroTitle)}</h1>
-              <p class="lede">${text(locale.ui.heroBody)}</p>
+              <h1 data-hero-title>${text(locale.ui.heroTitle)}</h1>
+              <p class="lede" data-hero-body>${text(locale.ui.heroBody)}</p>
             </div>
             <button class="signal-reader-gate__action" type="button" aria-expanded="false" aria-controls="name-form-gate">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
@@ -1569,6 +1579,7 @@ function renderHome(localeKey, currentFile) {
               <h2 class="name-auth-modal__title" id="name-form-title">${text(locale.ui.authTitle)}</h2>
               <p class="name-auth-modal__body-copy">${text(locale.ui.authBody)}</p>
               <form class="name-auth-modal__form name-form" id="name-form-gate" data-name-form novalidate>
+                <div class="name-auth-step" data-name-email-step>
                 <label class="name-auth-field" for="reader-email">
                   <span>${text(locale.ui.authEmail)}</span>
                   <input
@@ -1581,6 +1592,31 @@ function renderHome(localeKey, currentFile) {
                     aria-label="${text(locale.ui.authEmail)}"
                   />
                 </label>
+                </div>
+                <div class="name-auth-step name-auth-step--profile" data-name-profile-step hidden>
+                  <label class="name-auth-field" for="reader-first-name">
+                    <span>${text(locale.ui.authFirstName)}</span>
+                    <input
+                      id="reader-first-name"
+                      class="name-auth-input"
+                      data-name-first-input
+                      type="text"
+                      autocomplete="given-name"
+                      aria-label="${text(locale.ui.authFirstName)}"
+                    />
+                  </label>
+                  <label class="name-auth-field" for="reader-last-name">
+                    <span>${text(locale.ui.authLastName)}</span>
+                    <input
+                      id="reader-last-name"
+                      class="name-auth-input"
+                      data-name-last-input
+                      type="text"
+                      autocomplete="family-name"
+                      aria-label="${text(locale.ui.authLastName)}"
+                    />
+                  </label>
+                </div>
                 <label class="name-auth-field name-auth-field--code" for="reader-code" data-name-code-field hidden>
                   <span>${text(locale.ui.authCode)}</span>
                   <input

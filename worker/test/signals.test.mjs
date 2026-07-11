@@ -529,7 +529,33 @@ test("OPTIONS /api/signals returns CORS preflight headers", async () => {
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
 });
 
-test("POST /api/auth/request-code is not exposed for the local email-save flow", async () => {
+test("POST /api/auth/welcome-email sends a code-free welcome email", async () => {
+  const env = testEnv();
+  const resend = resendFetchRecorder();
+  const response = await handleRequest(
+    new Request("https://alomat.ai/api/auth/welcome-email", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: " Malik@example.COM " }),
+    }),
+    env,
+    new Date("2026-07-11T12:00:00.000Z"),
+    { fetch: resend.fetchImpl },
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.equal(env.DB.authCodes.length, 0);
+  assert.equal(resend.calls.length, 1);
+  assert.equal(resend.calls[0].url, "https://api.resend.com/emails");
+  const payload = JSON.parse(resend.calls[0].init.body);
+  assert.equal(payload.to, "malik@example.com");
+  assert.equal(payload.subject, ".alomatga xush kelibsiz");
+  assert.match(payload.text, /kunning eng muhim signallari/i);
+  assert.doesNotMatch(payload.text, /\b\d{6}\b/);
+});
+
+test("POST /api/auth/request-code is not exposed for the welcome email flow", async () => {
   const env = testEnv();
   const resend = resendFetchRecorder();
   const response = await handleRequest(

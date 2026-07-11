@@ -91,7 +91,18 @@ If the API is unavailable or empty, the generated fallback timeline remains visi
 
 ## Email Save Panel
 
-The "Name yourself" / "Kutubhona" panel only saves the entered email in the browser. It does not send a verification email and does not need Resend for the current flow. After a valid email is submitted, the panel shows `Mail saqlap qolindi`.
+The "Name yourself" / "Kutubhona" panel has two steps:
+
+1. The reader enters an email address. The Worker sends a code-free Uzbek welcome email through Resend and the panel shows `Mail saqlap qolindi`.
+2. The reader enters first and last name. The panel closes, the gate button is hidden, and the home hero greets the reader by name.
+
+The welcome email endpoint is:
+
+```text
+POST /api/auth/welcome-email
+```
+
+It requires the Worker secrets `RESEND_API_KEY` and `AUTH_FROM_EMAIL`.
 
 ## Deploy
 
@@ -139,12 +150,17 @@ Invoke-RestMethod `
   -Body $body
 ```
 
-7. Build the static site with the deployed Worker base URL:
+7. Build the static site. For the Worker deployment, leave `ALOMAT_SIGNALS_API_BASE` empty so the site calls same-origin API paths like `/api/signals`:
 
 ```powershell
 cd ..
-$env:ALOMAT_SIGNALS_API_BASE="https://xabar.alomat.workers.dev"
+Remove-Item Env:ALOMAT_SIGNALS_API_BASE -ErrorAction SilentlyContinue
 npm run build
 ```
 
-8. Deploy `dist/` to GitHub Pages, Cloudflare Pages, Netlify, or any static host.
+8. Deploy the Worker. It serves both `dist/` static assets and `/api/*` routes:
+
+```powershell
+cd worker
+npm run deploy
+```
