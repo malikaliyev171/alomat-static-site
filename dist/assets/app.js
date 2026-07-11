@@ -89,7 +89,7 @@ const detailLabels = {
     close: "Panelni yopish",
     source: "MANBA",
     time: "VAQT",
-    weight: "OG'IRLIK",
+    weight: "DOLZARBLIGI",
     aiLens: "AI LINZASI",
     askAi: "AI so'rash",
     originalSource: "ASL MANBA",

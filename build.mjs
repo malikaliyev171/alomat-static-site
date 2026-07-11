@@ -575,7 +575,7 @@ const locales = {
       activeSignal: "Faol signal",
       sourceLabel: "Manba",
       timeLabel: "Vaqt",
-      weightLabel: "Og'irlik",
+      weightLabel: "Dolzarbligi",
       audioBrief: "Audio qisqa",
       aiLens: "AI linzasi",
       askAi: "AI so'rash",
