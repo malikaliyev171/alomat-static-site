@@ -592,3 +592,21 @@ test("POST /api/auth/verify-code accepts the latest unused code only once", asyn
   assert.equal(reused.status, 400);
   assert.deepEqual(await reused.json(), { error: "invalid or expired code" });
 });
+
+test("GET / serves static site assets when the Worker has an assets binding", async () => {
+  const env = {
+    ...testEnv(),
+    ASSETS: {
+      async fetch(request) {
+        return new Response(`asset:${new URL(request.url).pathname}`, {
+          headers: { "content-type": "text/plain" },
+        });
+      },
+    },
+  };
+
+  const response = await handleRequest(new Request("https://xabar.alomat.workers.dev/"), env);
+
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), "asset:/");
+});

@@ -20,6 +20,9 @@ export async function handleRequest(request, env, now = new Date(), services = {
   }
 
   if (url.pathname !== "/api/signals") {
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
     return jsonResponse({ error: "not found" }, 404);
   }
 
