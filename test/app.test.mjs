@@ -561,6 +561,36 @@ test("valid live records replace demo cards and hydrate the detail panel", async
   }
 });
 
+test("live summary text hides visible links in the detail panel", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const signal = helpers.normalizeLiveSignal(
+      {
+        id: 302,
+        title: "Linked signal",
+        summary: [
+          "Batafsil: https://example.com/news?utm=telegram",
+          "Kanal: t.me/alomat",
+          "Sayt www.example.org/path orqali ochildi.",
+          "Tadqiqot (https://arxiv.org/abs/2607.07859) e'lon qilindi.",
+          "Markdown [manba](https://example.com/source) matni qoladi.",
+        ],
+        url: "https://wrong.example/about",
+      },
+      0,
+    );
+
+    assert.deepEqual(signal.summary, [
+      "Sayt orqali ochildi.",
+      "Tadqiqot e'lon qilindi.",
+      "Markdown manba matni qoladi.",
+    ]);
+    assert.equal(signal.url, "https://example.com/news?utm=telegram");
+  } finally {
+    cleanup();
+  }
+});
+
 test("imageless live records do not use fallback backgrounds", async () => {
   const fallbackStories = [
     {

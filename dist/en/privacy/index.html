@@ -5414,6 +5414,43 @@ function sanitizeStoryImage(value) {
   return sanitizeHttpUrl(value, "");
 }
 
+function firstVisibleLinkFromText(value) {
+  const text = String(value ?? "");
+  const match = text.match(/https?:\/\/[^\s<>"'`\\)\]]+|www\.[^\s<>"'`\\)\]]+|(?:t\.me|telegram\.me)\/[^\s<>"'`\\)\]]+/i);
+  if (!match) {
+    return "";
+  }
+  const url = match[0].startsWith("www.") ? `https://${match[0]}` : match[0];
+  return sanitizeStoryUrl(url);
+}
+
+function firstVisibleLinkFromSummary(summary) {
+  const items = Array.isArray(summary) ? summary : typeof summary === "string" ? [summary] : [];
+  for (const item of items) {
+    const link = firstVisibleLinkFromText(item);
+    if (link !== "#") {
+      return link;
+    }
+  }
+  return "";
+}
+
+function stripVisibleLinks(value) {
+  return String(value ?? "")
+    .replace(/\[([^\]]+)\]\((?:https?:\/\/|www\.|t\.me\/|telegram\.me\/)[^)]+\)/gi, "$1")
+    .replace(/<a\b[^>]*>(.*?)<\/a>/gis, "$1")
+    .replace(/https?:\/\/[^\s<>"'`\\]+|www\.[^\s<>"'`\\]+|(?:t\.me|telegram\.me)\/[^\s<>"'`\\]+/gi, "")
+    .replace(/\(\s+/g, "")
+    .replace(/\(\s*\)/g, "")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
+function isLinkOnlyLabel(value) {
+  return /^[\s\-–—•*]*(?:batafsil|kanal|link|manba|source|channel|more|read more)\s*:?\s*$/i.test(value);
+}
+
 function normalizeLiveSignalSummary(summary) {
   if (!Array.isArray(summary)) {
     return [];
@@ -5421,7 +5458,8 @@ function normalizeLiveSignalSummary(summary) {
 
   return summary
     .filter((entry) => typeof entry === "string")
-    .map((entry) => entry.trim())
+    .map((entry) => stripVisibleLinks(entry))
+    .filter((entry) => !isLinkOnlyLabel(entry))
     .filter(Boolean);
 }
 
@@ -5429,6 +5467,7 @@ function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
   const summary = normalizeLiveSignalSummary(signal.summary);
+  const sourceUrl = firstVisibleLinkFromSummary(signal.summary) || signal.url;
 
   return {
     id: `live-${id}`,
@@ -5438,7 +5477,7 @@ function normalizeLiveSignal(signal, index) {
     dayKey: getLocalDayKey(createdAt),
     time: formatSignalTime(createdAt),
     score: Number.isFinite(signal.score) ? signal.score : 94,
-    url: sanitizeStoryUrl(signal.url),
+    url: sanitizeStoryUrl(sourceUrl),
     image: sanitizeStoryImage(signal.image),
     category: String(signal.category || "general").trim(),
     summary,

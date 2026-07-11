@@ -51,7 +51,7 @@ export function normalizeSignalInput(input, nowIso) {
       title,
       summary_json: JSON.stringify(summary),
       source: normalizeOptionalText(input.source),
-      url: normalizeOptionalUrl(input.url),
+      url: firstVisibleLinkFromSummary(input.summary) || normalizeOptionalUrl(input.url),
       category: normalizeOptionalText(input.category) || "general",
       image: normalizeOptionalUrl(input.image),
       language: normalizeOptionalText(input.language) || "uz",
@@ -97,7 +97,44 @@ function normalizeOptionalUrl(value) {
 
 function normalizeSummary(value) {
   const items = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
-  return items.map(normalizeText).filter(Boolean).slice(0, 6);
+  return items.map(normalizeText).map(stripVisibleLinks).filter((item) => !isLinkOnlyLabel(item)).filter(Boolean).slice(0, 6);
+}
+
+function firstVisibleLinkFromText(value) {
+  const text = String(value ?? "");
+  const match = text.match(/https?:\/\/[^\s<>"'`\\)\]]+|www\.[^\s<>"'`\\)\]]+|(?:t\.me|telegram\.me)\/[^\s<>"'`\\)\]]+/i);
+  if (!match) {
+    return "";
+  }
+  const url = match[0].startsWith("www.") ? `https://${match[0]}` : match[0];
+  return isSafeHttpUrl(url) ? url : "";
+}
+
+function firstVisibleLinkFromSummary(value) {
+  const items = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
+  for (const item of items) {
+    const link = firstVisibleLinkFromText(item);
+    if (link) {
+      return link;
+    }
+  }
+  return "";
+}
+
+function stripVisibleLinks(value) {
+  return String(value ?? "")
+    .replace(/\[([^\]]+)\]\((?:https?:\/\/|www\.|t\.me\/|telegram\.me\/)[^)]+\)/gi, "$1")
+    .replace(/<a\b[^>]*>(.*?)<\/a>/gis, "$1")
+    .replace(/https?:\/\/[^\s<>"'`\\]+|www\.[^\s<>"'`\\]+|(?:t\.me|telegram\.me)\/[^\s<>"'`\\]+/gi, "")
+    .replace(/\(\s+/g, "")
+    .replace(/\(\s*\)/g, "")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
+function isLinkOnlyLabel(value) {
+  return /^[\s\-–—•*]*(?:batafsil|kanal|link|manba|source|channel|more|read more)\s*:?\s*$/i.test(value);
 }
 
 function normalizeCreatedAt(value, nowIso) {

@@ -110,6 +110,31 @@ test("normalizeTelegramUpdate converts a text message to signal input", () => {
   });
 });
 
+test("normalizeSignalInput strips visible links from summary text", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "Signal card title",
+      summary: [
+        "Batafsil: https://example.com/news?utm=telegram",
+        "Kanal: t.me/alomat",
+        "Sayt www.example.org/path orqali ochildi.",
+        "Tadqiqot (https://arxiv.org/abs/2607.07859) e'lon qilindi.",
+        "Markdown [manba](https://example.com/source) matni qoladi.",
+      ],
+      url: "https://wrong.example/about",
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(JSON.parse(result.value.summary_json), [
+    "Sayt orqali ochildi.",
+    "Tadqiqot e'lon qilindi.",
+    "Markdown manba matni qoladi.",
+  ]);
+  assert.equal(result.value.url, "https://example.com/news?utm=telegram");
+});
+
 test("normalizeTelegramUpdate ignores unsupported updates", () => {
   const result = normalizeTelegramUpdate({ update_id: 11, callback_query: {} }, "2026-07-10T14:00:00.000Z");
 
