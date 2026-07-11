@@ -14,5 +14,5 @@ custom_domain = true
 [[d1_databases]]
 binding = "DB"
 database_name = "alomat_signals"
-database_id = "247e9fe2-2744-4662-83f0-18e58719d8d3"
+database_id = "724e2c5c-ee13-42e0-90b6-eea1bdba1033"
 migrations_dir = "migrations"
