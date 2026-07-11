@@ -545,11 +545,11 @@ if (fs.existsSync(stylesPath)) {
   if (mobileDetailFooterBlock.includes("background: color-mix(in srgb, var(--bg)")) {
     fail("mobile detail footer must not reuse the page background");
   }
-  if (!signalDetailBlock.includes("width: 420px;")) {
-    fail("desktop signal detail panel must use the approved 420px reading width");
+  if (!signalDetailBlock.includes("width: var(--home-detail-width, 420px);")) {
+    fail("desktop signal detail panel must use the responsive reading width token");
   }
-  if (!signalDetailBlock.includes("height: min(946px, calc(100vh - 128px));")) {
-    fail("desktop signal detail panel must extend closer to the viewport bottom");
+  if (!signalDetailBlock.includes("height: var(--home-detail-height, min(946px, calc(100vh - 128px)));")) {
+    fail("desktop signal detail panel must use the responsive viewport height token");
   }
   if (!signalDetailStoryContentBlock.includes("grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;")) {
     fail("story detail content must reserve a flexible row for the explanation");
@@ -581,8 +581,17 @@ if (fs.existsSync(stylesPath)) {
   if (!timelinePanelLensButtonBlock.includes("width: 40px;") || !timelinePanelLensButtonBlock.includes("height: 40px;")) {
     fail("detail AI provider buttons must use the compact 40px size");
   }
+  if (!styles.includes("--home-rail-left: clamp(") || !styles.includes("--home-detail-width: clamp(")) {
+    fail("home timeline and detail panel must expose responsive layout tokens");
+  }
+  if (!timelineHeadlineButtonBlock.includes("left: var(--home-card-left")) {
+    fail("desktop timeline cards must use the responsive home card position");
+  }
   if (!timelineHeadlineButtonBlock.includes("--timeline-widget-width, 500px")) {
-    fail("desktop timeline cards must leave more room for the detail panel");
+    fail("desktop timeline cards must use the responsive home card width token");
+  }
+  if (!signalDetailBlock.includes("width: var(--home-detail-width")) {
+    fail("home signal detail panel must use the responsive reading width token");
   }
   if (
     !styles.includes(
@@ -619,14 +628,14 @@ if (fs.existsSync(buildPath)) {
   if (!build.includes("__ALOMAT_SIGNALS_API_BASE__")) {
     fail("build output must expose the configurable signals API base URL");
   }
-  if (!build.includes("width: 420px;")) {
-    fail("home signal detail inline width must match the approved reading width");
+  if (!build.includes("width: var(--home-detail-width, 420px);")) {
+    fail("home signal detail inline width must use the responsive reading width token");
   }
-  if (!build.includes("height: min(946px, calc(100vh - 128px));")) {
-    fail("home signal detail inline height must use the expanded viewport fit");
+  if (!build.includes("height: var(--home-detail-height, min(946px, calc(100vh - 128px)));")) {
+    fail("home signal detail inline height must use the responsive viewport fit token");
   }
-  if (!build.includes("width: min(100%, 500px);")) {
-    fail("home timeline inline card width must leave room for the detail panel");
+  if (!build.includes("width: min(100%, var(--timeline-widget-width, 500px));")) {
+    fail("home timeline inline card width must use the responsive card width token");
   }
   if (
     !build.includes(

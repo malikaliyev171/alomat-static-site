@@ -316,6 +316,41 @@ img {
   padding-top: 0;
 }
 
+html[data-page="home"] {
+  --home-gate-axis: clamp(72px, 6.67vw, 96px);
+  --home-gate-title-width: clamp(284px, 25.1vw, 361px);
+  --home-gate-action-width: clamp(112px, 8.9vw, 128px);
+  --home-gate-gap: clamp(18px, 1.95vw, 28px);
+  --home-gate-margin-left: clamp(72px, 8.2vw, 118px);
+  --home-timeline-top-pad: clamp(92px, 7.92vw, 114px);
+  --home-row-min-height: clamp(202px, 16.875vw, 243px);
+  --home-row-center: clamp(104px, 8.44vw, 121.5px);
+  --home-rail-left: clamp(96px, 11.16vw, 160.69px);
+  --home-node-left: calc(var(--home-rail-left) + 0.5px);
+  --home-node-size: clamp(18px, 1.41vw, 20.3px);
+  --home-node-shift: calc(var(--home-node-size) / -2);
+  --home-node-active-size: clamp(24px, 1.97vw, 28.3px);
+  --home-node-active-shift: calc(var(--home-node-active-size) / -2);
+  --home-card-left: clamp(132px, 13.78vw, 198.39px);
+  --home-card-min-height: clamp(64px, 5.08vw, 73.0944px);
+  --home-card-y: calc(var(--home-card-min-height) / -2);
+  --home-card-active-x: clamp(4px, 0.7vw, 10px);
+  --home-card-pad-y: clamp(12px, 0.94vw, 13.6px);
+  --home-card-pad-x: clamp(15px, 1.35vw, 19.4px);
+  --home-detail-top: clamp(92px, 7.5vw, 108px);
+  --home-detail-right: clamp(24px, 2.5vw, 36px);
+  --home-detail-width: clamp(320px, 29.17vw, 420px);
+  --home-detail-height: min(946px, calc(100vh - var(--home-detail-top) - 20px));
+  --timeline-widget-width: clamp(
+    280px,
+    calc(100vw - var(--home-card-left) - var(--home-detail-width) - var(--home-detail-right) - 40px),
+    500px
+  );
+  --timeline-widget-pad-y: var(--home-card-pad-y);
+  --timeline-widget-pad-x: var(--home-card-pad-x);
+  --timeline-node-size: var(--home-node-size);
+}
+
 .page-shell--static {
   width: 100%;
   max-width: none;
@@ -1216,12 +1251,12 @@ html[data-page="home"][data-locale="uz"] .hero--home h1 {
 .signal-reader-gate {
   position: relative;
   display: grid;
-  grid-template-columns: 96px fit-content(361px) 128px;
+  grid-template-columns: var(--home-gate-axis, 96px) fit-content(var(--home-gate-title-width, 361px)) var(--home-gate-action-width, 128px);
   align-items: center;
-  gap: 28px;
+  gap: var(--home-gate-gap, 28px);
   padding: 18px 0 0;
   margin-bottom: 26px;
-  margin-left: 128px;
+  margin-left: var(--home-gate-margin-left, 128px);
   max-width: 660px;
   min-height: 137px;
 }
@@ -1280,7 +1315,7 @@ html[data-page="home"][data-locale="uz"] .hero--home h1 {
   letter-spacing: normal;
   line-height: 0.82;
   font-size: clamp(2.45rem, 2.7vw, 2.55rem);
-  min-width: 361px;
+  min-width: var(--home-gate-title-width, 361px);
   min-height: 0;
 }
 
@@ -1306,7 +1341,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  width: 128px;
+  width: var(--home-gate-action-width, 128px);
   justify-content: center;
   min-height: 38px;
   padding: 0 14px;
@@ -1337,13 +1372,13 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
 .signal-timeline--home {
   position: relative;
   margin-top: 0;
-  padding-top: 114px;
+  padding-top: var(--home-timeline-top-pad, 114px);
   padding-bottom: 0;
 }
 
 .signal-timeline__line {
   position: absolute;
-  left: 160.69px;
+  left: var(--home-rail-left, 160.69px);
   top: 0;
   bottom: 0;
   width: 1px;
@@ -1368,7 +1403,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
 .signal-timeline__day-marker::before {
   content: "";
   display: block;
-  width: 160.69px;
+  width: var(--home-rail-left, 160.69px);
   height: 1px;
   background: transparent;
 }
@@ -1390,7 +1425,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
 
 .signal-timeline__item {
   position: relative;
-  min-height: 243px;
+  min-height: var(--home-row-min-height, 243px);
   display: block;
   padding: 0;
   border: 0;
@@ -1422,19 +1457,19 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   border-color: transparent;
   box-shadow: 0 22px 70px color-mix(in srgb, var(--text) 16%, transparent);
   opacity: 1;
-  transform: translate(10px, -36.8438px) scale(1.035);
+  transform: translate(var(--home-card-active-x, 10px), var(--home-card-y, -36.8438px)) scale(1.035);
 }
 
 .signal-timeline__item.is-active .signal-timeline__node {
-  width: 28.3px;
-  height: 28.3px;
+  width: var(--home-node-active-size, 28.3px);
+  height: var(--home-node-active-size, 28.3px);
   background: color-mix(in srgb, var(--text) 96%, transparent);
   border-color: color-mix(in srgb, var(--surface-strong) 80%, transparent);
   box-shadow:
     0 0 0 10px color-mix(in srgb, var(--bg) 84%, transparent),
     0 0 0 13px color-mix(in srgb, var(--text) 38%, transparent),
     0 0 46px color-mix(in srgb, var(--text) 36%, transparent);
-  transform: translate(-14.15px, -14.15px);
+  transform: translate(var(--home-node-active-shift, -14.15px), var(--home-node-active-shift, -14.15px));
 }
 
 .signal-timeline__item.is-active .signal-timeline__headline-text {
@@ -1443,8 +1478,8 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
 
 .signal-timeline__node {
   position: absolute;
-  left: 161.19px;
-  top: 121.5px;
+  left: var(--home-node-left, 161.19px);
+  top: var(--home-row-center, 121.5px);
   width: var(--timeline-node-size, 20.3px);
   height: var(--timeline-node-size, 20.3px);
   border-radius: 50%;
@@ -1453,7 +1488,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   box-shadow:
     0 0 0 8px color-mix(in srgb, var(--bg) 80%, transparent),
     0 0 34px color-mix(in srgb, var(--text) 22%, transparent);
-  transform: translate(-10.1484px, -10.1484px);
+  transform: translate(var(--home-node-shift, -10.1484px), var(--home-node-shift, -10.1484px));
   transition:
     width 180ms ease,
     height 180ms ease,
@@ -1465,12 +1500,12 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
 
 .signal-timeline__headline-button {
   position: absolute;
-  left: 198.39px;
-  top: 121.5px;
+  left: var(--home-card-left, 198.39px);
+  top: var(--home-row-center, 121.5px);
   display: flex;
   align-items: center;
   width: min(100%, var(--timeline-widget-width, 500px));
-  min-height: 73.0944px;
+  min-height: var(--home-card-min-height, 73.0944px);
   padding: var(--timeline-widget-pad-y, 13.6px) var(--timeline-widget-pad-x, 19.4px);
   border-radius: 8px;
   border: 0.8px solid color-mix(in srgb, var(--text) 6%, transparent);
@@ -1478,7 +1513,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   text-align: left;
   box-shadow: 0 10px 30px color-mix(in srgb, var(--text) 5%, transparent);
   overflow: visible;
-  transform: translateY(-36.8438px);
+  transform: translateY(var(--home-card-y, -36.8438px));
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
@@ -1531,7 +1566,7 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   box-shadow: 0 12px 34px color-mix(in srgb, var(--text) 7%, transparent);
   filter: saturate(0.92);
   opacity: 0.88;
-  transform: translateY(-36.8438px) scale(0.995);
+  transform: translateY(var(--home-card-y, -36.8438px)) scale(0.995);
 }
 
 .page-home.has-active-story .signal-timeline__item.is-visible:not(.is-active) .signal-timeline__headline-text {
@@ -1933,10 +1968,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 .signal-detail {
   position: fixed;
-  top: 108px;
-  right: 28.8px;
-  width: 420px;
-  height: min(946px, calc(100vh - 128px));
+  top: var(--home-detail-top, 108px);
+  right: var(--home-detail-right, 28.8px);
+  width: var(--home-detail-width, 420px);
+  height: var(--home-detail-height, min(946px, calc(100vh - 128px)));
   box-sizing: border-box;
   border-radius: 8px;
   border: 0.8px solid rgba(22, 29, 39, 0.12);
@@ -1953,10 +1988,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 @media (min-width: 1200px) {
   .signal-detail {
-    top: 108px;
-    right: 36px;
-    width: 420px;
-    height: min(946px, calc(100vh - 128px));
+    top: var(--home-detail-top, 108px);
+    right: var(--home-detail-right, 36px);
+    width: var(--home-detail-width, 420px);
+    height: var(--home-detail-height, min(946px, calc(100vh - 128px)));
   }
 }
 
@@ -3849,7 +3884,7 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
   }
 
   .signal-detail {
-    height: min(946px, calc(100vh - 128px));
+    height: var(--home-detail-height, min(946px, calc(100vh - 128px)));
   }
 
   .timeline-panel--home {
@@ -4360,7 +4395,7 @@ html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-vis
   box-shadow: 0 12px 34px color-mix(in srgb, var(--text) 7%, transparent);
   filter: saturate(0.92);
   opacity: 0.88;
-  transform: translateY(-36.8438px) scale(0.995);
+  transform: translateY(var(--home-card-y, -36.8438px)) scale(0.995);
 }
 
 html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-visible:not(.is-active) .signal-timeline__headline-text {

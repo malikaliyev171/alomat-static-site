@@ -2381,15 +2381,15 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       html[data-page="home"][data-locale] .signal-reader-gate h1 {
         margin-top: 0;
         margin-bottom: 0;
-        font-size: 2.25rem;
+        font-size: clamp(2.05rem, 2.5vw, 2.25rem);
         line-height: 0.88;
-        min-width: 361px;
+        min-width: var(--home-gate-title-width, 361px);
         min-height: 0;
       }
 
       html[data-page="home"] .signal-reader-gate .lede {
-        width: 314px;
-        max-width: 314px;
+        width: min(314px, calc(var(--home-gate-title-width, 361px) - 24px));
+        max-width: min(314px, calc(var(--home-gate-title-width, 361px) - 24px));
         margin-top: 6px;
         font-size: 0.78rem;
         line-height: 1.45;
@@ -2407,15 +2407,15 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       }
 
       html[data-page="home"] .signal-reader-gate {
-        margin-left: 118px;
+        margin-left: var(--home-gate-margin-left, 118px);
       }
 
       html[data-page="home"] .signal-timeline__item {
-        min-height: 243px;
+        min-height: var(--home-row-min-height, 243px);
       }
 
       html[data-page="home"] .signal-timeline__line {
-        left: 160.69px;
+        left: var(--home-rail-left, 160.69px);
       }
 
       html[data-page="home"] .signal-timeline__day-marker {
@@ -2423,24 +2423,24 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       }
 
       html[data-page="home"] .signal-timeline__day-marker::before {
-        width: 160.69px;
+        width: var(--home-rail-left, 160.69px);
       }
 
       html[data-page="home"] .signal-timeline__node {
-        left: 161.19px;
-        top: 121.5px;
-        width: 20.3px;
-        height: 20.3px;
-        transform: translate(-10.1484px, -10.1484px);
+        left: var(--home-node-left, 161.19px);
+        top: var(--home-row-center, 121.5px);
+        width: var(--home-node-size, 20.3px);
+        height: var(--home-node-size, 20.3px);
+        transform: translate(var(--home-node-shift, -10.1484px), var(--home-node-shift, -10.1484px));
       }
 
       html[data-page="home"] .signal-timeline__headline-button {
-        left: 198.39px;
-        top: 121.5px;
-        width: min(100%, 500px);
-        min-height: 73.0944px;
-        padding: 13.6px 19.4px;
-        transform: translateY(-36.8438px);
+        left: var(--home-card-left, 198.39px);
+        top: var(--home-row-center, 121.5px);
+        width: min(100%, var(--timeline-widget-width, 500px));
+        min-height: var(--home-card-min-height, 73.0944px);
+        padding: var(--home-card-pad-y, 13.6px) var(--home-card-pad-x, 19.4px);
+        transform: translateY(var(--home-card-y, -36.8438px));
       }
 
       html[data-page="home"] .signal-timeline__headline-text {
@@ -2449,10 +2449,10 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
       }
 
       html[data-page="home"] .signal-detail {
-        top: 108px;
-        right: 36px;
-        width: 420px;
-        height: min(946px, calc(100vh - 128px));
+        top: var(--home-detail-top, 108px);
+        right: var(--home-detail-right, 36px);
+        width: var(--home-detail-width, 420px);
+        height: var(--home-detail-height, min(946px, calc(100vh - 128px)));
       }
 
       html[data-page="home"] .signal-detail.has-story .signal-detail__content {
