@@ -89,16 +89,9 @@ npm run build
 
 If the API is unavailable or empty, the generated fallback timeline remains visible.
 
-## Email Sign-in
+## Email Save Panel
 
-The "Name yourself" / "Kutubhona" panel uses the same Worker for email verification. The browser never calls Resend directly:
-
-```text
-POST /api/auth/request-code
-POST /api/auth/verify-code
-```
-
-`request-code` stores a hashed 6 digit code in D1 and sends it with Resend. Codes expire after 10 minutes and are marked as used after a successful verification.
+The "Name yourself" / "Kutubhona" panel only saves the entered email in the browser. It does not send a verification email and does not need Resend for the current flow. After a valid email is submitted, the panel shows `Mail saqlap qolindi`.
 
 ## Deploy
 

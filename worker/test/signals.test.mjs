@@ -529,7 +529,7 @@ test("OPTIONS /api/signals returns CORS preflight headers", async () => {
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
 });
 
-test("POST /api/auth/request-code stores a code and sends it with Resend", async () => {
+test("POST /api/auth/request-code is not exposed for the local email-save flow", async () => {
   const env = testEnv();
   const resend = resendFetchRecorder();
   const response = await handleRequest(
@@ -543,54 +543,25 @@ test("POST /api/auth/request-code stores a code and sends it with Resend", async
     { fetch: resend.fetchImpl },
   );
 
-  assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { ok: true });
-  assert.equal(env.DB.authCodes.length, 1);
-  assert.equal(env.DB.authCodes[0].email, "malik@example.com");
-  assert.equal(env.DB.authCodes[0].expires_at, "2026-07-11T12:10:00.000Z");
-  assert.equal(resend.calls.length, 1);
-  assert.equal(resend.calls[0].url, "https://api.resend.com/emails");
-  assert.equal(resend.calls[0].init.headers.authorization, "Bearer resend-secret-for-tests");
-  assert.deepEqual(JSON.parse(resend.calls[0].init.body).to, ["malik@example.com"]);
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { error: "not found" });
+  assert.equal(env.DB.authCodes.length, 0);
+  assert.equal(resend.calls.length, 0);
 });
 
-test("POST /api/auth/verify-code accepts the latest unused code only once", async () => {
-  const env = testEnv();
-  const resend = resendFetchRecorder();
-  await handleRequest(
-    new Request("https://xabar.alomat.workers.dev/api/auth/request-code", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email: "malik@example.com" }),
-    }),
-    env,
-    new Date("2026-07-11T12:00:00.000Z"),
-    { fetch: resend.fetchImpl },
-  );
-
-  const accepted = await handleRequest(
+test("POST /api/auth/verify-code is not exposed for the local email-save flow", async () => {
+  const response = await handleRequest(
     new Request("https://xabar.alomat.workers.dev/api/auth/verify-code", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: "malik@example.com", code: "123456" }),
     }),
-    env,
+    testEnv(),
     new Date("2026-07-11T12:01:00.000Z"),
   );
-  const reused = await handleRequest(
-    new Request("https://xabar.alomat.workers.dev/api/auth/verify-code", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email: "malik@example.com", code: "123456" }),
-    }),
-    env,
-    new Date("2026-07-11T12:02:00.000Z"),
-  );
 
-  assert.equal(accepted.status, 200);
-  assert.deepEqual(await accepted.json(), { ok: true, email: "malik@example.com" });
-  assert.equal(reused.status, 400);
-  assert.deepEqual(await reused.json(), { error: "invalid or expired code" });
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { error: "not found" });
 });
 
 test("GET / serves static site assets when the Worker has an assets binding", async () => {

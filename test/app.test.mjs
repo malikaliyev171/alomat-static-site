@@ -240,7 +240,7 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     classList: createClassList(),
   };
   const nameSubmitLabel = {
-    textContent: "Send link and code",
+    textContent: "Save email",
   };
   const nameSubmitButton = {
     disabled: false,
@@ -924,7 +924,7 @@ test("live records update the topbar latest time and today count", async () => {
   }
 });
 
-test("name auth form requests an email code and verifies it before saving", async () => {
+test("name auth form saves the email locally without requesting a code", async () => {
   const { environment, cleanup } = await loadAppModule({
     fetchImpl: async () => ({ ok: false, json: async () => ({}) }),
     lang: "en",
@@ -934,61 +934,19 @@ test("name auth form requests an email code and verifies it before saving", asyn
     globalThis.window.__ALOMAT_SIGNALS_API_BASE__ = "https://xabar.alomat.workers.dev";
     globalThis.fetch = async (url, init = {}) => {
       requests.push({ url: String(url), init });
-      if (String(url).endsWith("/api/auth/request-code")) {
-        return { ok: true, json: async () => ({ ok: true }) };
-      }
-      if (String(url).endsWith("/api/auth/verify-code")) {
-        return { ok: true, json: async () => ({ ok: true, email: "malik@example.com" }) };
-      }
       return { ok: false, json: async () => ({}) };
     };
 
     environment.nameInput.value = " Malik@example.COM ";
     await environment.nameForm.submit();
 
-    assert.equal(requests.length, 1);
-    assert.equal(requests[0].url, "https://xabar.alomat.workers.dev/api/auth/request-code");
-    assert.deepEqual(JSON.parse(requests[0].init.body), { email: "malik@example.com" });
-    assert.equal(environment.nameCodeInput.hidden, false);
-    assert.match(environment.nameAuthStatus.textContent, /code/i);
-    assert.equal(environment.nameSubmitLabel.textContent, "Verify code");
-
-    environment.nameCodeInput.value = "123456";
-    await environment.nameForm.submit();
-
-    assert.equal(requests.length, 2);
-    assert.equal(requests[1].url, "https://xabar.alomat.workers.dev/api/auth/verify-code");
-    assert.deepEqual(JSON.parse(requests[1].init.body), {
-      email: "malik@example.com",
-      code: "123456",
-    });
-    assert.equal(globalThis.localStorage.getItem("alomat-name"), "malik@example.com");
-    assert.equal(environment.nameModal.hidden, true);
-  } finally {
-    cleanup();
-  }
-});
-
-test("name auth form keeps the code step closed when email sending fails", async () => {
-  const { environment, cleanup } = await loadAppModule({
-    fetchImpl: async () => ({ ok: false, json: async () => ({}) }),
-    lang: "en",
-  });
-  try {
-    globalThis.window.__ALOMAT_SIGNALS_API_BASE__ = "https://xabar.alomat.workers.dev";
-    globalThis.fetch = async () => ({
-      ok: false,
-      status: 502,
-      json: async () => ({ error: "email could not be sent" }),
-    });
-
-    environment.nameInput.value = "malik@example.com";
-    await environment.nameForm.submit();
-
+    assert.equal(requests.length, 0);
     assert.equal(environment.nameCodeField.hidden, true);
     assert.equal(environment.nameCodeInput.hidden, true);
-    assert.equal(environment.nameSubmitLabel.textContent, "Send link and code");
-    assert.match(environment.nameAuthStatus.textContent, /email could not be sent/i);
+    assert.equal(environment.nameSubmitLabel.textContent, "Save email");
+    assert.equal(globalThis.localStorage.getItem("alomat-name"), "malik@example.com");
+    assert.equal(environment.nameModal.hidden, false);
+    assert.equal(environment.nameAuthStatus.textContent, "Mail saqlap qolindi");
   } finally {
     cleanup();
   }

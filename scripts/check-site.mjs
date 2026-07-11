@@ -628,8 +628,8 @@ if (fs.existsSync(buildPath)) {
   if (!build.includes("data-signal-status-time") || !build.includes("data-signal-status-count")) {
     fail("home topbar must expose status hooks for the latest signal time and today's count");
   }
-  if (!build.includes("data-name-code-input") || !build.includes("data-name-auth-status")) {
-    fail("name auth modal must expose code and status hooks for email verification");
+  if (!build.includes("data-name-auth-status")) {
+    fail("name auth modal must expose a status hook for local email save feedback");
   }
   if (!build.includes("__ALOMAT_SIGNALS_API_BASE__")) {
     fail("build output must expose the configurable signals API base URL");
@@ -677,8 +677,11 @@ if (fs.existsSync(appPath)) {
   if (!app.includes("function replaceTimelineStories(")) {
     fail("app.js must replace fallback timeline cards with live cards");
   }
-  if (!app.includes('postAuthJson("/api/auth/request-code"') || !app.includes('postAuthJson("/api/auth/verify-code"')) {
-    fail("app.js must request and verify email auth codes through the Worker API");
+  if (app.includes("/api/auth/request-code") || app.includes("/api/auth/verify-code")) {
+    fail("app.js must save email locally without requesting auth codes");
+  }
+  if (!app.includes("Mail saqlap qolindi")) {
+    fail("app.js must show the local email saved confirmation");
   }
   if (!app.includes("storyMap = new Map(storyData.map((story) => [String(story.id), story]));")) {
     fail("live timeline replacement must rebuild the detail-panel story map");
@@ -758,7 +761,6 @@ if (!fs.existsSync(previewServerPath)) {
 
 for (const relativePath of [
   "worker/src/index.js",
-  "worker/src/auth.js",
   "worker/src/signals.js",
   "worker/migrations/0001_create_signals.sql",
   "worker/migrations/0002_create_auth_codes.sql",
