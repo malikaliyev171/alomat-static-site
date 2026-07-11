@@ -5481,6 +5481,7 @@ let timelineClosed = false;
 let lastScrollY = window.scrollY || 0;
 let timelineRevealObserver = null;
 let earlierLiveStoryGroups = [];
+let liveTimelineTodayKey = getLocalDayKey(new Date());
 
 document.documentElement.classList.add("js-ready");
 
@@ -5706,6 +5707,22 @@ function getLocalDayKey(value) {
   return `${year}-${month}-${day}`;
 }
 
+function dayKeyToLocalDate(dayKey) {
+  const [year, month, day] = String(dayKey || "").split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getDayDistance(fromDayKey, toDayKey) {
+  const fromDate = dayKeyToLocalDate(fromDayKey);
+  const toDate = dayKeyToLocalDate(toDayKey);
+  if (!fromDate || !toDate) {
+    return 0;
+  }
+  const dayMs = 24 * 60 * 60 * 1000;
+  return Math.max(0, Math.round((fromDate - toDate) / dayMs));
+}
+
 function partitionStoriesByToday(stories, now = new Date()) {
   const todayKey = getLocalDayKey(now);
   if (!todayKey) {
@@ -5730,6 +5747,17 @@ function partitionStoriesByToday(stories, now = new Date()) {
     todayStories: groups.todayStories,
     earlierStoryGroups: Array.from(groups.earlierStoriesByDay.values()),
   };
+}
+
+function formatTimelineDayLabel(dayKey, todayKey = liveTimelineTodayKey) {
+  const distance = getDayDistance(todayKey, dayKey);
+  if (distance <= 0) {
+    return locale === "en" ? "Today" : "Bugun";
+  }
+  if (distance === 1) {
+    return locale === "en" ? "Yesterday" : "Kecha";
+  }
+  return locale === "en" ? `${distance} days ago` : `${distance} kun oldin`;
 }
 
 function formatSignalTime(value) {
@@ -5997,7 +6025,14 @@ function renderLiveTimelineItem(story, index) {
     </article>`;
 }
 
-function insertLiveTimelineStories(stories, startIndex = 0) {
+function renderTimelineDayMarker(label, dayKey = "") {
+  return `
+    <div class="signal-timeline__day-marker" data-live-day-marker="${escapeAttribute(dayKey)}" aria-hidden="true">
+      <span class="signal-timeline__day-pill">${escapeHtml(label)}</span>
+    </div>`;
+}
+
+function insertLiveTimelineStories(stories, startIndex = 0, options = {}) {
   if (!timelineItemsContainer || !stories.length) {
     return;
   }
@@ -6005,7 +6040,9 @@ function insertLiveTimelineStories(stories, startIndex = 0) {
   const dayMarker = timelineItemsContainer.querySelector(".signal-timeline__day-marker");
   const sentinel = timelineItemsContainer.querySelector(".signal-timeline__sentinel");
   const earlierGate = timelineItemsContainer.querySelector(".signal-timeline__earlier-gate");
-  const html = stories.map((story, index) => renderLiveTimelineItem(story, startIndex + index)).join("");
+  const markerHtml =
+    options.dayLabel || options.dayKey ? renderTimelineDayMarker(options.dayLabel, options.dayKey) : "";
+  const html = `${markerHtml}${stories.map((story, index) => renderLiveTimelineItem(story, startIndex + index)).join("")}`;
 
   if (sentinel) {
     sentinel.insertAdjacentHTML("beforebegin", html);
@@ -6045,6 +6082,7 @@ function replaceTimelineStories(todayStories, olderStoryGroups = []) {
   }
 
   timelineItemsContainer.querySelectorAll(".signal-timeline__item").forEach((item) => item.remove());
+  timelineItemsContainer.querySelectorAll("[data-live-day-marker]").forEach((item) => item.remove());
   insertLiveTimelineStories(todayStories);
 
   storyData = [...todayStories];
@@ -6388,7 +6426,11 @@ function initLoadEarlier() {
   loadEarlierButton?.addEventListener("click", () => {
     if (earlierLiveStoryGroups.length) {
       const nextStories = earlierLiveStoryGroups.shift() || [];
-      insertLiveTimelineStories(nextStories, storyData.length);
+      const dayKey = nextStories[0]?.dayKey || "";
+      insertLiveTimelineStories(nextStories, storyData.length, {
+        dayKey,
+        dayLabel: formatTimelineDayLabel(dayKey),
+      });
       storyData = [...storyData, ...nextStories];
       refreshTimelineStoryBindings();
       updateLoadEarlierButton(earlierLiveStoryGroups.length > 0);
@@ -6529,6 +6571,7 @@ async function loadLiveSignals(now = new Date()) {
     }
 
     const { todayStories, earlierStoryGroups } = partitionStoriesByToday(nextStories, now);
+    liveTimelineTodayKey = getLocalDayKey(now);
     updateSignalTopbarStatus(todayStories, nextStories);
     replaceTimelineStories(todayStories, earlierStoryGroups);
   } catch {

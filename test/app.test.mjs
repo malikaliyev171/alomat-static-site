@@ -141,8 +141,15 @@ function parseTimelineItemsFromHtml(html) {
   );
 }
 
+function parseDayLabelsFromHtml(html) {
+  return Array.from(html.matchAll(/<span class="signal-timeline__day-pill">([\s\S]*?)<\/span>/g), ([, label]) =>
+    decodeHtml(label).trim(),
+  );
+}
+
 function createTimelineEnvironment(stories) {
   const state = {
+    dayLabels: [],
     items: stories.map((story) => createTimelineItem({ storyId: story.id, title: story.title.en })),
   };
 
@@ -171,6 +178,7 @@ function createTimelineEnvironment(stories) {
       return [];
     },
     insertAdjacentHTML(position, html) {
+      state.dayLabels.push(...parseDayLabelsFromHtml(html));
       const nextItems = parseTimelineItemsFromHtml(html);
       nextItems.forEach((item) => {
         item.remove = () => detach(item);
@@ -194,6 +202,9 @@ function createTimelineEnvironment(stories) {
     container,
     getTitles() {
       return state.items.map((item) => item.title);
+    },
+    getDayLabels() {
+      return [...state.dayLabels];
     },
     getFirstItem() {
       return state.items[0] ?? null;
@@ -704,7 +715,7 @@ test("live records show today's cards first and reveal one older day per load ea
       image: "https://example.com/fallback.png",
     },
   ];
-  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories });
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories, lang: "uz" });
   try {
     globalThis.fetch = async () => ({
       ok: true,
@@ -751,6 +762,7 @@ test("live records show today's cards first and reveal one older day per load ea
     environment.loadEarlierButton.click();
 
     assert.deepEqual(environment.timeline.getTitles(), ["Today signal", "Yesterday signal", "Second yesterday signal"]);
+    assert.deepEqual(environment.timeline.getDayLabels(), ["Kecha"]);
     assert.equal(environment.loadEarlierButton.disabled, false);
 
     environment.loadEarlierButton.click();
@@ -761,6 +773,7 @@ test("live records show today's cards first and reveal one older day per load ea
       "Second yesterday signal",
       "Two days ago signal",
     ]);
+    assert.deepEqual(environment.timeline.getDayLabels(), ["Kecha", "2 kun oldin"]);
     assert.equal(environment.loadEarlierButton.disabled, true);
   } finally {
     cleanup();
