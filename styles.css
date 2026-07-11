@@ -1337,11 +1337,13 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   top: 0;
   bottom: 0;
   width: 1px;
+  z-index: 0;
   background: rgba(17, 19, 24, 0.08);
 }
 
 .signal-timeline__items {
   position: relative;
+  z-index: 1;
   display: grid;
   gap: 0;
 }
@@ -1929,13 +1931,14 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   border-radius: 8px;
   border: 0.8px solid rgba(22, 29, 39, 0.12);
   box-shadow: 0 30px 90px rgba(5, 7, 13, 0.22);
-  z-index: 120;
+  z-index: 320;
+  isolation: isolate;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 249, 248, 0.985));
+  background: linear-gradient(180deg, rgb(255, 255, 255), rgb(249, 249, 248));
 }
 
 .signal-detail--intro {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 249, 248, 0.985));
+  background: linear-gradient(180deg, rgb(255, 255, 255), rgb(249, 249, 248));
 }
 
 @media (min-width: 1200px) {
@@ -1964,7 +1967,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail.has-story {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.995), rgba(248, 248, 247, 0.99));
+  background: linear-gradient(180deg, rgb(255, 255, 255), rgb(248, 248, 247));
 }
 
 .signal-detail__content {
@@ -4144,9 +4147,9 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
     min-height: 0;
     margin: 0;
     border-radius: 20px 20px 0 0;
-    z-index: 200;
+    z-index: 320;
     box-shadow: 0 -18px 50px rgba(5, 7, 13, 0.28);
-    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    background: var(--bg);
     transform: translateY(calc(100% + 28px));
     pointer-events: none;
     transition: transform 220ms ease;
@@ -4430,12 +4433,17 @@ html:root[data-page="home"][data-theme] .signal-detail--intro,
 html:root[data-page="home"][data-theme] .signal-detail.has-story {
   border-color: color-mix(in srgb, var(--text) 17%, transparent);
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 70%, transparent), transparent 42%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent-soft) 34%, var(--surface-strong)) 0%,
+      color-mix(in srgb, var(--surface-strong) 92%, var(--surface)) 46%,
+      var(--surface-strong) 100%
+    ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--surface-strong) 94%, transparent) 0%,
-      color-mix(in srgb, var(--surface) 92%, transparent) 48%,
-      color-mix(in srgb, var(--bg-end) 88%, transparent) 100%
+      var(--surface-strong) 0%,
+      var(--surface) 48%,
+      var(--bg-end) 100%
     );
   box-shadow: 0 30px 90px color-mix(in srgb, var(--text) 20%, transparent);
 }
@@ -4581,12 +4589,17 @@ html:root[data-page="home"][data-palette][data-theme] .signal-detail--intro,
 html:root[data-page="home"][data-palette][data-theme] .signal-detail.has-story {
   border-color: color-mix(in srgb, var(--text) 17%, transparent);
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 70%, transparent), transparent 42%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent-soft) 34%, var(--surface-strong)) 0%,
+      color-mix(in srgb, var(--surface-strong) 92%, var(--surface)) 46%,
+      var(--surface-strong) 100%
+    ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--surface-strong) 94%, transparent) 0%,
-      color-mix(in srgb, var(--surface) 92%, transparent) 48%,
-      color-mix(in srgb, var(--bg-end) 88%, transparent) 100%
+      var(--surface-strong) 0%,
+      var(--surface) 48%,
+      var(--bg-end) 100%
     );
   box-shadow: 0 30px 90px color-mix(in srgb, var(--text) 20%, transparent);
 }
@@ -4603,7 +4616,8 @@ html:root[data-page="home"][data-palette="7"][data-theme] .signal-detail.has-sto
       180deg,
       color-mix(in srgb, var(--bg-start) 90%, transparent) 0%,
       color-mix(in srgb, var(--bg-end) 92%, transparent) 100%
-    );
+    ),
+    linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
 html:root[data-page="home"][data-palette="4"] .timeline-panel__lens-button,
@@ -4780,7 +4794,7 @@ html[data-page="home"] .site-footer__bottom {
 
 @media (max-width: 780px) {
   html[data-page="home"] .signal-detail {
-    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    background: var(--bg);
   }
 
   html[data-page="home"] .page-home.has-detail-open .signal-detail {

@@ -2604,9 +2604,9 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
           min-height: 0;
           margin: 0;
           border-radius: 20px 20px 0 0;
-          z-index: 200;
+          z-index: 320;
           box-shadow: 0 -18px 50px rgba(5, 7, 13, 0.28);
-          background: color-mix(in srgb, var(--bg) 96%, transparent);
+          background: var(--bg);
           transform: translateY(calc(100% + 28px));
           pointer-events: none;
           transition: transform 220ms ease;
