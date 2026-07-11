@@ -5481,6 +5481,27 @@ function isLinkOnlyLabel(value) {
   return /^[\s\-–—•*]*(?:batafsil|kanal|link|manba|source|channel|more|read more)\s*:?\s*$/i.test(value);
 }
 
+function normalizeOperationalText(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[‘’ʻʼ`]/g, "'");
+}
+
+function isBotOperationalMessage(story) {
+  const text = normalizeOperationalText([story?.title, ...(Array.isArray(story?.summary) ? story.summary : [])].join(" "));
+  return (
+    text.includes("manba matni taqdim etilmagan") ||
+    text.includes("post yozib bo'lmadi") ||
+    text.includes("maqolaning to'liq matnini yuboring") ||
+    text.includes("source text was not provided") ||
+    text.includes("could not write the post")
+  );
+}
+
+function isPublishableSignal(story) {
+  return Boolean(story?.title && Array.isArray(story.summary) && story.summary.length && !isBotOperationalMessage(story));
+}
+
 function normalizeLiveSignalSummary(summary) {
   if (!Array.isArray(summary)) {
     return [];
@@ -6311,7 +6332,7 @@ async function loadLiveSignals(now = new Date()) {
     const signals = Array.isArray(payload?.signals) ? payload.signals : [];
     const nextStories = signals
       .map(normalizeLiveSignal)
-      .filter((story) => story.title && Array.isArray(story.summary) && story.summary.length);
+      .filter(isPublishableSignal);
     if (!nextStories.length) {
       return;
     }
@@ -6337,6 +6358,7 @@ globalThis.__ALOMAT_APP_TEST__ = {
   getLocalDayKey,
   partitionStoriesByToday,
   createBackgroundImageValue,
+  isPublishableSignal,
   loadLiveSignals,
   normalizeLiveSignal,
 };

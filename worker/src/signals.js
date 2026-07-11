@@ -39,6 +39,10 @@ export function normalizeSignalInput(input, nowIso) {
     return { ok: false, status: 400, error: "summary must contain at least one item" };
   }
 
+  if (isBotOperationalMessage({ title, summary })) {
+    return { ok: false, status: 400, error: "signal must be a news item" };
+  }
+
   const createdAt = normalizeCreatedAt(input.created_at, nowIso);
   if (!createdAt) {
     return { ok: false, status: 400, error: "created_at must be a valid ISO date" };
@@ -135,6 +139,23 @@ function stripVisibleLinks(value) {
 
 function isLinkOnlyLabel(value) {
   return /^[\s\-–—•*]*(?:batafsil|kanal|link|manba|source|channel|more|read more)\s*:?\s*$/i.test(value);
+}
+
+function normalizeOperationalText(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[‘’ʻʼ`]/g, "'");
+}
+
+function isBotOperationalMessage(signal) {
+  const text = normalizeOperationalText([signal?.title, ...(Array.isArray(signal?.summary) ? signal.summary : [])].join(" "));
+  return (
+    text.includes("manba matni taqdim etilmagan") ||
+    text.includes("post yozib bo'lmadi") ||
+    text.includes("maqolaning to'liq matnini yuboring") ||
+    text.includes("source text was not provided") ||
+    text.includes("could not write the post")
+  );
 }
 
 function normalizeCreatedAt(value, nowIso) {

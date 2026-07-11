@@ -191,6 +191,26 @@ test("normalizeSignalInput rejects empty summary", () => {
   });
 });
 
+test("normalizeSignalInput rejects bot operational error messages", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "Manba matni taqdim etilmaganligi sababli post yozib bo'lmadi. Iltimos, maqolaning to'liq matnini yuboring.",
+      summary: [
+        "Manba matni taqdim etilmaganligi sababli post yozib bo'lmadi. Iltimos, maqolaning to'liq matnini yuboring.",
+      ],
+      source: "Telegram bot",
+      url: "https://example.com/source",
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.deepEqual(result, {
+    ok: false,
+    status: 400,
+    error: "signal must be a news item",
+  });
+});
+
 test("normalizeSignalInput keeps valid http and https url fields unchanged", () => {
   const result = normalizeSignalInput(
     {

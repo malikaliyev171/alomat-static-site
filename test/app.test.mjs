@@ -511,6 +511,52 @@ test("malformed live summary arrays preserve the fallback timeline", async () =>
   }
 });
 
+test("bot operational error messages do not replace the fallback timeline", async () => {
+  const fallbackStories = [
+    {
+      id: "fallback-1",
+      title: { en: "Fallback story" },
+      summary: { en: ["Static summary"] },
+      source: "Fallback Source",
+      time: "09:00",
+      url: "https://example.com/fallback",
+      image: "https://example.com/fallback.png",
+    },
+  ];
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [
+          {
+            id: 30,
+            title: "Manba matni taqdim etilmaganligi sababli post yozib bo'lmadi. Iltimos, maqolaning to'liq matnini yuboring.",
+            summary: [
+              "Manba matni taqdim etilmaganligi sababli post yozib bo'lmadi. Iltimos, maqolaning to'liq matnini yuboring.",
+            ],
+            source: "Telegram bot",
+            url: "https://example.com/source",
+            created_at: "2026-07-11T08:45:24.610Z",
+          },
+        ],
+      }),
+    });
+
+    await helpers.loadLiveSignals();
+
+    assert.equal(helpers.isPublishableSignal(helpers.normalizeLiveSignal({
+      title: "Manba matni taqdim etilmaganligi sababli post yozib bo'lmadi.",
+      summary: ["Iltimos, maqolaning to'liq matnini yuboring."],
+      source: "Telegram bot",
+    }, 0)), false);
+    assert.deepEqual(environment.timeline.getTitles(), ["Fallback story"]);
+    assert.equal(environment.detailPanel.classList.contains("has-story"), false);
+  } finally {
+    cleanup();
+  }
+});
+
 test("valid live records replace demo cards and hydrate the detail panel", async () => {
   const fallbackStories = [
     {
