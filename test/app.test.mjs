@@ -523,25 +523,30 @@ test("valid live records replace demo cards and hydrate the detail panel", async
   ];
   const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories });
   try {
-    globalThis.fetch = async () => ({
-      ok: true,
-      json: async () => ({
-        signals: [
-          {
-            id: 202,
-            title: "Live signal",
-            summary: ["Live summary paragraph."],
-            source: "Live Source",
-            created_at: "2026-07-11T10:30:00Z",
-            url: "https://example.com/live",
-            image: "https://example.com/live.png",
-          },
-        ],
-      }),
-    });
+    let requestedUrl = "";
+    globalThis.fetch = async (url) => {
+      requestedUrl = String(url);
+      return {
+        ok: true,
+        json: async () => ({
+          signals: [
+            {
+              id: 202,
+              title: "Live signal",
+              summary: ["Live summary paragraph."],
+              source: "Live Source",
+              created_at: "2026-07-11T10:30:00Z",
+              url: "https://example.com/live",
+              image: "https://example.com/live.png",
+            },
+          ],
+        }),
+      };
+    };
 
     await helpers.loadLiveSignals(new Date("2026-07-11T12:00:00Z"));
 
+    assert.match(requestedUrl, /[?&]limit=50\b/);
     assert.deepEqual(environment.timeline.getTitles(), ["Live signal"]);
     assert.match(environment.detailContent.innerHTML, /Live signal/);
     assert.match(environment.detailContent.innerHTML, /Live summary paragraph\./);

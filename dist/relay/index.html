@@ -5368,7 +5368,7 @@ function parseStoryData() {
 
 function getSignalsApiUrl() {
   const base = String(window.__ALOMAT_SIGNALS_API_BASE__ || "").trim();
-  const path = "/api/signals?limit=20";
+  const path = "/api/signals?limit=50";
   if (!base) {
     return path;
   }
