@@ -1891,6 +1891,10 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   text-transform: uppercase;
 }
 
+.name-auth-field[hidden] {
+  display: none;
+}
+
 .name-auth-input {
   width: 100%;
   height: 44px;
@@ -1902,6 +1906,10 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   font: inherit;
   letter-spacing: normal;
   text-transform: none;
+}
+
+.name-auth-input[hidden] {
+  display: none;
 }
 
 .name-auth-input::placeholder {
@@ -6329,8 +6337,9 @@ function initNameForm() {
       }
       resetNameAuthCodeStep();
       closeNameModal();
-    } catch {
-      setNameAuthStatus(labelMap[locale].authError, "error");
+    } catch (error) {
+      const message = error?.message || labelMap[locale].authError;
+      setNameAuthStatus(message, "error");
     } finally {
       setNameAuthLoading(false);
     }

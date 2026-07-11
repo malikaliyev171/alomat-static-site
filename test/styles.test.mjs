@@ -33,3 +33,10 @@ test("home timeline and detail panel use responsive layout tokens", () => {
   assert.doesNotMatch(build, /html\[data-page="home"\] \.signal-timeline__headline-button\s*\{[\s\S]*?width:\s*min\(100%, 500px\);/);
   assert.doesNotMatch(build, /html\[data-page="home"\] \.signal-detail\s*\{[\s\S]*?width:\s*420px;/);
 });
+
+test("auth code controls keep hidden elements hidden despite field display styles", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(styles, /\.name-auth-field\[hidden\][\s\S]*display:\s*none;/);
+  assert.match(styles, /\.name-auth-input\[hidden\][\s\S]*display:\s*none;/);
+});

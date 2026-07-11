@@ -968,3 +968,28 @@ test("name auth form requests an email code and verifies it before saving", asyn
     cleanup();
   }
 });
+
+test("name auth form keeps the code step closed when email sending fails", async () => {
+  const { environment, cleanup } = await loadAppModule({
+    fetchImpl: async () => ({ ok: false, json: async () => ({}) }),
+    lang: "en",
+  });
+  try {
+    globalThis.window.__ALOMAT_SIGNALS_API_BASE__ = "https://xabar.alomat.workers.dev";
+    globalThis.fetch = async () => ({
+      ok: false,
+      status: 502,
+      json: async () => ({ error: "email could not be sent" }),
+    });
+
+    environment.nameInput.value = "malik@example.com";
+    await environment.nameForm.submit();
+
+    assert.equal(environment.nameCodeField.hidden, true);
+    assert.equal(environment.nameCodeInput.hidden, true);
+    assert.equal(environment.nameSubmitLabel.textContent, "Send link and code");
+    assert.match(environment.nameAuthStatus.textContent, /email could not be sent/i);
+  } finally {
+    cleanup();
+  }
+});

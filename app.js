@@ -1050,8 +1050,9 @@ function initNameForm() {
       }
       resetNameAuthCodeStep();
       closeNameModal();
-    } catch {
-      setNameAuthStatus(labelMap[locale].authError, "error");
+    } catch (error) {
+      const message = error?.message || labelMap[locale].authError;
+      setNameAuthStatus(message, "error");
     } finally {
       setNameAuthLoading(false);
     }
