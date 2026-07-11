@@ -678,7 +678,7 @@ if (fs.existsSync(appPath)) {
     fail("app.js must replace fallback timeline cards with live cards");
   }
   if (app.includes("/api/auth/request-code") || app.includes("/api/auth/verify-code")) {
-    fail("app.js must save email locally without requesting auth codes");
+    fail("app.js must store reader details without requesting auth codes");
   }
   if (!app.includes("Mail saqlap qolindi")) {
     fail("app.js must show the local email saved confirmation");

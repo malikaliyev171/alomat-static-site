@@ -14,6 +14,7 @@ class FakeD1 {
   constructor() {
     this.rows = [];
     this.authCodes = [];
+    this.readerProfiles = [];
     this.nextId = 1;
     this.nextAuthCodeId = 1;
   }
@@ -82,6 +83,25 @@ class FakeStatement {
       return { success: true };
     }
 
+    if (this.sql.includes("INSERT INTO reader_profiles")) {
+      const [email, first_name, last_name, created_at, updated_at] = this.values;
+      const existing = this.db.readerProfiles.find((row) => row.email === email);
+      if (existing) {
+        existing.first_name = first_name || existing.first_name;
+        existing.last_name = last_name || existing.last_name;
+        existing.updated_at = updated_at;
+      } else {
+        this.db.readerProfiles.push({
+          email,
+          first_name,
+          last_name,
+          created_at,
+          updated_at,
+        });
+      }
+      return { success: true };
+    }
+
     throw new Error(`Unexpected SQL for run: ${this.sql}`);
   }
 
@@ -117,8 +137,6 @@ function testEnv() {
     ALOMAT_SIGNALS_SECRET: "secret-for-tests",
     TELEGRAM_WEBHOOK_SECRET: "telegram-secret-for-tests",
     AUTH_DEV_CODE: "123456",
-    AUTH_FROM_EMAIL: "onboarding@resend.dev",
-    RESEND_API_KEY: "resend-secret-for-tests",
   };
 }
 
@@ -529,11 +547,11 @@ test("OPTIONS /api/signals returns CORS preflight headers", async () => {
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
 });
 
-test("POST /api/auth/welcome-email sends a code-free welcome email", async () => {
+test("POST /api/readers stores an email without sending mail", async () => {
   const env = testEnv();
   const resend = resendFetchRecorder();
   const response = await handleRequest(
-    new Request("https://alomat.ai/api/auth/welcome-email", {
+    new Request("https://alomat.ai/api/readers", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: " Malik@example.COM " }),
@@ -546,16 +564,59 @@ test("POST /api/auth/welcome-email sends a code-free welcome email", async () =>
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { ok: true });
   assert.equal(env.DB.authCodes.length, 0);
-  assert.equal(resend.calls.length, 1);
-  assert.equal(resend.calls[0].url, "https://api.resend.com/emails");
-  const payload = JSON.parse(resend.calls[0].init.body);
-  assert.equal(payload.to, "malik@example.com");
-  assert.equal(payload.subject, ".alomatga xush kelibsiz");
-  assert.match(payload.text, /kunning eng muhim signallari/i);
-  assert.doesNotMatch(payload.text, /\b\d{6}\b/);
+  assert.equal(resend.calls.length, 0);
+  assert.deepEqual(env.DB.readerProfiles, [
+    {
+      email: "malik@example.com",
+      first_name: "",
+      last_name: "",
+      created_at: "2026-07-11T12:00:00.000Z",
+      updated_at: "2026-07-11T12:00:00.000Z",
+    },
+  ]);
 });
 
-test("POST /api/auth/request-code is not exposed for the welcome email flow", async () => {
+test("POST /api/readers stores first and last name for an existing email", async () => {
+  const env = testEnv();
+  const response = await handleRequest(
+    new Request("https://alomat.ai/api/readers", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "malik@example.com", first_name: " Malik ", last_name: " Aliyev " }),
+    }),
+    env,
+    new Date("2026-07-11T12:01:00.000Z"),
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.deepEqual(env.DB.readerProfiles, [
+    {
+      email: "malik@example.com",
+      first_name: "Malik",
+      last_name: "Aliyev",
+      created_at: "2026-07-11T12:01:00.000Z",
+      updated_at: "2026-07-11T12:01:00.000Z",
+    },
+  ]);
+});
+
+test("POST /api/auth/welcome-email is not exposed for the reader profile flow", async () => {
+  const response = await handleRequest(
+    new Request("https://alomat.ai/api/auth/welcome-email", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "malik@example.com" }),
+    }),
+    testEnv(),
+    new Date("2026-07-11T12:00:00.000Z"),
+  );
+
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { error: "not found" });
+});
+
+test("POST /api/auth/request-code is not exposed for the reader profile flow", async () => {
   const env = testEnv();
   const resend = resendFetchRecorder();
   const response = await handleRequest(

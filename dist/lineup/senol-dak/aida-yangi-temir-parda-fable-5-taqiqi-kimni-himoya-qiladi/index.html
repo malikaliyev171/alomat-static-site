@@ -5157,7 +5157,7 @@ const labelMap = {
     nameSubmit: "Ismni saqlash",
     invalidEmail: "Iltimos, to'g'ri e-pochta kiriting.",
     invalidName: "Iltimos, ism va familiyani kiriting.",
-    emailFailed: "Mail yuborilmadi. Qayta urinib ko'ring.",
+    saveFailed: "Ma'lumot saqlanmadi. Qayta urinib ko'ring.",
   },
   en: {
     palette: "Palette",
@@ -5173,7 +5173,7 @@ const labelMap = {
     nameSubmit: "Save name",
     invalidEmail: "Please enter a valid email.",
     invalidName: "Please enter your first and last name.",
-    emailFailed: "The email could not be sent. Please try again.",
+    saveFailed: "The details could not be saved. Please try again.",
   },
 };
 
@@ -6047,14 +6047,14 @@ function updateReaderIdentity(fullName) {
   }
 }
 
-async function sendWelcomeEmail(email) {
-  const response = await fetch(buildApiUrl("/api/auth/welcome-email"), {
+async function saveReaderProfile(profile) {
+  const response = await fetch(buildApiUrl("/api/readers"), {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify(profile),
   });
   if (!response.ok) {
-    throw new Error("welcome email failed");
+    throw new Error("reader profile save failed");
   }
   return response.json().catch(() => ({}));
 }
@@ -6138,9 +6138,26 @@ function initNameForm() {
       }
 
       const fullName = `${firstName} ${lastName}`;
+      const email = normalizeAuthEmail(storage?.getItem(storageKeys.email) || nameInput?.value);
+      if (!isLikelyEmail(email)) {
+        setNameAuthStep("email");
+        setNameAuthStatus(labelMap[locale].invalidEmail, "error");
+        return;
+      }
+
+      setNameAuthLoading(true);
+      try {
+        await saveReaderProfile({ email, first_name: firstName, last_name: lastName });
+      } catch {
+        setNameAuthLoading(false);
+        setNameAuthStatus(labelMap[locale].saveFailed, "error");
+        return;
+      }
+
       storage?.setItem(storageKeys.name, fullName);
       storage?.removeItem(legacyStorageKeys.name);
       updateReaderIdentity(fullName);
+      setNameAuthLoading(false);
       closeNameModal();
       return;
     }
@@ -6153,10 +6170,10 @@ function initNameForm() {
 
     setNameAuthLoading(true);
     try {
-      await sendWelcomeEmail(email);
+      await saveReaderProfile({ email });
     } catch {
       setNameAuthLoading(false);
-      setNameAuthStatus(labelMap[locale].emailFailed, "error");
+      setNameAuthStatus(labelMap[locale].saveFailed, "error");
       return;
     }
 

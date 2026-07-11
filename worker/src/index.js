@@ -14,8 +14,8 @@ export async function handleRequest(request, env, now = new Date(), services = {
     return handleTelegramWebhook(request, env, now);
   }
 
-  if (url.pathname === "/api/auth/welcome-email") {
-    return handleWelcomeEmail(request, env, services);
+  if (url.pathname === "/api/readers") {
+    return handleReaderProfile(request, env, now);
   }
 
   if (url.pathname !== "/api/signals") {
@@ -126,7 +126,7 @@ async function handleTelegramWebhook(request, env, now) {
   return jsonResponse({ ok: true }, 201);
 }
 
-async function handleWelcomeEmail(request, env, services = {}) {
+async function handleReaderProfile(request, env, now) {
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -154,29 +154,23 @@ async function handleWelcomeEmail(request, env, services = {}) {
     return jsonResponse({ error: "valid email is required" }, 400);
   }
 
-  if (!env.RESEND_API_KEY || !env.AUTH_FROM_EMAIL) {
-    return jsonResponse({ error: "email is not configured" }, 503);
-  }
+  const firstName = normalizeName(body?.first_name);
+  const lastName = normalizeName(body?.last_name);
+  const timestamp = now.toISOString();
 
-  const fetchImpl = services.fetch ?? fetch;
-  const message = welcomeEmailMessage();
-  const response = await fetchImpl("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      from: env.AUTH_FROM_EMAIL,
-      to: email,
-      subject: ".alomatga xush kelibsiz",
-      text: message.text,
-      html: message.html,
-    }),
-  });
-
-  if (!response.ok) {
-    return jsonResponse({ error: "email delivery failed" }, 502);
+  try {
+    await env.DB.prepare(
+      `INSERT INTO reader_profiles (email, first_name, last_name, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(email) DO UPDATE SET
+         first_name = CASE WHEN excluded.first_name != '' THEN excluded.first_name ELSE reader_profiles.first_name END,
+         last_name = CASE WHEN excluded.last_name != '' THEN excluded.last_name ELSE reader_profiles.last_name END,
+         updated_at = excluded.updated_at`,
+    )
+      .bind(email, firstName, lastName, timestamp, timestamp)
+      .run();
+  } catch {
+    return jsonResponse({ error: "storage error" }, 500);
   }
 
   return jsonResponse({ ok: true });
@@ -227,21 +221,6 @@ function normalizeEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
 }
 
-function welcomeEmailMessage() {
-  const text = [
-    "Salom,",
-    "",
-    ".alomatga xush kelibsiz.",
-    "",
-    "Bu yerda kunning eng muhim signallari vaqt, manba va dolzarbligi bilan bitta chiziqda jamlanadi. Har bir signalni ochib, nima o'zgarganini va nima uchun muhimligini tezda ko'rasiz.",
-    "",
-    "Shovqinsiz, qisqa va aniq.",
-    "",
-    ".alomat",
-  ].join("\n");
-
-  return {
-    text,
-    html: `<p>Salom,</p><p><strong>.alomatga xush kelibsiz.</strong></p><p>Bu yerda kunning eng muhim signallari vaqt, manba va dolzarbligi bilan bitta chiziqda jamlanadi. Har bir signalni ochib, nima o'zgarganini va nima uchun muhimligini tezda ko'rasiz.</p><p>Shovqinsiz, qisqa va aniq.</p><p>.alomat</p>`,
-  };
+function normalizeName(value) {
+  return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, 120);
 }

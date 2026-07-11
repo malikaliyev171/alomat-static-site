@@ -984,7 +984,7 @@ test("live records update the topbar latest time and today count", async () => {
   }
 });
 
-test("name auth form sends a welcome email before collecting first and last name", async () => {
+test("name auth form stores reader details without sending email", async () => {
   const requests = [];
   const { environment, cleanup } = await loadAppModule({
     fetchImpl: async (url, init = {}) => {
@@ -1001,7 +1001,7 @@ test("name auth form sends a welcome email before collecting first and last name
     await environment.nameForm.submit();
 
     assert.equal(requests.length, 1);
-    assert.equal(requests[0].url, "https://alomat.ai/api/auth/welcome-email");
+    assert.equal(requests[0].url, "https://alomat.ai/api/readers");
     assert.deepEqual(JSON.parse(requests[0].init.body), { email: "malik@example.com" });
     assert.equal(environment.emailStep.hidden, true);
     assert.equal(environment.profileStep.hidden, false);
@@ -1016,6 +1016,13 @@ test("name auth form sends a welcome email before collecting first and last name
     environment.lastNameInput.value = " Aliyev ";
     await environment.nameForm.submit();
 
+    assert.equal(requests.length, 2);
+    assert.equal(requests[1].url, "https://alomat.ai/api/readers");
+    assert.deepEqual(JSON.parse(requests[1].init.body), {
+      email: "malik@example.com",
+      first_name: "Malik",
+      last_name: "Aliyev",
+    });
     assert.equal(globalThis.localStorage.getItem("alomat-name"), "Malik Aliyev");
     assert.equal(environment.nameModal.hidden, true);
     assert.equal(environment.readerGateAction.hidden, true);

@@ -68,8 +68,6 @@ For local Worker development, create `worker/.dev.vars` with the same bearer tok
 ```text
 ALOMAT_SIGNALS_SECRET=local-secret
 TELEGRAM_WEBHOOK_SECRET=local-telegram-secret
-RESEND_API_KEY=re_example
-AUTH_FROM_EMAIL=onboarding@resend.dev
 ```
 
 Then run the Worker locally:
@@ -93,16 +91,16 @@ If the API is unavailable or empty, the generated fallback timeline remains visi
 
 The "Name yourself" / "Kutubhona" panel has two steps:
 
-1. The reader enters an email address. The Worker sends a code-free Uzbek welcome email through Resend and the panel shows `Mail saqlap qolindi`.
-2. The reader enters first and last name. The panel closes, the gate button is hidden, and the home hero greets the reader by name.
+1. The reader enters an email address. The Worker stores it in D1 and the panel shows `Mail saqlap qolindi`.
+2. The reader enters first and last name. The Worker updates the same D1 profile, the panel closes, the gate button is hidden, and the home hero greets the reader by name.
 
-The welcome email endpoint is:
+The reader profile endpoint is:
 
 ```text
-POST /api/auth/welcome-email
+POST /api/readers
 ```
 
-It requires the Worker secrets `RESEND_API_KEY` and `AUTH_FROM_EMAIL`.
+It does not send email and does not require Resend.
 
 ## Deploy
 
@@ -116,8 +114,6 @@ Deploy the Worker before building the static site against it:
 cd worker
 npx wrangler secret put ALOMAT_SIGNALS_SECRET
 npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
-npx wrangler secret put RESEND_API_KEY
-npx wrangler secret put AUTH_FROM_EMAIL
 ```
 
 4. Apply the remote D1 migrations:
