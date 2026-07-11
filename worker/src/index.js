@@ -1,5 +1,6 @@
 import { jsonResponse, normalizeSignalInput, parseLimit, rowToSignal } from "./signals.js";
 import { normalizeTelegramUpdate } from "./telegram.js";
+import { handleAuthRequest } from "./auth.js";
 
 export default {
   fetch(request, env) {
@@ -7,11 +8,15 @@ export default {
   },
 };
 
-export async function handleRequest(request, env, now = new Date()) {
+export async function handleRequest(request, env, now = new Date(), services = {}) {
   const url = new URL(request.url);
 
   if (url.pathname === "/api/telegram-webhook") {
     return handleTelegramWebhook(request, env, now);
+  }
+
+  if (url.pathname.startsWith("/api/auth/")) {
+    return handleAuthRequest(request, env, now, services);
   }
 
   if (url.pathname !== "/api/signals") {

@@ -33,7 +33,7 @@ Builds the site and validates generated pages, local links, and publishing place
 The home timeline can load live cards from a Cloudflare Worker API. The browser does not call Telegram directly. The existing Telegram bot sends each new signal to the Worker:
 
 ```bash
-curl -X POST "https://habar.alomat.workers.dev/api/signals" \
+curl -X POST "https://xabar.alomat.workers.dev/api/signals" \
   -H "Authorization: Bearer example-secret" \
   -H "Content-Type: application/json" \
   -d '{
@@ -58,7 +58,7 @@ GET /api/signals?limit=20
 Telegram can also send bot updates directly to the Worker webhook:
 
 ```text
-POST https://habar.alomat.workers.dev/api/telegram-webhook
+POST https://xabar.alomat.workers.dev/api/telegram-webhook
 ```
 
 The Worker accepts `message` and `channel_post` updates. The first non-empty line becomes the card title. Remaining non-empty lines become the timeline/detail text. If the message contains an `http` or `https` link, the first link becomes the source URL.
@@ -68,6 +68,8 @@ For local Worker development, create `worker/.dev.vars` with the same bearer tok
 ```text
 ALOMAT_SIGNALS_SECRET=local-secret
 TELEGRAM_WEBHOOK_SECRET=local-telegram-secret
+RESEND_API_KEY=re_example
+AUTH_FROM_EMAIL=onboarding@resend.dev
 ```
 
 Then run the Worker locally:
@@ -81,11 +83,22 @@ npm run dev
 For local static builds that need a remote Worker URL, set:
 
 ```powershell
-$env:ALOMAT_SIGNALS_API_BASE="https://habar.alomat.workers.dev"
+$env:ALOMAT_SIGNALS_API_BASE="https://xabar.alomat.workers.dev"
 npm run build
 ```
 
 If the API is unavailable or empty, the generated fallback timeline remains visible.
+
+## Email Sign-in
+
+The "Name yourself" / "Kutubhona" panel uses the same Worker for email verification. The browser never calls Resend directly:
+
+```text
+POST /api/auth/request-code
+POST /api/auth/verify-code
+```
+
+`request-code` stores a hashed 6 digit code in D1 and sends it with Resend. Codes expire after 10 minutes and are marked as used after a successful verification.
 
 ## Deploy
 
@@ -99,6 +112,8 @@ Deploy the Worker before building the static site against it:
 cd worker
 npx wrangler secret put ALOMAT_SIGNALS_SECRET
 npx wrangler secret put TELEGRAM_WEBHOOK_SECRET
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put AUTH_FROM_EMAIL
 ```
 
 4. Apply the remote D1 migrations:
@@ -119,7 +134,7 @@ npm run deploy
 $env:TELEGRAM_BOT_TOKEN="<bot-token>"
 $env:TELEGRAM_WEBHOOK_SECRET="<same-secret-used-above>"
 $body = @{
-  url = "https://habar.alomat.workers.dev/api/telegram-webhook"
+  url = "https://xabar.alomat.workers.dev/api/telegram-webhook"
   secret_token = $env:TELEGRAM_WEBHOOK_SECRET
   allowed_updates = @("message", "channel_post")
   drop_pending_updates = $false
@@ -135,7 +150,7 @@ Invoke-RestMethod `
 
 ```powershell
 cd ..
-$env:ALOMAT_SIGNALS_API_BASE="https://habar.alomat.workers.dev"
+$env:ALOMAT_SIGNALS_API_BASE="https://xabar.alomat.workers.dev"
 npm run build
 ```
 

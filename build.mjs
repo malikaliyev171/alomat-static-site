@@ -593,6 +593,7 @@ const locales = {
       authTitle: "Signallaringizni saqlang.",
       authBody: "Saqlagan va yoqtirgan signallaringiz .alomat hisobingizda tursin.",
       authEmail: "E-pochta",
+      authCode: "Tasdiqlash kodi",
       authSubmit: "Havola va kod yuborish",
       close: "Yopish",
       loadEarlier: "Oldingi kunlarni yuklash",
@@ -937,6 +938,7 @@ const locales = {
       authTitle: "Save your signals.",
       authBody: "Keep your saved and liked signals in your .alomat account.",
       authEmail: "Email",
+      authCode: "Verification code",
       authSubmit: "Send link and code",
       close: "Close",
       loadEarlier: "Load earlier days",
@@ -1579,12 +1581,29 @@ function renderHome(localeKey, currentFile) {
                     aria-label="${text(locale.ui.authEmail)}"
                   />
                 </label>
-                <button type="submit" class="name-auth-primary-button">
+                <label class="name-auth-field name-auth-field--code" for="reader-code" data-name-code-field hidden>
+                  <span>${text(locale.ui.authCode)}</span>
+                  <input
+                    id="reader-code"
+                    class="name-auth-input"
+                    data-name-code-input
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    placeholder="123456"
+                    aria-label="${text(locale.ui.authCode)}"
+                    hidden
+                  />
+                </label>
+                <p class="name-auth-status" data-name-auth-status hidden></p>
+                <button type="submit" class="name-auth-primary-button" data-name-auth-submit>
                   <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
                     <path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"></path>
                     <path fill="none" stroke="currentColor" stroke-width="2" d="m4 7 8 6 8-6"></path>
                   </svg>
-                  <span>${text(locale.ui.authSubmit)}</span>
+                  <span data-name-submit-label>${text(locale.ui.authSubmit)}</span>
                 </button>
               </form>
             </div>

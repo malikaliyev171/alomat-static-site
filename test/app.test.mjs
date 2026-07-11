@@ -218,6 +218,60 @@ function createTimelineEnvironment(stories) {
 function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
   const timeline = createTimelineEnvironment(stories);
   const storyDataElement = { textContent: JSON.stringify(stories) };
+  const storage = new Map();
+  const createInput = () => ({
+    hidden: false,
+    value: "",
+    disabled: false,
+    addEventListener() {},
+    blur() {},
+    focus() {},
+  });
+  const nameInput = createInput();
+  const nameCodeInput = createInput();
+  nameCodeInput.hidden = true;
+  const nameCodeField = {
+    hidden: true,
+  };
+  const nameAuthStatus = {
+    hidden: true,
+    dataset: {},
+    textContent: "",
+    classList: createClassList(),
+  };
+  const nameSubmitLabel = {
+    textContent: "Send link and code",
+  };
+  const nameSubmitButton = {
+    disabled: false,
+    querySelector(selector) {
+      return selector === "[data-name-submit-label]" ? nameSubmitLabel : null;
+    },
+  };
+  const nameForm = {
+    listeners: {},
+    addEventListener(type, listener) {
+      this.listeners[type] = listener;
+    },
+    async submit() {
+      await this.listeners.submit?.({ preventDefault() {} });
+    },
+    querySelector(selector) {
+      if (selector === "[data-name-auth-submit]") {
+        return nameSubmitButton;
+      }
+      if (selector === "[data-name-submit-label]") {
+        return nameSubmitLabel;
+      }
+      return null;
+    },
+  };
+  const nameModal = {
+    hidden: false,
+    parentElement: null,
+    classList: createClassList(),
+    addEventListener() {},
+  };
   const loadEarlierButton = {
     disabled: false,
     hidden: false,
@@ -281,7 +335,9 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
   const body = {
     dataset: {},
     classList: createClassList(),
-    appendChild() {},
+    appendChild(node) {
+      node.parentElement = this;
+    },
   };
   const documentStub = {
     body,
@@ -307,6 +363,30 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
       }
       if (selector === "[data-signal-status-count]") {
         return signalStatusCount;
+      }
+      if (selector === "[data-name-form]") {
+        return nameForm;
+      }
+      if (selector === "[data-name-input]") {
+        return nameInput;
+      }
+      if (selector === "[data-name-code-input]") {
+        return nameCodeInput;
+      }
+      if (selector === "[data-name-code-field]") {
+        return nameCodeField;
+      }
+      if (selector === "[data-name-auth-status]") {
+        return nameAuthStatus;
+      }
+      if (selector === "[data-name-auth-submit]") {
+        return nameSubmitButton;
+      }
+      if (selector === "[data-name-submit-label]") {
+        return nameSubmitLabel;
+      }
+      if (selector === "[data-name-modal]") {
+        return nameModal;
       }
       return null;
     },
@@ -339,11 +419,15 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     cancelAnimationFrame() {},
     scrollTo() {},
     localStorage: {
-      getItem() {
-        return null;
+      getItem(key) {
+        return storage.get(key) ?? null;
       },
-      setItem() {},
-      removeItem() {},
+      setItem(key, value) {
+        storage.set(key, String(value));
+      },
+      removeItem(key) {
+        storage.delete(key);
+      },
     },
     Intl,
   };
@@ -353,6 +437,14 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     detailPanel,
     detailVisual,
     loadEarlierButton,
+    nameAuthStatus,
+    nameCodeField,
+    nameCodeInput,
+    nameForm,
+    nameInput,
+    nameModal,
+    nameSubmitButton,
+    nameSubmitLabel,
     pageMain,
     signalStatusCount,
     signalStatusTime,
@@ -827,6 +919,51 @@ test("live records update the topbar latest time and today count", async () => {
 
     assert.equal(environment.signalStatusTime.textContent, "12:45");
     assert.equal(environment.signalStatusCount.textContent, "2 signal");
+  } finally {
+    cleanup();
+  }
+});
+
+test("name auth form requests an email code and verifies it before saving", async () => {
+  const { environment, cleanup } = await loadAppModule({
+    fetchImpl: async () => ({ ok: false, json: async () => ({}) }),
+    lang: "en",
+  });
+  try {
+    const requests = [];
+    globalThis.window.__ALOMAT_SIGNALS_API_BASE__ = "https://xabar.alomat.workers.dev";
+    globalThis.fetch = async (url, init = {}) => {
+      requests.push({ url: String(url), init });
+      if (String(url).endsWith("/api/auth/request-code")) {
+        return { ok: true, json: async () => ({ ok: true }) };
+      }
+      if (String(url).endsWith("/api/auth/verify-code")) {
+        return { ok: true, json: async () => ({ ok: true, email: "malik@example.com" }) };
+      }
+      return { ok: false, json: async () => ({}) };
+    };
+
+    environment.nameInput.value = " Malik@example.COM ";
+    await environment.nameForm.submit();
+
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].url, "https://xabar.alomat.workers.dev/api/auth/request-code");
+    assert.deepEqual(JSON.parse(requests[0].init.body), { email: "malik@example.com" });
+    assert.equal(environment.nameCodeInput.hidden, false);
+    assert.match(environment.nameAuthStatus.textContent, /code/i);
+    assert.equal(environment.nameSubmitLabel.textContent, "Verify code");
+
+    environment.nameCodeInput.value = "123456";
+    await environment.nameForm.submit();
+
+    assert.equal(requests.length, 2);
+    assert.equal(requests[1].url, "https://xabar.alomat.workers.dev/api/auth/verify-code");
+    assert.deepEqual(JSON.parse(requests[1].init.body), {
+      email: "malik@example.com",
+      code: "123456",
+    });
+    assert.equal(globalThis.localStorage.getItem("alomat-name"), "malik@example.com");
+    assert.equal(environment.nameModal.hidden, true);
   } finally {
     cleanup();
   }

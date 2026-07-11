@@ -13,7 +13,9 @@ import { normalizeTelegramUpdate } from "../src/telegram.js";
 class FakeD1 {
   constructor() {
     this.rows = [];
+    this.authCodes = [];
     this.nextId = 1;
+    this.nextAuthCodeId = 1;
   }
 
   prepare(sql) {
@@ -57,6 +59,29 @@ class FakeStatement {
       return { success: true };
     }
 
+    if (this.sql.includes("INSERT INTO auth_codes")) {
+      const [email, code_hash, expires_at, created_at] = this.values;
+      this.db.authCodes.push({
+        id: this.db.nextAuthCodeId,
+        email,
+        code_hash,
+        expires_at,
+        created_at,
+        used_at: null,
+      });
+      this.db.nextAuthCodeId += 1;
+      return { success: true };
+    }
+
+    if (this.sql.includes("UPDATE auth_codes")) {
+      const [used_at, id] = this.values;
+      const row = this.db.authCodes.find((entry) => entry.id === id);
+      if (row) {
+        row.used_at = used_at;
+      }
+      return { success: true };
+    }
+
     throw new Error(`Unexpected SQL for run: ${this.sql}`);
   }
 
@@ -71,6 +96,19 @@ class FakeStatement {
 
     throw new Error(`Unexpected SQL for all: ${this.sql}`);
   }
+
+  async first() {
+    if (this.sql.includes("FROM auth_codes")) {
+      const [email] = this.values;
+      return (
+        [...this.db.authCodes]
+          .filter((row) => row.email === email && !row.used_at)
+          .sort((left, right) => right.created_at.localeCompare(left.created_at) || right.id - left.id)[0] ?? null
+      );
+    }
+
+    throw new Error(`Unexpected SQL for first: ${this.sql}`);
+  }
 }
 
 function testEnv() {
@@ -78,7 +116,23 @@ function testEnv() {
     DB: new FakeD1(),
     ALOMAT_SIGNALS_SECRET: "secret-for-tests",
     TELEGRAM_WEBHOOK_SECRET: "telegram-secret-for-tests",
+    AUTH_DEV_CODE: "123456",
+    AUTH_FROM_EMAIL: "onboarding@resend.dev",
+    RESEND_API_KEY: "resend-secret-for-tests",
   };
+}
+
+function resendFetchRecorder() {
+  const calls = [];
+  const fetchImpl = async (url, init = {}) => {
+    calls.push({ url: String(url), init });
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ id: "email-test-id" }),
+    };
+  };
+  return { calls, fetchImpl };
 }
 
 test("normalizeTelegramUpdate converts a text message to signal input", () => {
@@ -308,7 +362,7 @@ test("jsonResponse returns JSON with CORS headers", async () => {
 
 test("POST /api/signals rejects missing bearer token", async () => {
   const response = await handleRequest(
-    new Request("https://habar.alomat.workers.dev/api/signals", {
+    new Request("https://xabar.alomat.workers.dev/api/signals", {
       method: "POST",
       body: JSON.stringify({ title: "Title", summary: ["Summary"] }),
     }),
@@ -323,7 +377,7 @@ test("POST /api/signals rejects missing bearer token", async () => {
 test("POST /api/signals inserts a valid signal", async () => {
   const env = testEnv();
   const response = await handleRequest(
-    new Request("https://habar.alomat.workers.dev/api/signals", {
+    new Request("https://xabar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: {
         authorization: "Bearer secret-for-tests",
@@ -348,7 +402,7 @@ test("POST /api/signals inserts a valid signal", async () => {
 
 test("POST /api/telegram-webhook rejects missing Telegram secret", async () => {
   const response = await handleRequest(
-    new Request("https://habar.alomat.workers.dev/api/telegram-webhook", {
+    new Request("https://xabar.alomat.workers.dev/api/telegram-webhook", {
       method: "POST",
       body: JSON.stringify({ update_id: 10 }),
     }),
@@ -363,7 +417,7 @@ test("POST /api/telegram-webhook rejects missing Telegram secret", async () => {
 test("POST /api/telegram-webhook inserts a Telegram message", async () => {
   const env = testEnv();
   const response = await handleRequest(
-    new Request("https://habar.alomat.workers.dev/api/telegram-webhook", {
+    new Request("https://xabar.alomat.workers.dev/api/telegram-webhook", {
       method: "POST",
       headers: { "x-telegram-bot-api-secret-token": "telegram-secret-for-tests" },
       body: JSON.stringify({
@@ -390,7 +444,7 @@ test("POST /api/telegram-webhook inserts a Telegram message", async () => {
 test("POST /api/telegram-webhook treats duplicate Telegram retries as ok", async () => {
   const env = testEnv();
   const request = () =>
-    new Request("https://habar.alomat.workers.dev/api/telegram-webhook", {
+    new Request("https://xabar.alomat.workers.dev/api/telegram-webhook", {
       method: "POST",
       headers: { "x-telegram-bot-api-secret-token": "telegram-secret-for-tests" },
       body: JSON.stringify({
@@ -421,7 +475,7 @@ test("POST /api/signals rejects duplicate external_id", async () => {
   };
 
   await handleRequest(
-    new Request("https://habar.alomat.workers.dev/api/signals", {
+    new Request("https://xabar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: { authorization: "Bearer secret-for-tests" },
       body: JSON.stringify(requestBody),
@@ -430,7 +484,7 @@ test("POST /api/signals rejects duplicate external_id", async () => {
     new Date("2026-07-10T14:00:00.000Z"),
   );
   const duplicate = await handleRequest(
-    new Request("https://habar.alomat.workers.dev/api/signals", {
+    new Request("https://xabar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: { authorization: "Bearer secret-for-tests" },
       body: JSON.stringify(requestBody),
@@ -450,7 +504,7 @@ test("GET /api/signals returns newest-first rows", async () => {
     ["Newer", "2026-07-10T12:00:00.000Z"],
   ]) {
     await handleRequest(
-      new Request("https://habar.alomat.workers.dev/api/signals", {
+      new Request("https://xabar.alomat.workers.dev/api/signals", {
         method: "POST",
         headers: { authorization: "Bearer secret-for-tests" },
         body: JSON.stringify({ title, summary: [`${title} summary`], created_at }),
@@ -460,7 +514,7 @@ test("GET /api/signals returns newest-first rows", async () => {
     );
   }
 
-  const response = await handleRequest(new Request("https://habar.alomat.workers.dev/api/signals?limit=1"), env);
+  const response = await handleRequest(new Request("https://xabar.alomat.workers.dev/api/signals?limit=1"), env);
   const body = await response.json();
 
   assert.equal(response.status, 200);
@@ -469,8 +523,72 @@ test("GET /api/signals returns newest-first rows", async () => {
 });
 
 test("OPTIONS /api/signals returns CORS preflight headers", async () => {
-  const response = await handleRequest(new Request("https://habar.alomat.workers.dev/api/signals", { method: "OPTIONS" }), testEnv());
+  const response = await handleRequest(new Request("https://xabar.alomat.workers.dev/api/signals", { method: "OPTIONS" }), testEnv());
 
   assert.equal(response.status, 204);
   assert.equal(response.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
+});
+
+test("POST /api/auth/request-code stores a code and sends it with Resend", async () => {
+  const env = testEnv();
+  const resend = resendFetchRecorder();
+  const response = await handleRequest(
+    new Request("https://xabar.alomat.workers.dev/api/auth/request-code", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: " Malik@example.COM " }),
+    }),
+    env,
+    new Date("2026-07-11T12:00:00.000Z"),
+    { fetch: resend.fetchImpl },
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.equal(env.DB.authCodes.length, 1);
+  assert.equal(env.DB.authCodes[0].email, "malik@example.com");
+  assert.equal(env.DB.authCodes[0].expires_at, "2026-07-11T12:10:00.000Z");
+  assert.equal(resend.calls.length, 1);
+  assert.equal(resend.calls[0].url, "https://api.resend.com/emails");
+  assert.equal(resend.calls[0].init.headers.authorization, "Bearer resend-secret-for-tests");
+  assert.deepEqual(JSON.parse(resend.calls[0].init.body).to, ["malik@example.com"]);
+});
+
+test("POST /api/auth/verify-code accepts the latest unused code only once", async () => {
+  const env = testEnv();
+  const resend = resendFetchRecorder();
+  await handleRequest(
+    new Request("https://xabar.alomat.workers.dev/api/auth/request-code", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "malik@example.com" }),
+    }),
+    env,
+    new Date("2026-07-11T12:00:00.000Z"),
+    { fetch: resend.fetchImpl },
+  );
+
+  const accepted = await handleRequest(
+    new Request("https://xabar.alomat.workers.dev/api/auth/verify-code", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "malik@example.com", code: "123456" }),
+    }),
+    env,
+    new Date("2026-07-11T12:01:00.000Z"),
+  );
+  const reused = await handleRequest(
+    new Request("https://xabar.alomat.workers.dev/api/auth/verify-code", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "malik@example.com", code: "123456" }),
+    }),
+    env,
+    new Date("2026-07-11T12:02:00.000Z"),
+  );
+
+  assert.equal(accepted.status, 200);
+  assert.deepEqual(await accepted.json(), { ok: true, email: "malik@example.com" });
+  assert.equal(reused.status, 400);
+  assert.deepEqual(await reused.json(), { error: "invalid or expired code" });
 });

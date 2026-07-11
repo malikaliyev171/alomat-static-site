@@ -1903,6 +1903,22 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   outline-offset: 2px;
 }
 
+.name-auth-status {
+  margin: -2px 0 0;
+  color: color-mix(in srgb, var(--text) 68%, transparent);
+  font-size: 0.78rem;
+  font-weight: 720;
+  line-height: 1.4;
+}
+
+.name-auth-status[data-state="error"] {
+  color: var(--text);
+}
+
+.name-auth-status[hidden] {
+  display: none;
+}
+
 .name-auth-primary-button,
 .button--primary {
   border-color: transparent;

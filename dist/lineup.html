@@ -1913,6 +1913,22 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   outline-offset: 2px;
 }
 
+.name-auth-status {
+  margin: -2px 0 0;
+  color: color-mix(in srgb, var(--text) 68%, transparent);
+  font-size: 0.78rem;
+  font-weight: 720;
+  line-height: 1.4;
+}
+
+.name-auth-status[data-state="error"] {
+  color: var(--text);
+}
+
+.name-auth-status[hidden] {
+  display: none;
+}
+
 .name-auth-primary-button,
 .button--primary {
   border-color: transparent;
@@ -5283,7 +5299,7 @@ html[data-page="home"] .site-footer__bottom {
     </div>
   </footer>
     </div>
-    <script>window.__ALOMAT_SIGNALS_API_BASE__="https://habar.alomat.workers.dev";</script>
+    <script>window.__ALOMAT_SIGNALS_API_BASE__="https://xabar.alomat.workers.dev";</script>
     <script data-alomat-app>
 const paletteOrder = ["0", "2", "4", "5", "6", "7"];
 const paletteThemeMap = {
@@ -5309,6 +5325,11 @@ const themeButtons = Array.from(document.querySelectorAll("[data-palette-toggle]
 const themeOptions = Array.from(document.querySelectorAll("[data-palette-option]"));
 const nameForm = document.querySelector("[data-name-form]");
 const nameInput = document.querySelector("[data-name-input]");
+const nameCodeField = document.querySelector("[data-name-code-field]");
+const nameCodeInput = document.querySelector("[data-name-code-input]");
+const nameAuthStatus = document.querySelector("[data-name-auth-status]");
+const nameAuthSubmit = document.querySelector("[data-name-auth-submit]");
+const nameSubmitLabel = document.querySelector("[data-name-submit-label]");
 const nameDisplay = document.querySelector("[data-name-display]");
 const readerGateAction = document.querySelector(".signal-reader-gate__action");
 const nameModal = document.querySelector("[data-name-modal]");
@@ -5335,6 +5356,8 @@ let lastScrollY = window.scrollY || 0;
 let timelineRevealObserver = null;
 let earlierLiveStoryGroups = [];
 let liveTimelineTodayKey = getLocalDayKey(new Date());
+let pendingAuthEmail = "";
+let authRequestInFlight = false;
 
 document.documentElement.classList.add("js-ready");
 
@@ -5355,6 +5378,12 @@ const labelMap = {
     greeting: (name) => `Salom, ${name}. Ismingiz saqlandi.`,
     hint: (name) => `Salom, ${name}. Saqlashlar va yoqtirishlar shu nom bilan bog‘langan.`,
     reveal: "Oldingi kunlar ochildi",
+    codeSent: "Kod yuborildi. E-pochtangizni tekshiring.",
+    requestSubmit: "Havola va kod yuborish",
+    verifySubmit: "Kodni tasdiqlash",
+    invalidEmail: "Iltimos, to'g'ri e-pochta kiriting.",
+    invalidCode: "6 xonali kodni kiriting.",
+    authError: "Hozir kodni tekshirib bo'lmadi. Qayta urinib ko'ring.",
   },
   en: {
     palette: "Palette",
@@ -5362,6 +5391,12 @@ const labelMap = {
     greeting: (name) => `Hello, ${name}. Your name is saved.`,
     hint: (name) => `Hello, ${name}. Saves and likes are tied to this name.`,
     reveal: "Earlier days revealed",
+    codeSent: "Code sent. Check your email.",
+    requestSubmit: "Send link and code",
+    verifySubmit: "Verify code",
+    invalidEmail: "Please enter a valid email.",
+    invalidCode: "Enter the 6 digit code.",
+    authError: "We could not verify the code right now. Try again.",
   },
 };
 
@@ -5425,6 +5460,14 @@ function parseStoryData() {
 function getSignalsApiUrl() {
   const base = String(window.__ALOMAT_SIGNALS_API_BASE__ || "").trim();
   const path = "/api/signals?limit=50";
+  if (!base) {
+    return path;
+  }
+  return `${base.replace(/\/$/, "")}${path}`;
+}
+
+function getAuthApiUrl(path) {
+  const base = String(window.__ALOMAT_SIGNALS_API_BASE__ || "").trim();
   if (!base) {
     return path;
   }
@@ -6177,6 +6220,75 @@ function updateNameDisplay(name) {
   nameDisplay.textContent = labelMap[locale].hint(trimmed);
 }
 
+function normalizeAuthEmail(value) {
+  return String(value ?? "").trim().toLowerCase();
+}
+
+function isLikelyEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function setNameAuthStatus(message, state = "info") {
+  if (!nameAuthStatus) {
+    return;
+  }
+  nameAuthStatus.hidden = !message;
+  nameAuthStatus.textContent = message;
+  nameAuthStatus.dataset.state = state;
+}
+
+function setNameAuthLoading(isLoading) {
+  authRequestInFlight = isLoading;
+  if (nameAuthSubmit) {
+    nameAuthSubmit.disabled = isLoading;
+  }
+  if (nameInput) {
+    nameInput.disabled = isLoading;
+  }
+  if (nameCodeInput) {
+    nameCodeInput.disabled = isLoading;
+  }
+}
+
+function resetNameAuthCodeStep() {
+  pendingAuthEmail = "";
+  if (nameCodeInput) {
+    nameCodeInput.value = "";
+    nameCodeInput.hidden = true;
+  }
+  if (nameCodeField) {
+    nameCodeField.hidden = true;
+  }
+  if (nameSubmitLabel) {
+    nameSubmitLabel.textContent = labelMap[locale].requestSubmit;
+  }
+  setNameAuthStatus("");
+}
+
+async function postAuthJson(path, body) {
+  const response = await fetch(getAuthApiUrl(path), {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  let payload = {};
+  try {
+    payload = await response.json();
+  } catch {
+    payload = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(payload?.error || "auth request failed");
+  }
+
+  return payload;
+}
+
 function initNameForm() {
   const storage = safeStorage();
   const savedName = storage?.getItem(storageKeys.name) ?? storage?.getItem(legacyStorageKeys.name);
@@ -6189,28 +6301,70 @@ function initNameForm() {
     }
   }
 
-  nameForm?.addEventListener("submit", (event) => {
+  nameForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const value = nameInput?.value?.trim();
-    if (!value) {
-      updateNameDisplay("");
+    if (authRequestInFlight) {
       return;
     }
 
-    storage?.setItem(storageKeys.name, value);
-    storage?.removeItem(legacyStorageKeys.name);
-    updateNameDisplay(value);
-    if (nameDisplay) {
-      nameDisplay.textContent = labelMap[locale].greeting(value);
+    const email = normalizeAuthEmail(nameInput?.value);
+    if (!isLikelyEmail(email)) {
+      updateNameDisplay("");
+      setNameAuthStatus(labelMap[locale].invalidEmail, "error");
+      return;
     }
-    if (nameInput) {
-      nameInput.blur();
+
+    try {
+      setNameAuthLoading(true);
+      if (!pendingAuthEmail || nameCodeInput?.hidden || pendingAuthEmail !== email) {
+        await postAuthJson("/api/auth/request-code", { email });
+        pendingAuthEmail = email;
+        if (nameCodeInput) {
+          nameCodeInput.hidden = false;
+          nameCodeInput.focus?.({ preventScroll: true });
+        }
+        if (nameCodeField) {
+          nameCodeField.hidden = false;
+        }
+        if (nameSubmitLabel) {
+          nameSubmitLabel.textContent = labelMap[locale].verifySubmit;
+        }
+        setNameAuthStatus(labelMap[locale].codeSent, "success");
+        return;
+      }
+
+      const code = String(nameCodeInput?.value ?? "").trim();
+      if (!/^\d{6}$/.test(code)) {
+        setNameAuthStatus(labelMap[locale].invalidCode, "error");
+        return;
+      }
+
+      const verified = await postAuthJson("/api/auth/verify-code", { email: pendingAuthEmail, code });
+      const verifiedEmail = normalizeAuthEmail(verified.email || pendingAuthEmail).toLowerCase();
+      storage?.setItem(storageKeys.name, verifiedEmail);
+      storage?.removeItem(legacyStorageKeys.name);
+      updateNameDisplay(verifiedEmail);
+      if (nameDisplay) {
+        nameDisplay.textContent = labelMap[locale].greeting(verifiedEmail);
+      }
+      if (nameInput) {
+        nameInput.value = verifiedEmail;
+        nameInput.blur();
+      }
+      resetNameAuthCodeStep();
+      closeNameModal();
+    } catch {
+      setNameAuthStatus(labelMap[locale].authError, "error");
+    } finally {
+      setNameAuthLoading(false);
     }
-    closeNameModal();
   });
 
   nameInput?.addEventListener("input", () => {
     updateNameDisplay(nameInput.value);
+    if (pendingAuthEmail && normalizeAuthEmail(nameInput.value) !== pendingAuthEmail) {
+      resetNameAuthCodeStep();
+    }
   });
 }
 
@@ -6236,6 +6390,7 @@ function closeNameModal() {
     return;
   }
 
+  resetNameAuthCodeStep();
   nameModal.classList.remove("is-open");
   nameModal.hidden = true;
   document.documentElement.classList.remove("modal-open");
