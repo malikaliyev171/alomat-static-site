@@ -159,3 +159,29 @@ test("lineup article topbar uses the same neutral signal chrome background", () 
     /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?background:\s*color-mix\(in srgb, var\(--bg-start\) 92%, transparent\);[\s\S]*?box-shadow:\s*none;/,
   );
 });
+
+test("signed-in reader sigil derives its colors from the active palette", () => {
+  const styles = readProjectFile("styles.css");
+  const axis = cssBlock(styles, ".signal-reader-gate__axis");
+  const sigil = cssBlock(styles, ".signal-reader-gate__sigil");
+
+  assert.match(axis, /color:\s*var\(--text\);/);
+  assert.match(
+    sigil,
+    /background:\s*color-mix\(in srgb, var\(--bg\) 88%, var\(--surface\) 12%\);/,
+  );
+  assert.doesNotMatch(sigil, /rgba\(255, 255, 255|white 12%/);
+});
+
+test("story detail collapses an empty action status to enlarge the body", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(
+    styles,
+    /\.timeline-panel__action-status:empty\s*\{[\s\S]*?display:\s*none;/,
+  );
+  assert.match(
+    cssBlock(styles, ".signal-detail.has-story .signal-detail__content"),
+    /padding-bottom:\s*6px;/,
+  );
+});
