@@ -60,6 +60,14 @@ test("library page uses the home signal archive layout instead of generic cards"
     styles,
     /html:root:is\(\[data-page="home"\], \[data-page="library"\]\).*\.site-footer__top/,
   );
+  assert.match(
+    styles,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette="2"\]\[data-theme="light"\] body::before/,
+  );
+  assert.match(
+    styles,
+    /html:is\(\[data-page="home"\], \[data-page="library"\]\) body::before\s*\{[\s\S]*?opacity:\s*0\.035;/,
+  );
   const libraryHeroBlocks = Array.from(
     styles.matchAll(/^\.library-hero h1\s*\{[\s\S]*?\n\}/gm),
     (match) => match[0],
