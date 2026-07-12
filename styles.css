@@ -2358,6 +2358,18 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   margin-bottom: 0;
 }
 
+.timeline-panel__inline-link {
+  color: inherit;
+  font-weight: 650;
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.timeline-panel__inline-link:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+}
+
 .timeline-panel__actions {
   justify-content: space-between;
   flex-wrap: wrap;

@@ -50,7 +50,7 @@ export async function handleRequest(request, env, now = new Date(), services = {
 async function listSignals(url, env) {
   const limit = parseLimit(url.searchParams.get("limit"));
   const result = await env.DB.prepare(
-    `SELECT id, external_id, title, summary_json, source, url, category, image, language, created_at
+    `SELECT id, external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at
      FROM signals
      ORDER BY created_at DESC, id DESC
      LIMIT ?`,
@@ -179,13 +179,14 @@ async function handleReaderProfile(request, env, now) {
 async function insertSignal(env, signal) {
   try {
     await env.DB.prepare(
-      `INSERT INTO signals (external_id, title, summary_json, source, url, category, image, language, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO signals (external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
       .bind(
         signal.external_id || null,
         signal.title,
         signal.summary_json,
+        signal.rich_summary_json,
         signal.source,
         signal.url,
         signal.category,

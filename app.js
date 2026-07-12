@@ -483,10 +483,36 @@ function normalizeLiveSignalSummary(summary) {
     .filter(Boolean);
 }
 
+function normalizeLiveRichSummary(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.slice(0, 6).map((paragraph) => {
+    const segments = Array.isArray(paragraph?.segments)
+      ? paragraph.segments
+          .slice(0, 64)
+          .map((segment) => {
+            const text = typeof segment?.text === "string" ? segment.text.slice(0, 5000) : "";
+            if (!text) {
+              return null;
+            }
+            const url = sanitizeStoryUrl(segment.url);
+            return url === "#" ? { text } : { text, url };
+          })
+          .filter(Boolean)
+      : [];
+    return segments.length && segments.map((segment) => segment.text).join("").trim()
+      ? { segments }
+      : null;
+  }).filter(Boolean);
+}
+
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
   const summary = normalizeLiveSignalSummary(signal.summary);
+  const richSummary = normalizeLiveRichSummary(signal.rich_summary);
   const sourceUrl = firstVisibleLinkFromSummary(signal.summary) || signal.url;
 
   return {
@@ -501,6 +527,7 @@ function normalizeLiveSignal(signal, index) {
     image: sanitizeStoryImage(signal.image),
     category: String(signal.category || "general").trim(),
     summary,
+    richSummary,
   };
 }
 
@@ -675,6 +702,20 @@ function buildExpandedSummary(story) {
   return summary;
 }
 
+function renderRichSummaryParagraph(paragraph) {
+  const segments = Array.isArray(paragraph?.segments) ? paragraph.segments : [];
+  const markup = segments
+    .map((segment) => {
+      const text = escapeHtml(segment?.text ?? "");
+      const href = sanitizeStoryUrl(segment?.url);
+      return href === "#"
+        ? text
+        : `<a class="timeline-panel__inline-link" href="${escapeAttribute(href)}" target="_blank" rel="noreferrer noopener">${text}</a>`;
+    })
+    .join("");
+  return markup ? `<p>${markup}</p>` : "";
+}
+
 function actionIcon(name) {
   const icons = {
     heart: '<svg data-icon="heart" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path data-icon-fill fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>',
@@ -758,8 +799,14 @@ function renderStoryMarkup(story) {
   const time = escapeHtml(story.time ?? "");
   const weight = `${escapeHtml(String(story.score ?? 94))}/100`;
   const summary = buildExpandedSummary(story);
-  const summaryHtml = summary
-    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+  const richSummary = normalizeLiveRichSummary(story.richSummary);
+  const paragraphCount = Math.max(summary.length, richSummary.length);
+  const summaryHtml = Array.from({ length: paragraphCount }, (_, index) =>
+    richSummary[index]
+      ? renderRichSummaryParagraph(richSummary[index])
+      : `<p>${escapeHtml(summary[index] ?? "")}</p>`,
+  )
+    .filter(Boolean)
     .join("");
   const sourceHref = sanitizeStoryUrl(story.url);
   const sourceTarget = sourceHref === "#" ? "" : ' target="_blank" rel="noreferrer"';

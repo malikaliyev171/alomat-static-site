@@ -38,7 +38,8 @@ class FakeStatement {
 
   async run() {
     if (this.sql.includes("INSERT INTO signals")) {
-      const [external_id, title, summary_json, source, url, category, image, language, created_at] = this.values;
+      const [external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at] =
+        this.values;
       if (external_id && this.db.rows.some((row) => row.external_id === external_id)) {
         const error = new Error("D1_ERROR: UNIQUE constraint failed: signals.external_id");
         error.cause = { message: "UNIQUE constraint failed: signals.external_id" };
@@ -49,6 +50,7 @@ class FakeStatement {
         external_id,
         title,
         summary_json,
+        rich_summary_json,
         source,
         url,
         category,
@@ -234,6 +236,7 @@ test("normalizeSignalInput accepts the bot payload and fills defaults", () => {
     external_id: "telegram-123",
     title: "Signal card title",
     summary_json: JSON.stringify(["Short explanation 1", "Short explanation 2"]),
+    rich_summary_json: "[]",
     source: "Source name",
     url: "https://example.com/source",
     category: "ai",
@@ -299,6 +302,38 @@ test("normalizeSignalInput keeps valid http and https url fields unchanged", () 
   assert.equal(result.value.image, "http://cdn.example.com/image.jpg");
 });
 
+test("normalizeSignalInput preserves rich summary links and removes unsafe hrefs", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "AI digest",
+      summary: ["OpenAI va Anthropic yangiliklari."],
+      rich_summary: [
+        {
+          segments: [
+            { text: "OpenAI", url: "https://openai.com/news" },
+            { text: " va " },
+            { text: "Anthropic", url: "javascript:alert(1)" },
+            { text: " yangiliklari." },
+          ],
+        },
+      ],
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(JSON.parse(result.value.rich_summary_json), [
+    {
+      segments: [
+        { text: "OpenAI", url: "https://openai.com/news" },
+        { text: " va " },
+        { text: "Anthropic" },
+        { text: " yangiliklari." },
+      ],
+    },
+  ]);
+});
+
 test("normalizeSignalInput blanks unsafe url and image fields", () => {
   const result = normalizeSignalInput(
     {
@@ -347,6 +382,8 @@ test("rowToSignal parses summary_json and exposes API fields", () => {
       external_id: "telegram-123",
       title: "Signal card title",
       summary_json: "[\"Short explanation\"]",
+      rich_summary_json:
+        '[{"segments":[{"text":"OpenAI","url":"https://openai.com/news"},{"text":" update"}]}]',
       source: "Source name",
       url: "https://example.com/source",
       category: "ai",
@@ -359,6 +396,14 @@ test("rowToSignal parses summary_json and exposes API fields", () => {
       external_id: "telegram-123",
       title: "Signal card title",
       summary: ["Short explanation"],
+      rich_summary: [
+        {
+          segments: [
+            { text: "OpenAI", url: "https://openai.com/news" },
+            { text: " update" },
+          ],
+        },
+      ],
       source: "Source name",
       url: "https://example.com/source",
       category: "ai",
@@ -417,6 +462,42 @@ test("POST /api/signals inserts a valid signal", async () => {
   assert.deepEqual(await response.json(), { ok: true });
   assert.equal(env.DB.rows.length, 1);
   assert.equal(env.DB.rows[0].title, "Live card");
+});
+
+test("POST and GET /api/signals preserve rich summary link segments", async () => {
+  const env = testEnv();
+  const richSummary = [
+    {
+      segments: [
+        { text: "OpenAI", url: "https://openai.com/news" },
+        { text: " yangi model chiqardi." },
+      ],
+    },
+  ];
+  const created = await handleRequest(
+    new Request("https://xabar.alomat.workers.dev/api/signals", {
+      method: "POST",
+      headers: {
+        authorization: "Bearer secret-for-tests",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        external_id: "digest-1",
+        title: "AI digest",
+        summary: ["OpenAI yangi model chiqardi."],
+        rich_summary: richSummary,
+      }),
+    }),
+    env,
+    new Date("2026-07-10T14:00:00.000Z"),
+  );
+
+  const listed = await handleRequest(new Request("https://xabar.alomat.workers.dev/api/signals"), env);
+  const body = await listed.json();
+
+  assert.equal(created.status, 201);
+  assert.equal(listed.status, 200);
+  assert.deepEqual(body.signals[0].rich_summary, richSummary);
 });
 
 test("POST /api/telegram-webhook rejects missing Telegram secret", async () => {

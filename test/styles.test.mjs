@@ -185,3 +185,16 @@ test("story detail collapses an empty action status to enlarge the body", () => 
     /padding-bottom:\s*6px;/,
   );
 });
+
+test("rich summary links inherit text color and underline on interaction", () => {
+  const styles = readProjectFile("styles.css");
+  const link = cssBlock(styles, ".timeline-panel__inline-link");
+
+  assert.match(link, /color:\s*inherit;/);
+  assert.match(link, /font-weight:\s*650;/);
+  assert.match(link, /text-decoration:\s*none;/);
+  assert.match(
+    styles,
+    /\.timeline-panel__inline-link:is\(:hover, :focus-visible\)\s*\{[\s\S]*?text-decoration-line:\s*underline;/,
+  );
+});

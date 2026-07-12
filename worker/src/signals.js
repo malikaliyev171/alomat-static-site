@@ -1,4 +1,6 @@
 const MAX_TEXT_LENGTH = 5000;
+const MAX_SUMMARY_ITEMS = 6;
+const MAX_RICH_SEGMENTS = 64;
 const DEFAULT_LIMIT = 20;
 const MIN_LIMIT = 1;
 const MAX_LIMIT = 200;
@@ -54,6 +56,7 @@ export function normalizeSignalInput(input, nowIso) {
       external_id: normalizeOptionalText(input.external_id),
       title,
       summary_json: JSON.stringify(summary),
+      rich_summary_json: JSON.stringify(normalizeRichSummary(input.rich_summary)),
       source: normalizeOptionalText(input.source),
       url: firstVisibleLinkFromSummary(input.summary) || normalizeOptionalUrl(input.url),
       category: normalizeOptionalText(input.category) || "general",
@@ -70,6 +73,7 @@ export function rowToSignal(row) {
     external_id: row.external_id || "",
     title: row.title,
     summary: parseSummaryJson(row.summary_json),
+    rich_summary: parseRichSummaryJson(row.rich_summary_json),
     source: row.source || "",
     url: row.url || "",
     category: row.category || "general",
@@ -101,7 +105,44 @@ function normalizeOptionalUrl(value) {
 
 function normalizeSummary(value) {
   const items = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
-  return items.map(normalizeText).map(stripVisibleLinks).filter((item) => !isLinkOnlyLabel(item)).filter(Boolean).slice(0, 6);
+  return items
+    .map(normalizeText)
+    .map(stripVisibleLinks)
+    .filter((item) => !isLinkOnlyLabel(item))
+    .filter(Boolean)
+    .slice(0, MAX_SUMMARY_ITEMS);
+}
+
+function normalizeRichSummary(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .slice(0, MAX_SUMMARY_ITEMS)
+    .map((paragraph) => {
+      const rawSegments = Array.isArray(paragraph?.segments) ? paragraph.segments : [];
+      let remaining = MAX_TEXT_LENGTH;
+      const segments = [];
+
+      for (const segment of rawSegments.slice(0, MAX_RICH_SEGMENTS)) {
+        if (remaining <= 0 || typeof segment?.text !== "string") {
+          continue;
+        }
+        const text = segment.text.slice(0, remaining);
+        remaining -= text.length;
+        if (!text) {
+          continue;
+        }
+        const url = normalizeOptionalUrl(segment.url);
+        segments.push(url ? { text, url } : { text });
+      }
+
+      return segments.length && segments.map((segment) => segment.text).join("").trim()
+        ? { segments }
+        : null;
+    })
+    .filter(Boolean);
 }
 
 function firstVisibleLinkFromText(value) {
@@ -175,6 +216,14 @@ function parseSummaryJson(value) {
   try {
     const parsed = JSON.parse(value);
     return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseRichSummaryJson(value) {
+  try {
+    return normalizeRichSummary(JSON.parse(value || "[]"));
   } catch {
     return [];
   }

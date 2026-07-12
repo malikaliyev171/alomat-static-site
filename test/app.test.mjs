@@ -693,6 +693,40 @@ test("detail action markup uses one compact source, like, save, and share row wi
   }
 });
 
+test("detail markup renders safe rich-summary links on their original words", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const markup = helpers.renderStoryMarkup({
+      id: "digest-1",
+      title: "AI digest",
+      summary: ["OpenAI va Anthropic yangiliklari."],
+      richSummary: [
+        {
+          segments: [
+            { text: "OpenAI", url: "https://openai.com/news" },
+            { text: " va " },
+            { text: "Anthropic", url: "javascript:alert(1)" },
+            { text: " yangiliklari." },
+          ],
+        },
+      ],
+      source: "AI digest",
+      time: "13:00",
+      url: "https://example.com/digest",
+    });
+
+    assert.match(
+      markup,
+      /<a class="timeline-panel__inline-link" href="https:\/\/openai\.com\/news" target="_blank" rel="noreferrer noopener">OpenAI<\/a>/,
+    );
+    assert.match(markup, /Anthropic/);
+    assert.doesNotMatch(markup, /javascript:alert/);
+    assert.match(markup, /class="timeline-panel__source"/);
+  } finally {
+    cleanup();
+  }
+});
+
 test("share action falls back to copying the sanitized story URL", async () => {
   const { helpers, cleanup } = await loadAppModule();
   try {
@@ -951,6 +985,39 @@ test("live summary text hides visible links in the detail panel", async () => {
       "Markdown manba matni qoladi.",
     ]);
     assert.equal(signal.url, "https://example.com/news?utm=telegram");
+  } finally {
+    cleanup();
+  }
+});
+
+test("live signal normalization keeps structured rich-summary links", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const signal = helpers.normalizeLiveSignal(
+      {
+        id: 303,
+        title: "AI digest",
+        summary: ["OpenAI yangiligi."],
+        rich_summary: [
+          {
+            segments: [
+              { text: "OpenAI", url: "https://openai.com/news" },
+              { text: " yangiligi." },
+            ],
+          },
+        ],
+      },
+      0,
+    );
+
+    assert.deepEqual(signal.richSummary, [
+      {
+        segments: [
+          { text: "OpenAI", url: "https://openai.com/news" },
+          { text: " yangiligi." },
+        ],
+      },
+    ]);
   } finally {
     cleanup();
   }

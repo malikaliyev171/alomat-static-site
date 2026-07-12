@@ -40,6 +40,14 @@ curl -X POST "https://xabar.alomat.workers.dev/api/signals" \
     "external_id": "telegram-message-123",
     "title": "Signal card title",
     "summary": ["Short explanation 1", "Short explanation 2"],
+    "rich_summary": [
+      {
+        "segments": [
+          { "text": "OpenAI", "url": "https://openai.com/news" },
+          { "text": " released a new model." }
+        ]
+      }
+    ],
     "source": "Source name",
     "url": "https://example.com/source",
     "category": "ai",
@@ -48,6 +56,8 @@ curl -X POST "https://xabar.alomat.workers.dev/api/signals" \
     "created_at": "2026-07-10T13:20:00.000Z"
   }'
 ```
+
+`rich_summary` is optional and preserves Telegram's hidden word links for digest posts. Each paragraph contains ordered text segments; a segment with an `http` or `https` `url` is rendered as a linked word. Send the plain `summary` in parallel for compatibility and fallback. Unsafe URLs are kept as plain text without a link.
 
 The site reads:
 
