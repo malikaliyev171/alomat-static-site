@@ -604,6 +604,141 @@ test("client background-image helper never returns raw unsafe css", async () => 
   }
 });
 
+test("local library recovers from malformed storage and toggles like and save independently", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule();
+  try {
+    const storage = environment.globals.localStorage;
+    storage.setItem("alomat-library-v1", "{broken");
+    assert.deepEqual(helpers.readLibraryState(storage), { version: 1, items: {} });
+
+    const story = {
+      id: "story-1",
+      title: "Stored signal",
+      summary: ["Stored summary"],
+      source: "Signal Source",
+      time: "12:34",
+      score: 91,
+      url: "https://example.com/story",
+    };
+
+    helpers.toggleLibraryAction(story, "save", storage, "2026-07-12T10:00:00.000Z");
+    assert.deepEqual(helpers.getLibraryEntries(storage)[0].story.summary, ["Stored summary"]);
+    assert.deepEqual(helpers.getLibraryCounts(helpers.getLibraryEntries(storage)), {
+      liked: 0,
+      saved: 1,
+      total: 1,
+    });
+
+    helpers.toggleLibraryAction(story, "like", storage, "2026-07-12T10:01:00.000Z");
+    assert.equal(helpers.getLibraryEntries(storage)[0].liked, true);
+    assert.equal(helpers.getLibraryEntries(storage)[0].saved, true);
+
+    helpers.toggleLibraryAction(story, "save", storage, "2026-07-12T10:02:00.000Z");
+    assert.equal(helpers.getLibraryEntries(storage)[0].saved, false);
+
+    helpers.toggleLibraryAction(story, "like", storage, "2026-07-12T10:03:00.000Z");
+    assert.deepEqual(helpers.getLibraryEntries(storage), []);
+  } finally {
+    cleanup();
+  }
+});
+
+test("local library deduplicates stories and sorts the latest action first", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule();
+  try {
+    const storage = environment.globals.localStorage;
+    const first = { id: "first", title: "First", summary: ["One"], url: "https://example.com/first" };
+    const second = { id: "second", title: "Second", summary: ["Two"], url: "https://example.com/second" };
+
+    helpers.toggleLibraryAction(first, "save", storage, "2026-07-12T10:00:00.000Z");
+    helpers.toggleLibraryAction(second, "like", storage, "2026-07-12T10:02:00.000Z");
+    helpers.toggleLibraryAction(first, "like", storage, "2026-07-12T10:03:00.000Z");
+
+    const entries = helpers.getLibraryEntries(storage);
+    assert.deepEqual(entries.map((entry) => entry.story.id), ["first", "second"]);
+    assert.deepEqual(helpers.getLibraryCounts(entries), { liked: 2, saved: 1, total: 2 });
+  } finally {
+    cleanup();
+  }
+});
+
+test("detail action markup uses like, save, and share SVG controls without download", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const markup = helpers.renderStoryMarkup({
+      id: "actions-1",
+      title: "Action story",
+      summary: ["Summary"],
+      source: "Source",
+      time: "13:00",
+      url: "https://example.com/action",
+    });
+
+    assert.match(markup, /data-story-action="like"/);
+    assert.match(markup, /data-story-action="save"/);
+    assert.match(markup, /data-story-action="share"/);
+    assert.match(markup, /data-icon="heart"/);
+    assert.match(markup, /data-icon="bookmark"/);
+    assert.match(markup, /data-icon="share"/);
+    assert.doesNotMatch(markup, /data-story-action="download"/);
+    assert.doesNotMatch(markup, /Download|Yuklash/);
+  } finally {
+    cleanup();
+  }
+});
+
+test("share action falls back to copying the sanitized story URL", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    let copied = "";
+    const result = await helpers.shareStory(
+      { title: "Shared signal", url: "https://example.com/shared" },
+      {
+        clipboard: {
+          async writeText(value) {
+            copied = value;
+          },
+        },
+      },
+    );
+
+    assert.equal(result, "copied");
+    assert.equal(copied, "https://example.com/shared");
+  } finally {
+    cleanup();
+  }
+});
+
+test("library entry renderer outputs one story with liked and saved states", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const markup = helpers.renderLibraryEntriesMarkup([
+      {
+        story: {
+          id: "library-1",
+          title: "Library signal",
+          summary: ["Library summary"],
+          source: "Library Source",
+          time: "14:20",
+          url: "https://example.com/library",
+        },
+        liked: true,
+        saved: true,
+        updatedAt: "2026-07-12T14:21:00.000Z",
+      },
+    ]);
+
+    assert.match(markup, /Library signal/);
+    assert.match(markup, /Library summary/);
+    assert.match(markup, /Library Source/);
+    assert.match(markup, /Liked/);
+    assert.match(markup, /Saved/);
+    assert.equal((markup.match(/class="library-signal-row"/g) || []).length, 1);
+  } finally {
+    cleanup();
+  }
+});
+
 test("titled live records without a summary array do not replace the fallback timeline", async () => {
   const fallbackStories = [
     {

@@ -41,6 +41,13 @@ const libraryGateActions = Array.from(document.querySelectorAll("[data-library-g
 const loadEarlierButton = document.querySelector("[data-load-earlier]");
 const signalStatusTime = document.querySelector("[data-signal-status-time]");
 const signalStatusCount = document.querySelector("[data-signal-status-count]");
+const libraryList = document.querySelector("[data-library-list]");
+const libraryEmpty = document.querySelector("[data-library-empty]");
+const libraryCountElements = {
+  saved: document.querySelector('[data-library-count="saved"]'),
+  liked: document.querySelector('[data-library-count="liked"]'),
+  total: document.querySelector('[data-library-count="total"]'),
+};
 let timelineItems = Array.from(document.querySelectorAll(".signal-timeline__item"));
 const storyDataElement = document.querySelector("[data-signal-stories]");
 const detailPanel = document.querySelector("[data-signal-detail]");
@@ -67,6 +74,7 @@ const storageKeys = {
   theme: "alomat-palette",
   name: "alomat-name",
   email: "alomat-email",
+  library: "alomat-library-v1",
 };
 
 const legacyStorageKeys = {
@@ -127,9 +135,16 @@ const detailLabels = {
     aiLens: "AI LINZASI",
     askAi: "AI so'rash",
     originalSource: "ASL MANBA",
+    like: "Yoqtirish",
     save: "Saqlash",
     share: "Ulashish",
-    download: "Yuklash",
+    liked: "Yoqtirildi",
+    unliked: "Yoqtirish bekor qilindi",
+    saved: "Saqlandi",
+    unsaved: "Saqlash bekor qilindi",
+    shared: "Ulashildi",
+    copied: "Havola nusxalandi",
+    shareFailed: "Havolani ulashib bo'lmadi",
   },
   en: {
     active: "ACTIVE SIGNAL",
@@ -140,9 +155,16 @@ const detailLabels = {
     aiLens: "AI LENS",
     askAi: "Ask AI",
     originalSource: "ORIGINAL SOURCE",
+    like: "Like",
     save: "Save",
     share: "Share",
-    download: "Download",
+    liked: "Liked",
+    unliked: "Like removed",
+    saved: "Saved",
+    unsaved: "Save removed",
+    shared: "Shared",
+    copied: "Link copied",
+    shareFailed: "The link could not be shared",
   },
 };
 
@@ -164,6 +186,197 @@ function parseStoryData() {
   } catch {
     return [];
   }
+}
+
+function emptyLibraryState() {
+  return { version: 1, items: {} };
+}
+
+function normalizeLibraryStory(story) {
+  const id = String(story?.id ?? "").trim();
+  const title = String(localizeStoryValue(story?.title) ?? "").trim();
+  const localizedSummary = Array.isArray(story?.summary) ? story.summary : localizeStoryValue(story?.summary);
+  const summary = (Array.isArray(localizedSummary) ? localizedSummary : [])
+    .filter((entry) => typeof entry === "string")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  if (!id || !title) {
+    return null;
+  }
+
+  return {
+    id,
+    title,
+    summary,
+    source: String(story?.source ?? "").trim(),
+    time: String(story?.time ?? "").trim(),
+    score: Number.isFinite(story?.score) ? story.score : 94,
+    url: sanitizeStoryUrl(story?.url),
+    image: sanitizeStoryImage(story?.image),
+    created_at: String(story?.createdAt ?? story?.created_at ?? "").trim(),
+  };
+}
+
+function readLibraryState(storage = safeStorage()) {
+  if (!storage) {
+    return emptyLibraryState();
+  }
+
+  try {
+    const parsed = JSON.parse(storage.getItem(storageKeys.library) || "");
+    if (parsed?.version !== 1 || !parsed.items || typeof parsed.items !== "object" || Array.isArray(parsed.items)) {
+      return emptyLibraryState();
+    }
+
+    const items = {};
+    Object.entries(parsed.items).forEach(([id, entry]) => {
+      const story = normalizeLibraryStory(entry?.story);
+      const liked = entry?.liked === true;
+      const saved = entry?.saved === true;
+      if (!story || story.id !== id || (!liked && !saved)) {
+        return;
+      }
+      items[id] = {
+        story,
+        liked,
+        saved,
+        updatedAt: String(entry?.updatedAt || ""),
+      };
+    });
+    return { version: 1, items };
+  } catch {
+    return emptyLibraryState();
+  }
+}
+
+function writeLibraryState(state, storage = safeStorage()) {
+  if (!storage) {
+    return false;
+  }
+  try {
+    storage.setItem(storageKeys.library, JSON.stringify(state));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getLibraryEntries(storage = safeStorage()) {
+  return Object.values(readLibraryState(storage).items).sort((left, right) =>
+    String(right.updatedAt).localeCompare(String(left.updatedAt)),
+  );
+}
+
+function getLibraryCounts(entries = getLibraryEntries()) {
+  return entries.reduce(
+    (counts, entry) => {
+      counts.liked += entry.liked ? 1 : 0;
+      counts.saved += entry.saved ? 1 : 0;
+      counts.total += 1;
+      return counts;
+    },
+    { liked: 0, saved: 0, total: 0 },
+  );
+}
+
+function toggleLibraryAction(story, action, storage = safeStorage(), now = new Date().toISOString()) {
+  if (action !== "like" && action !== "save") {
+    return null;
+  }
+  const snapshot = normalizeLibraryStory(story);
+  if (!snapshot) {
+    return null;
+  }
+
+  const state = readLibraryState(storage);
+  const current = state.items[snapshot.id] || {
+    story: snapshot,
+    liked: false,
+    saved: false,
+    updatedAt: "",
+  };
+  const next = {
+    story: snapshot,
+    liked: action === "like" ? !current.liked : current.liked,
+    saved: action === "save" ? !current.saved : current.saved,
+    updatedAt: String(now),
+  };
+
+  if (!next.liked && !next.saved) {
+    delete state.items[snapshot.id];
+  } else {
+    state.items[snapshot.id] = next;
+  }
+  writeLibraryState(state, storage);
+  return state.items[snapshot.id] || null;
+}
+
+function renderLibraryEntriesMarkup(entries) {
+  const labels =
+    locale === "en"
+      ? { liked: "Liked", saved: "Saved", source: "Source" }
+      : { liked: "Yoqtirildi", saved: "Saqlandi", source: "Manba" };
+
+  return entries
+    .map((entry, index) => {
+      const story = entry?.story || {};
+      const href = sanitizeStoryUrl(story.url);
+      const title = escapeHtml(story.title ?? "");
+      const summary = escapeHtml(Array.isArray(story.summary) ? story.summary[0] ?? "" : "");
+      const source = escapeHtml(story.source ?? "");
+      const time = escapeHtml(story.time ?? "");
+      const titleMarkup =
+        href === "#"
+          ? title
+          : `<a href="${escapeAttribute(href)}" target="_blank" rel="noreferrer">${title}</a>`;
+      const states = [
+        entry?.liked ? `<span>${escapeHtml(labels.liked)}</span>` : "",
+        entry?.saved ? `<span>${escapeHtml(labels.saved)}</span>` : "",
+      ]
+        .filter(Boolean)
+        .join("");
+
+      return `
+        <article class="library-signal-row">
+          <span class="library-signal-row__index">${String(index + 1).padStart(2, "0")}</span>
+          <div class="library-signal-row__body">
+            <h2>${titleMarkup}</h2>
+            ${summary ? `<p>${summary}</p>` : ""}
+            <p class="library-signal-row__source">${escapeHtml(labels.source)}: ${source}${source && time ? " / " : ""}${time}</p>
+          </div>
+          <span class="library-signal-row__meta">${states}</span>
+        </article>`;
+    })
+    .join("");
+}
+
+function renderLibraryFromStorage() {
+  if (!libraryList) {
+    return;
+  }
+  const entries = getLibraryEntries();
+  const counts = getLibraryCounts(entries);
+  libraryList.innerHTML = renderLibraryEntriesMarkup(entries);
+  Object.entries(libraryCountElements).forEach(([key, element]) => {
+    if (element) {
+      element.textContent = String(counts[key]);
+    }
+  });
+  if (libraryEmpty) {
+    libraryEmpty.hidden = entries.length > 0;
+  }
+}
+
+function initLibrary() {
+  if (!libraryList) {
+    return;
+  }
+  renderLibraryFromStorage();
+  window.addEventListener("storage", (event) => {
+    if (event.key === storageKeys.library) {
+      renderLibraryFromStorage();
+    }
+  });
 }
 
 function getSignalsApiUrl() {
@@ -466,6 +679,36 @@ function buildExpandedSummary(story) {
   return summary;
 }
 
+function actionIcon(name) {
+  const icons = {
+    heart: '<svg data-icon="heart" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path data-icon-fill fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>',
+    bookmark: '<svg data-icon="bookmark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path data-icon-fill fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1Z"></path></svg>',
+    share: '<svg data-icon="share" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><circle cx="6" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><circle cx="18" cy="19" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5"></path></svg>',
+  };
+  return icons[name] || "";
+}
+
+async function shareStory(story, navigatorApi = globalThis.navigator) {
+  const url = sanitizeStoryUrl(story?.url);
+  if (url === "#") {
+    return "failed";
+  }
+  const title = String(localizeStoryValue(story?.title) || "").trim();
+  try {
+    if (typeof navigatorApi?.share === "function") {
+      await navigatorApi.share({ title, url });
+      return "shared";
+    }
+    if (typeof navigatorApi?.clipboard?.writeText === "function") {
+      await navigatorApi.clipboard.writeText(url);
+      return "copied";
+    }
+  } catch {
+    return "failed";
+  }
+  return "failed";
+}
+
 function captureDetailDefaults() {
   return detailContent
     ? {
@@ -524,10 +767,15 @@ function renderStoryMarkup(story) {
     .join("");
   const sourceHref = sanitizeStoryUrl(story.url);
   const sourceTarget = sourceHref === "#" ? "" : ' target="_blank" rel="noreferrer"';
-  const imageButton = (label, symbol) =>
-    `<button class="timeline-panel__lens-button" type="button" aria-label="${escapeHtml(label)}">${symbol}</button>`;
-  const actionButton = (label, symbol) =>
-    `<button class="timeline-panel__icon-button" type="button" aria-label="${escapeHtml(label)}">${symbol}</button>`;
+  const libraryEntry = readLibraryState().items[String(story.id)] || { liked: false, saved: false };
+  const imageButton = (label, content) =>
+    `<button class="timeline-panel__lens-button" type="button" aria-label="${escapeHtml(label)}">${content}</button>`;
+  const actionButton = (label, action, icon, className) => {
+    const pressed = action === "like" ? libraryEntry.liked : action === "save" ? libraryEntry.saved : false;
+    const activeClass = pressed ? " is-active" : "";
+    const pressedAttribute = action === "share" ? "" : ` aria-pressed="${pressed}"`;
+    return `<button class="${className}${activeClass}" type="button" data-story-action="${action}" aria-label="${escapeHtml(label)}"${pressedAttribute}>${actionIcon(icon)}</button>`;
+  };
 
   return `
     <div class="timeline-panel__hero-top">
@@ -561,8 +809,8 @@ function renderStoryMarkup(story) {
       </div>
       <div class="timeline-panel__lens-buttons">
         ${imageButton(labels.askAi, "AI")}
-        ${imageButton(labels.save, "★")}
-        ${imageButton(labels.share, "↗")}
+        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__lens-button")}
+        ${actionButton(labels.share, "share", "share", "timeline-panel__lens-button")}
       </div>
     </div>
     <div class="timeline-panel__footer">
@@ -574,11 +822,32 @@ function renderStoryMarkup(story) {
         </svg>
       </a>
       <div class="timeline-panel__share">
-        ${actionButton(labels.save, "♥")}
-        ${actionButton(labels.share, "↔")}
-        ${actionButton(labels.download, "⇩")}
+        ${actionButton(labels.like, "like", "heart", "timeline-panel__icon-button")}
+        ${actionButton(labels.share, "share", "share", "timeline-panel__icon-button")}
       </div>
-    </div>`;
+    </div>
+    <p class="timeline-panel__action-status" data-story-action-status role="status" aria-live="polite"></p>`;
+}
+
+function updateStoryActionControls(storyId) {
+  if (!detailContent?.querySelectorAll) {
+    return;
+  }
+  const entry = readLibraryState().items[String(storyId)] || { liked: false, saved: false };
+  ["like", "save"].forEach((action) => {
+    const pressed = action === "like" ? entry.liked : entry.saved;
+    detailContent.querySelectorAll(`[data-story-action="${action}"]`).forEach((button) => {
+      button.classList.toggle("is-active", pressed);
+      button.setAttribute("aria-pressed", String(pressed));
+    });
+  });
+}
+
+function setStoryActionStatus(key) {
+  const status = detailContent?.querySelector?.("[data-story-action-status]");
+  if (status) {
+    status.textContent = detailLabels[locale][key] || "";
+  }
 }
 
 function resetDetailPanel() {
@@ -1280,7 +1549,27 @@ function initTimelineStories() {
     return;
   }
 
-  detailPanel.addEventListener("click", (event) => {
+  detailPanel.addEventListener("click", async (event) => {
+    const actionButton = event.target.closest?.("[data-story-action]");
+    if (actionButton) {
+      event.preventDefault();
+      const story = storyMap.get(String(activeStoryId));
+      if (!story) {
+        return;
+      }
+      const action = actionButton.dataset.storyAction;
+      if (action === "share") {
+        const result = await shareStory(story);
+        setStoryActionStatus(result === "shared" ? "shared" : result === "copied" ? "copied" : "shareFailed");
+        return;
+      }
+      const entry = toggleLibraryAction(story, action);
+      updateStoryActionControls(story.id);
+      const active = action === "like" ? entry?.liked === true : entry?.saved === true;
+      setStoryActionStatus(action === "like" ? (active ? "liked" : "unliked") : active ? "saved" : "unsaved");
+      return;
+    }
+
     const closeButton = event.target.closest("[data-signal-detail-close]");
     if (!closeButton) {
       return;
@@ -1353,6 +1642,7 @@ initNameForm();
 initTimelineReveal();
 initLoadEarlier();
 initTimelineStories();
+initLibrary();
 loadLiveSignals();
 
 globalThis.__ALOMAT_APP_TEST__ = {
@@ -1364,4 +1654,12 @@ globalThis.__ALOMAT_APP_TEST__ = {
   isPublishableSignal,
   loadLiveSignals,
   normalizeLiveSignal,
+  readLibraryState,
+  toggleLibraryAction,
+  getLibraryEntries,
+  getLibraryCounts,
+  renderLibraryEntriesMarkup,
+  renderLibraryFromStorage,
+  renderStoryMarkup,
+  shareStory,
 };

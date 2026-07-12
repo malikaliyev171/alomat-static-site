@@ -1984,12 +1984,31 @@ function renderLibrary(localeKey, currentFile) {
   const locale = locales[localeKey];
   const library = locale.library;
   const archiveLabel = localeKey === "en" ? "Saved signal archive" : "Saqlangan signal arxivi";
-  const rowMeta = localeKey === "en" ? "saved today" : "bugun saqlandi";
-  const noteLabel = localeKey === "en" ? "Library state" : "Kutubxona holati";
-  const emptyNote =
+  const metrics =
     localeKey === "en"
-      ? "When saves and likes are connected, this area will hold the reader's own signal history without changing the homepage rhythm."
-      : "Saqlash va yoqtirishlar ulanganda, bu joy o'quvchining shaxsiy signal tarixini ana sahifa ritmini buzmasdan ushlab turadi.";
+      ? [
+          ["saved", "Saved"],
+          ["liked", "Liked"],
+          ["total", "Total"],
+        ]
+      : [
+          ["saved", "Saqlangan"],
+          ["liked", "Yoqtirilgan"],
+          ["total", "Jami"],
+        ];
+  const emptyLabel =
+    localeKey === "en"
+      ? "No saved or liked signals yet."
+      : "Hali saqlangan yoki yoqtirilgan signallar yo'q.";
+  const noteLabel = localeKey === "en" ? "Library state" : "Kutubxona holati";
+  const localStateTitle =
+    localeKey === "en"
+      ? "Your library stays in this browser."
+      : "Kutubxonangiz shu brauzerda saqlanadi.";
+  const localStateBody =
+    localeKey === "en"
+      ? "Saved and liked signals appear here immediately. Account synchronization can be added later."
+      : "Saqlangan va yoqtirilgan signallar darhol shu yerda ko'rinadi. Hisoblararo sinxronizatsiya keyinroq qo'shiladi.";
   return `
   <main id="content" class="page page-library">
     <section class="library-shell" aria-labelledby="library-title">
@@ -2000,38 +2019,25 @@ function renderLibrary(localeKey, currentFile) {
       </div>
 
       <div class="library-status-strip" aria-label="${text(archiveLabel)}">
-        ${library.stats
+        ${metrics
           .map(
-            (metric) => `
+            ([key, label]) => `
           <span class="library-status-strip__item">
-            <strong>${text(metric.value)}</strong>
-            <span>${text(metric.label)}</span>
+            <strong data-library-count="${key}">0</strong>
+            <span>${text(label)}</span>
           </span>`,
           )
           .join("")}
       </div>
 
-      <section class="library-signal-list" aria-label="${text(archiveLabel)}">
-        ${library.collections
-          .map(
-            (item, index) => `
-        <article class="library-signal-row">
-          <span class="library-signal-row__index">${String(index + 1).padStart(2, "0")}</span>
-          <div class="library-signal-row__body">
-            <h2>${text(item.title)}</h2>
-            <p>${text(item.summary)}</p>
-          </div>
-          <span class="library-signal-row__meta">${text(rowMeta)}</span>
-        </article>`,
-          )
-          .join("")}
-      </section>
+      <section class="library-signal-list" data-library-list aria-label="${text(archiveLabel)}"></section>
+      <p class="library-empty" data-library-empty>${text(emptyLabel)}</p>
 
       <section class="library-memory">
         <div>
           <p class="library-memory__label">${text(noteLabel)}</p>
-          <h2>${text(library.ctaTitle)}</h2>
-          <p>${text(library.ctaBody)} ${text(emptyNote)}</p>
+          <h2>${text(localStateTitle)}</h2>
+          <p>${text(localStateBody)}</p>
         </div>
       </section>
     </section>

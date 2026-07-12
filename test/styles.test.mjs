@@ -48,7 +48,13 @@ test("library page uses the home signal archive layout instead of generic cards"
   assert.match(build, /topbar topbar--home/);
   assert.match(build, /class="page-shell page-shell--home"/);
   assert.match(build, /class="library-shell"/);
-  assert.match(build, /class="library-signal-row"/);
+  assert.match(build, /data-library-list/);
+  assert.match(build, /data-library-empty/);
+  assert.match(build, /data-library-count="saved"/);
+  assert.match(build, /data-library-count="liked"/);
+  assert.match(build, /data-library-count="total"/);
+  assert.doesNotMatch(build, />128</);
+  assert.doesNotMatch(build, /Bugun saqlangan/);
   assert.doesNotMatch(build, /class="metric-grid"/);
   assert.doesNotMatch(build, /class="content-grid content-grid--library"/);
   assert.doesNotMatch(build, /class="library-memory__action"/);
