@@ -2233,27 +2233,6 @@ function renderLineup(localeKey, currentFile) {
   </div>`;
 }
 
-function renderLineupTopbar(localeKey, currentFile) {
-  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
-  const lineupHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup"));
-  const labels =
-    localeKey === "en"
-      ? { brand: "alomat", writings: "Writings", login: "Login" }
-      : { brand: "alomat", writings: "Yozilar", login: "Kirish" };
-  return `
-      <header class="lineup-topbar">
-        <div class="lineup-topbar__brand">
-          <span class="lineup-topbar__brand-dot" aria-hidden="true"></span>
-          <a class="lineup-topbar__brand-word" href="${text(homeHref)}">${text(labels.brand)}</a>
-          <a class="lineup-topbar__brand-word" href="${text(lineupHref)}">lineup</a>
-        </div>
-        <nav class="lineup-topbar__nav" aria-label="Lineup">
-          <a class="lineup-topbar__link" href="${text(lineupHref)}#lineup-articles">${text(labels.writings)}</a>
-          <button type="button" class="lineup-topbar__link lineup-topbar__link--primary">${text(labels.login)}</button>
-        </nav>
-      </header>`;
-}
-
 function renderLineupArticle(localeKey, currentFile, article) {
   const locale = locales[localeKey];
   const lineupHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup"));
@@ -2280,7 +2259,6 @@ function renderLineupArticle(localeKey, currentFile, article) {
   return `
   <div id="content" class="lineup-page">
     <main class="lineup-shell">
-      ${renderLineupTopbar(localeKey, currentFile)}
       <article class="lineup-article">
         <div class="lineup-article-body">
           <header class="lineup-article-head">
@@ -2733,7 +2711,8 @@ function renderLineupArticleDocument(localeKey, article) {
   </head>
   <body>
     <div class="page-backdrop"></div>
-    <div class="page-shell page-shell--static">
+    <div class="page-shell page-shell--home">
+      ${renderHeader(localeKey, "lineup", currentFile).trim()}
       ${renderLineupArticle(localeKey, currentFile, article)}
       ${renderFooter(localeKey, "lineup", currentFile)}
     </div>

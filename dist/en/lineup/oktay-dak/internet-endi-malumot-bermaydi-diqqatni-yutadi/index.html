@@ -5258,22 +5258,73 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
   </head>
   <body>
     <div class="page-backdrop"></div>
-    <div class="page-shell page-shell--static">
+    <div class="page-shell page-shell--home">
+      <a class="skip-link" href="#content">Skip to content</a>
+    <header class="topbar topbar--home">
+      <a class="brand brand--home" href="../../../../en.html">
+        <span class="brand__stack">
+          <span class="brand__topline">
+            <span class="brand__name">.alomat</span>
+            <span class="brand__sub">SIGNAL TIMELINE</span>
+          </span>
+          <span class="brand__status">
+            <span>Today&#39;s line</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Active signal</span>
+            <span data-signal-status-time>19:01</span>
+            <span aria-hidden="true">&middot;</span>
+            <span data-signal-status-count>10 signals</span>
+          </span>
+        </span>
+      </a>
+
+      <div class="controls controls--home">
+        <nav class="nav nav--home signal-topbar-controls__group signal-topbar-controls__group--reader" aria-label="Primary">
+        <a class="nav__item nav__item--dot" href="../../../../en-about.html">
+          <span class="nav__bullet" aria-hidden="true">•</span>
+          <span>MANIFESTO</span>
+        </a>
+        <a class="nav__item nav__item--dot is-active" aria-current="page" href="../../../../en-lineup.html">
+          <span class="nav__bullet" aria-hidden="true">•</span>
+          <span>LINEUP</span>
+        </a>
+        <a class="nav__item nav__item--library" href="../../../library/index.html">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M4 4.5C4 3.1 5.1 2 6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15Z"></path>
+            <path fill="#fff" d="M7.25 5.5h10.5v1.6H7.25zM7.25 9.1h10.5v1.6H7.25zM7.25 12.7h7.8v1.6h-7.8z"></path>
+          </svg>
+          <span>LIBRARY</span>
+        </a>
+      </nav>
+
+        <div class="language-switch" role="group" aria-label="Dil">
+          <button class="language-switch__button is-active is-disabled" type="button" disabled aria-disabled="true">EN</button>
+          <button class="language-switch__button is-inactive is-disabled" type="button" disabled aria-disabled="true">UZ</button>
+        </div>
+
+        <div class="palette-rail" data-palette-picker role="group" aria-label="Palette">
+        <button class="palette-rail__trigger" type="button" data-palette-toggle aria-label="Palette" title="Palette" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.12 0-.93.74-1.67 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <span class="palette-rail__label" data-palette-label>Palette</span>
+          <span class="palette-rail__sample" aria-hidden="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></span>
+        </button>
+        <div class="palette-rail__swatches" data-palette-menu aria-hidden="true">
+          <button class="palette-dock-swatch" type="button" data-palette-option="0" aria-label="Palette: Palette 1" aria-pressed="false" style="--swatch-bg:#05070d;--swatch-fg:#ff4d32"></button>
+          <button class="palette-dock-swatch is-active" type="button" data-palette-option="2" aria-label="Palette: Palette 2" aria-pressed="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></button>
+          <button class="palette-dock-swatch" type="button" data-palette-option="4" aria-label="Palette: Palette 3" aria-pressed="false" style="--swatch-bg:#ff4d32;--swatch-fg:#efeff2"></button>
+        </div>
+      </div>
+      </div>
+    </header>
       
   <div id="content" class="lineup-page">
     <main class="lineup-shell">
-      
-      <header class="lineup-topbar">
-        <div class="lineup-topbar__brand">
-          <span class="lineup-topbar__brand-dot" aria-hidden="true"></span>
-          <a class="lineup-topbar__brand-word" href="../../../../en.html">alomat</a>
-          <a class="lineup-topbar__brand-word" href="../../../../en-lineup.html">lineup</a>
-        </div>
-        <nav class="lineup-topbar__nav" aria-label="Lineup">
-          <a class="lineup-topbar__link" href="../../../../en-lineup.html#lineup-articles">Writings</a>
-          <button type="button" class="lineup-topbar__link lineup-topbar__link--primary">Login</button>
-        </nav>
-      </header>
       <article class="lineup-article">
         <div class="lineup-article-body">
           <header class="lineup-article-head">

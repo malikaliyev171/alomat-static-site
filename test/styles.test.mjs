@@ -109,6 +109,18 @@ test("manifesto and lineup reuse the home signal topbar without page-local heade
   assert.doesNotMatch(lineup, /class="lineup-topbar__brand"/);
 });
 
+test("lineup article pages keep the same signal topbar as the lineup index", () => {
+  const article = readProjectFile(
+    "dist/lineup/oktay-dak/internet-endi-malumot-bermaydi-diqqatni-yutadi/index.html",
+  );
+
+  assert.match(article, /class="page-shell page-shell--home"/);
+  assert.match(article, /class="topbar topbar--home"/);
+  assert.match(article, /aria-current="page"[^>]*>[\s\S]*?LINEUP/);
+  assert.doesNotMatch(article, /class="lineup-topbar"/);
+  assert.doesNotMatch(article, /class="lineup-topbar__brand"/);
+});
+
 test("manifesto and lineup use one flat palette background across the viewport", () => {
   const styles = readProjectFile("styles.css");
 
