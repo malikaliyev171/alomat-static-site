@@ -83,4 +83,6 @@ test("library page uses the home signal archive layout instead of generic cards"
       /font-size:\s*clamp\(2\.45rem, 2\.7vw, 2\.55rem\)/.test(block),
     ),
   );
+  assert.ok(libraryHeroBlocks.some((block) => /white-space:\s*nowrap/.test(block)));
+  assert.ok(libraryHeroBlocks.some((block) => /overflow-wrap:\s*normal/.test(block)));
 });
