@@ -907,7 +907,7 @@ test("valid live records replace demo cards and hydrate the detail panel", async
 
     await helpers.loadLiveSignals(new Date("2026-07-11T12:00:00Z"));
 
-    assert.match(requestedUrl, /[?&]limit=50\b/);
+    assert.match(requestedUrl, /[?&]limit=200\b/);
     assert.deepEqual(environment.timeline.getTitles(), ["Live signal"]);
     assert.match(environment.detailContent.innerHTML, /Live signal/);
     assert.match(environment.detailContent.innerHTML, /Live summary paragraph\./);

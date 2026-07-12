@@ -1,7 +1,7 @@
 const MAX_TEXT_LENGTH = 5000;
 const DEFAULT_LIMIT = 20;
 const MIN_LIMIT = 1;
-const MAX_LIMIT = 50;
+const MAX_LIMIT = 200;
 
 export function jsonResponse(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {

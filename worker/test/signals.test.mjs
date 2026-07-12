@@ -335,7 +335,8 @@ test("parseLimit clamps to the public read range", () => {
   assert.equal(parseLimit(null), 20);
   assert.equal(parseLimit("0"), 1);
   assert.equal(parseLimit("7"), 7);
-  assert.equal(parseLimit("999"), 50);
+  assert.equal(parseLimit("200"), 200);
+  assert.equal(parseLimit("999"), 200);
   assert.equal(parseLimit("not-a-number"), 20);
 });
 

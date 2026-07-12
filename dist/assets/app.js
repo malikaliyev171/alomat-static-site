@@ -380,7 +380,7 @@ function initLibrary() {
 }
 
 function getSignalsApiUrl() {
-  return buildApiUrl("/api/signals?limit=50");
+  return buildApiUrl("/api/signals?limit=200");
 }
 
 function buildApiUrl(path) {
