@@ -348,12 +348,13 @@ html[data-page="home"] {
   padding: 0;
 }
 
-html[data-page="about"] body {
-  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+html:is([data-page="about"], [data-page="lineup"]) body {
+  background: var(--bg);
 }
 
-html[data-page="lineup"] body {
-  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+html:is([data-page="about"], [data-page="lineup"]) body::before,
+html:is([data-page="about"], [data-page="lineup"]) body::after {
+  opacity: 0;
 }
 
 html[data-page="lineup-article"] body {
@@ -3459,11 +3460,19 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 html[data-page="about"] .static-page,
 html[data-page="lineup"] .lineup-page,
 html[data-page="lineup-article"] .lineup-page {
-  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
   color: var(--text-strong);
   transition:
     background 220ms ease,
     color 220ms ease;
+}
+
+html[data-page="about"] .static-page,
+html[data-page="lineup"] .lineup-page {
+  background: transparent;
+}
+
+html[data-page="lineup-article"] .lineup-page {
+  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
 html[data-page="about"] .back-link,

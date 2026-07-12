@@ -108,3 +108,20 @@ test("manifesto and lineup reuse the home signal topbar without page-local heade
   assert.doesNotMatch(lineup, /class="lineup-topbar"/);
   assert.doesNotMatch(lineup, /class="lineup-topbar__brand"/);
 });
+
+test("manifesto and lineup use one flat palette background across the viewport", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(
+    styles,
+    /html:is\(\[data-page="about"\], \[data-page="lineup"\]\) body\s*\{[\s\S]*?background:\s*var\(--bg\);[\s\S]*?\}/,
+  );
+  assert.match(
+    styles,
+    /html:is\(\[data-page="about"\], \[data-page="lineup"\]\) body::before,[\s\S]*?body::after\s*\{[\s\S]*?opacity:\s*0;[\s\S]*?\}/,
+  );
+  assert.match(
+    styles,
+    /html\[data-page="about"\] \.static-page,[\s\S]*?html\[data-page="lineup"\] \.lineup-page\s*\{[\s\S]*?background:\s*transparent;/,
+  );
+});
