@@ -145,11 +145,11 @@ if (fs.existsSync(stylesPath)) {
   const frostedTopbarBackground = "background: color-mix(in srgb, var(--bg-start) 92%, transparent);";
   const topbarHomeBlock = /\.topbar--home\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const lightHomeTopbarBlock =
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const themedHomeTopbarBlock =
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-theme\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-theme\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
 

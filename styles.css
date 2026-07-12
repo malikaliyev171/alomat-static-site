@@ -4766,15 +4766,15 @@ html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-vis
   filter: saturate(1);
 }
 
-html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] body::before {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"], [data-page="lineup-article"])[data-palette="2"][data-theme="light"] body::before {
   background:
     radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--text) 3.5%, transparent), transparent 32%),
     radial-gradient(circle at 82% 16%, color-mix(in srgb, var(--text) 3%, transparent), transparent 30%),
     radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--text) 3%, transparent), transparent 38%);
 }
 
-html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] .topbar,
-html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] .topbar--home {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"], [data-page="lineup-article"])[data-palette="2"][data-theme="light"] .topbar,
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"], [data-page="lineup-article"])[data-palette="2"][data-theme="light"] .topbar--home {
   border: 0;
   border-radius: 0;
   background: color-mix(in srgb, var(--bg-start) 92%, transparent);
@@ -4803,15 +4803,15 @@ html:root[data-page="home"][data-palette="2"][data-theme="light"] .signal-detail
     0 30px 90px rgba(5, 7, 13, 0.28);
 }
 
-html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar,
-html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar--home {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"], [data-page="lineup-article"])[data-theme] .topbar,
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"], [data-page="lineup-article"])[data-theme] .topbar--home {
   border: 0;
   border-radius: 0;
   background: color-mix(in srgb, var(--bg-start) 92%, transparent);
   box-shadow: none;
 }
 
-html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar--home::after {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"], [data-page="lineup-article"])[data-theme] .topbar--home::after {
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 

@@ -68,7 +68,7 @@ test("library page uses the home signal archive layout instead of generic cards"
   assert.doesNotMatch(build, /class="library-memory__action"/);
   assert.match(
     styles,
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\).*\.topbar--home/,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\).*\.topbar--home/,
   );
   assert.match(
     styles,
@@ -76,7 +76,7 @@ test("library page uses the home signal archive layout instead of generic cards"
   );
   assert.match(
     styles,
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette="2"\]\[data-theme="light"\] body::before/,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-palette="2"\]\[data-theme="light"\] body::before/,
   );
   assert.match(
     styles,
@@ -148,5 +148,14 @@ test("lineup article pages use the same flat palette background", () => {
   assert.match(
     styles,
     /html\[data-page="lineup-article"\] \.lineup-page\s*\{[\s\S]*?background:\s*transparent;/,
+  );
+});
+
+test("lineup article topbar uses the same neutral signal chrome background", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(
+    styles,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?background:\s*color-mix\(in srgb, var\(--bg-start\) 92%, transparent\);[\s\S]*?box-shadow:\s*none;/,
   );
 });
