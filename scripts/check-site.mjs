@@ -145,11 +145,11 @@ if (fs.existsSync(stylesPath)) {
   const frostedTopbarBackground = "background: color-mix(in srgb, var(--bg-start) 92%, transparent);";
   const topbarHomeBlock = /\.topbar--home\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const lightHomeTopbarBlock =
-    /html:root\[data-page="home"\]\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root\[data-page="home"\]\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const themedHomeTopbarBlock =
-    /html:root\[data-page="home"\]\[data-theme\] \.topbar,[\s\S]*?html:root\[data-page="home"\]\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-theme\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
 
@@ -302,7 +302,7 @@ if (fs.existsSync(stylesPath)) {
   const orangeNameInputBlock =
     /html:root\[data-page="home"\]\[data-palette="4"\] \.name-auth-input,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.name-auth-input\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const themedHomeSocialChipBlock =
-    /html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.social-chip\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette\]\[data-theme\] \.social-chip\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const themedHomePanelControlsBlock =
     /html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.signal-detail__action,[\s\S]*?html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
       styles,

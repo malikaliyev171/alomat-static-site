@@ -43,10 +43,30 @@ test("auth code controls keep hidden elements hidden despite field display style
 
 test("library page uses the home signal archive layout instead of generic cards", () => {
   const build = readProjectFile("dist/library/index.html");
+  const styles = readProjectFile("styles.css");
 
   assert.match(build, /topbar topbar--home/);
+  assert.match(build, /class="page-shell page-shell--home"/);
   assert.match(build, /class="library-shell"/);
   assert.match(build, /class="library-signal-row"/);
   assert.doesNotMatch(build, /class="metric-grid"/);
   assert.doesNotMatch(build, /class="content-grid content-grid--library"/);
+  assert.doesNotMatch(build, /class="library-memory__action"/);
+  assert.match(
+    styles,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\).*\.topbar--home/,
+  );
+  assert.match(
+    styles,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\).*\.site-footer__top/,
+  );
+  const libraryHeroBlocks = Array.from(
+    styles.matchAll(/^\.library-hero h1\s*\{[\s\S]*?\n\}/gm),
+    (match) => match[0],
+  );
+  assert.ok(
+    libraryHeroBlocks.some((block) =>
+      /font-size:\s*clamp\(2\.45rem, 2\.7vw, 2\.55rem\)/.test(block),
+    ),
+  );
 });

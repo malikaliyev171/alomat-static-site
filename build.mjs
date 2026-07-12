@@ -1983,7 +1983,6 @@ function renderAbout(localeKey, currentFile) {
 function renderLibrary(localeKey, currentFile) {
   const locale = locales[localeKey];
   const library = locale.library;
-  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
   const archiveLabel = localeKey === "en" ? "Saved signal archive" : "Saqlangan signal arxivi";
   const rowMeta = localeKey === "en" ? "saved today" : "bugun saqlandi";
   const noteLabel = localeKey === "en" ? "Library state" : "Kutubxona holati";
@@ -2034,7 +2033,6 @@ function renderLibrary(localeKey, currentFile) {
           <h2>${text(library.ctaTitle)}</h2>
           <p>${text(library.ctaBody)} ${text(emptyNote)}</p>
         </div>
-        <a class="library-memory__action" href="${text(homeHref)}">${text(library.ctaAction)}</a>
       </section>
     </section>
     </main>`;
@@ -2724,7 +2722,7 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
   </head>
   <body>
     <div class="page-backdrop"></div>
-    <div class="page-shell${pageKey === "home" ? " page-shell--home" : ""}${skipSiteHeader ? " page-shell--static" : ""}">
+    <div class="page-shell${["home", "library"].includes(pageKey) ? " page-shell--home" : ""}${skipSiteHeader ? " page-shell--static" : ""}">
       ${skipSiteHeader ? "" : renderHeader(localeKey, pageKey, currentFile)}
       ${renderPage(localeKey, pageKey, currentFile)}
       ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile)}
