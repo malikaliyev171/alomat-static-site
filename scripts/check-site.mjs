@@ -145,11 +145,11 @@ if (fs.existsSync(stylesPath)) {
   const frostedTopbarBackground = "background: color-mix(in srgb, var(--bg-start) 92%, transparent);";
   const topbarHomeBlock = /\.topbar--home\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const lightHomeTopbarBlock =
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette="2"\]\[data-theme="light"\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const themedHomeTopbarBlock =
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-theme\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-theme\] \.topbar,[\s\S]*?html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-theme\] \.topbar--home\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
 
@@ -217,8 +217,7 @@ if (fs.existsSync(stylesPath)) {
   const loadEarlierBlock = /^\.signal-timeline__load-earlier\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const siteFooterTopBlock = /^\.site-footer__top\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const socialChipBlock = /^\.social-chip\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
-  const timelinePanelButtonBlock =
-    /^\.timeline-panel__lens-button,\s*\n\.timeline-panel__icon-button\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelButtonBlock = /^\.timeline-panel__icon-button\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const timelinePanelSourceBlock = /^\.timeline-panel__source\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const signalDetailBlock = /^\.signal-detail\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const signalDetailStoryContentBlock = /^\.signal-detail\.has-story \.signal-detail__content\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
@@ -226,7 +225,10 @@ if (fs.existsSync(stylesPath)) {
   const timelinePanelMetaBlock = /^\.timeline-panel__meta-grid\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const timelinePanelBodyBlock = /^\.timeline-panel__body\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const timelinePanelActionsBlock = /^\.timeline-panel__actions\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
-  const timelinePanelLensButtonBlock = /^\.timeline-panel__lens-button\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelinePanelIconButtonBlocks = Array.from(
+    styles.matchAll(/^\.timeline-panel__icon-button\s*\{[\s\S]*?\n\}/gm),
+    (match) => match[0],
+  );
   const darkOrangePaletteBlock = /^body\[data-palette="0"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const darkMonochromePaletteBlock = /^body\[data-palette="6"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const orangePaletteBlock = /^body\[data-palette="4"\]\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
@@ -252,7 +254,7 @@ if (fs.existsSync(stylesPath)) {
       styles,
     )?.[0] ?? "";
   const orangeTimelinePanelControlsBlock =
-    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__lens-button,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
+    /html:root\[data-page="home"\]\[data-palette="4"\] \.timeline-panel__icon-button,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
   const orangeTimelinePanelTextBlock =
@@ -302,13 +304,13 @@ if (fs.existsSync(stylesPath)) {
   const orangeNameInputBlock =
     /html:root\[data-page="home"\]\[data-palette="4"\] \.name-auth-input,[\s\S]*?html:root\[data-page="home"\]\[data-palette="7"\] \.name-auth-input\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const themedHomeSocialChipBlock =
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette\]\[data-theme\] \.social-chip\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette\]\[data-theme\] \.social-chip\s*\{[\s\S]*?\n\}/.exec(styles)?.[0] ?? "";
   const themedHomePanelControlsBlock =
     /html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.signal-detail__action,[\s\S]*?html:root\[data-page="home"\]\[data-palette\]\[data-theme\] \.timeline-panel__source\s*\{[\s\S]*?\n\}/.exec(
       styles,
     )?.[0] ?? "";
-  const mobileDetailFooterBlock =
-    /\.signal-detail \.timeline-panel__footer,\s*\n\s*\.signal-detail__actions--intro\s*\{[\s\S]*?\n\s*\}/.exec(styles)?.[0] ?? "";
+  const mobileDetailActionsBlock =
+    /\.signal-detail \.timeline-panel__actions,\s*\n\s*\.signal-detail__actions--intro\s*\{[\s\S]*?\n\s*\}/.exec(styles)?.[0] ?? "";
   const paletteFourSelectorGroups = Array.from(styles.matchAll(/(^|})\s*([^{}]*\[data-palette="4"\][^{}]*)\s*\{/g))
     .map((match) => match[2].trim())
     .filter((selectorGroup) => !selectorGroup.includes(":root[data-palette=\"4\"]") && !selectorGroup.includes("body[data-palette=\"4\"]"));
@@ -539,11 +541,11 @@ if (fs.existsSync(stylesPath)) {
   if (themedHomePanelControlsBlock.includes("background: color-mix(in srgb, var(--bg)")) {
     fail("home detail panel controls must not reuse the page background");
   }
-  if (!mobileDetailFooterBlock.includes("background: transparent;")) {
-    fail("mobile detail footer must reveal the detail panel surface");
+  if (!mobileDetailActionsBlock.includes("background: transparent;")) {
+    fail("mobile detail actions must reveal the detail panel surface");
   }
-  if (mobileDetailFooterBlock.includes("background: color-mix(in srgb, var(--bg)")) {
-    fail("mobile detail footer must not reuse the page background");
+  if (mobileDetailActionsBlock.includes("background: color-mix(in srgb, var(--bg)")) {
+    fail("mobile detail actions must not reuse the page background");
   }
   if (!signalDetailBlock.includes("width: var(--home-detail-width, 420px);")) {
     fail("desktop signal detail panel must use the responsive reading width token");
@@ -576,10 +578,14 @@ if (fs.existsSync(stylesPath)) {
     fail("detail explanation must use a panel-appropriate thin scrollbar");
   }
   if (!timelinePanelActionsBlock.includes("margin-top: 8px;")) {
-    fail("detail AI section must use compact spacing");
+    fail("detail action row must use compact spacing");
   }
-  if (!timelinePanelLensButtonBlock.includes("width: 40px;") || !timelinePanelLensButtonBlock.includes("height: 40px;")) {
-    fail("detail AI provider buttons must use the compact 40px size");
+  if (
+    !timelinePanelIconButtonBlocks.some(
+      (block) => block.includes("width: 36px;") && block.includes("height: 36px;"),
+    )
+  ) {
+    fail("detail action icon buttons must use the compact 36px size");
   }
   if (!styles.includes("--home-rail-left: clamp(") || !styles.includes("--home-detail-width: clamp(")) {
     fail("home timeline and detail panel must expose responsive layout tokens");

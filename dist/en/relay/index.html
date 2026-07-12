@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
     <style data-alomat-styles>
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap");
 
 :root {
   color-scheme: light;
@@ -22,7 +22,7 @@
   --muted: #747b88;
   --border: rgba(5, 7, 13, 0.1);
   --shadow: 0 26px 70px rgba(15, 23, 42, 0.06);
-  --font-body: "Nunito", "Nunito Fallback", system-ui, sans-serif;
+  --font-body: "Noto Sans", system-ui, sans-serif;
   --font-display: "Iowan Old Style", Georgia, "Times New Roman", serif;
   --radius-xl: 34px;
   --radius-lg: 26px;
@@ -591,6 +591,11 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 
 .nav__item--library svg {
   color: var(--text-readable);
+}
+
+.nav__item.is-active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-strong);
 }
 
 .controls {
@@ -2201,8 +2206,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 .timeline-panel__audio-label,
 .timeline-panel__player,
 .timeline-panel__actions,
-.timeline-panel__footer,
-.timeline-panel__share {
+.timeline-panel__action-buttons {
   display: flex;
   align-items: center;
 }
@@ -2258,8 +2262,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .timeline-panel__meta-grid span,
-.timeline-panel__audio-label span,
-.timeline-panel__lens span {
+.timeline-panel__audio-label span {
   display: block;
   color: #7a808c;
   font-size: 0.66rem;
@@ -2267,8 +2270,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   text-transform: uppercase;
 }
 
-.timeline-panel__meta-grid strong,
-.timeline-panel__lens strong {
+.timeline-panel__meta-grid strong {
   display: block;
   margin-top: 4px;
   color: #21242a;
@@ -2372,23 +2374,13 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 .timeline-panel__actions {
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
 
-.timeline-panel__lens {
-  min-width: 0;
-}
-
-.timeline-panel__lens-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.timeline-panel__lens-button,
 .timeline-panel__icon-button {
   display: grid;
   place-items: center;
@@ -2398,24 +2390,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   box-shadow: 0 10px 18px color-mix(in srgb, var(--text) 4%, transparent);
 }
 
-.timeline-panel__lens-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
 .timeline-panel__icon-button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-}
-
-.timeline-panel__footer {
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
 }
 
 .timeline-panel__source {
@@ -2439,7 +2417,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   flex: 0 0 auto;
 }
 
-.timeline-panel__share {
+.timeline-panel__action-buttons {
   gap: 8px;
   flex: 0 0 auto;
 }
@@ -4600,7 +4578,7 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
     padding-bottom: 58vh;
   }
 
-  .signal-detail .timeline-panel__footer,
+  .signal-detail .timeline-panel__actions,
   .signal-detail__actions--intro {
     position: sticky;
     bottom: 0;
@@ -4796,15 +4774,15 @@ html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-vis
   filter: saturate(1);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette="2"][data-theme="light"] body::before {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] body::before {
   background:
     radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--text) 3.5%, transparent), transparent 32%),
     radial-gradient(circle at 82% 16%, color-mix(in srgb, var(--text) 3%, transparent), transparent 30%),
     radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--text) 3%, transparent), transparent 38%);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette="2"][data-theme="light"] .topbar,
-html:root:is([data-page="home"], [data-page="library"])[data-palette="2"][data-theme="light"] .topbar--home {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] .topbar,
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] .topbar--home {
   border: 0;
   border-radius: 0;
   background: color-mix(in srgb, var(--bg-start) 92%, transparent);
@@ -4833,15 +4811,15 @@ html:root[data-page="home"][data-palette="2"][data-theme="light"] .signal-detail
     0 30px 90px rgba(5, 7, 13, 0.28);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .topbar,
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .topbar--home {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar,
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar--home {
   border: 0;
   border-radius: 0;
   background: color-mix(in srgb, var(--bg-start) 92%, transparent);
   box-shadow: none;
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .topbar--home::after {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar--home::after {
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
@@ -4875,7 +4853,7 @@ html:root[data-page="home"][data-theme] .signal-detail__action {
   color: var(--text);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .site-footer__top {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .site-footer__top {
   border-color: color-mix(in srgb, var(--text) 13%, transparent);
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 70%, transparent), transparent 42%),
@@ -4883,7 +4861,7 @@ html:root:is([data-page="home"], [data-page="library"])[data-theme] .site-footer
   box-shadow: 0 18px 42px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .social-chip {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .social-chip {
   border-color: color-mix(in srgb, var(--text) 12%, transparent);
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--text) 5%, transparent);
@@ -5041,8 +5019,6 @@ html:root[data-page="home"][data-palette="7"][data-theme] .signal-detail.has-sto
     linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
-html:root[data-page="home"][data-palette="4"] .timeline-panel__lens-button,
-html:root[data-page="home"][data-palette="7"] .timeline-panel__lens-button,
 html:root[data-page="home"][data-palette="4"] .timeline-panel__icon-button,
 html:root[data-page="home"][data-palette="7"] .timeline-panel__icon-button,
 html:root[data-page="home"][data-palette="4"] .timeline-panel__source,
@@ -5083,7 +5059,6 @@ html:root[data-page="home"][data-palette="7"] .signal-detail__action {
 
 html:root[data-page="home"][data-palette][data-theme] .signal-detail__action,
 html:root[data-page="home"][data-palette][data-theme] .signal-detail__action--mute,
-html:root[data-page="home"][data-palette][data-theme] .timeline-panel__lens-button,
 html:root[data-page="home"][data-palette][data-theme] .timeline-panel__icon-button,
 html:root[data-page="home"][data-palette][data-theme] .timeline-panel__source {
   background: transparent;
@@ -5152,13 +5127,13 @@ html[data-page="home"][data-palette="0"] .timeline-panel__body p {
   color: var(--text);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette][data-theme] .site-footer__top {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette][data-theme] .site-footer__top {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette][data-theme] .social-chip {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette][data-theme] .social-chip {
   border-color: color-mix(in srgb, var(--text) 12%, transparent);
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--text) 5%, transparent);
@@ -5560,8 +5535,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
   <body>
     <div class="page-backdrop"></div>
     <div class="page-shell">
-      
-  <a class="skip-link" href="#content">Skip to content</a>
+      <a class="skip-link" href="#content">Skip to content</a>
   <header class="topbar">
     <a class="brand" href="../../en.html">
       <span class="brand__dot"></span>
@@ -5591,7 +5565,6 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
           <span class="palette-rail__sample" aria-hidden="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></span>
         </button>
         <div class="palette-rail__swatches" data-palette-menu aria-hidden="true">
-          
           <button class="palette-dock-swatch" type="button" data-palette-option="0" aria-label="Palette: Palette 1" aria-pressed="false" style="--swatch-bg:#05070d;--swatch-fg:#ff4d32"></button>
           <button class="palette-dock-swatch is-active" type="button" data-palette-option="2" aria-label="Palette: Palette 2" aria-pressed="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></button>
           <button class="palette-dock-swatch" type="button" data-palette-option="4" aria-label="Palette: Palette 3" aria-pressed="false" style="--swatch-bg:#ff4d32;--swatch-fg:#efeff2"></button>
@@ -5599,8 +5572,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       </div>
     </div>
   </header>
-      
-  <main id="content" class="page page-detail">
+      <main id="content" class="page page-detail">
     <section class="page-hero">
       <p class="eyebrow">Relay</p>
       <h1>Relay</h1>
@@ -5633,8 +5605,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       </div>
     </section>
   </main>
-      
-  <footer class="site-footer">
+      <footer class="site-footer">
     <div class="site-footer__top">
       <div class="footer-nav">
         <p class="eyebrow">Explore</p>
@@ -5804,8 +5775,6 @@ const detailLabels = {
     source: "MANBA",
     time: "VAQT",
     weight: "DOLZARBLIGI",
-    aiLens: "AI LINZASI",
-    askAi: "AI so'rash",
     originalSource: "ASL MANBA",
     like: "Yoqtirish",
     save: "Saqlash",
@@ -5824,8 +5793,6 @@ const detailLabels = {
     source: "SOURCE",
     time: "TIME",
     weight: "WEIGHT",
-    aiLens: "AI LENS",
-    askAi: "Ask AI",
     originalSource: "ORIGINAL SOURCE",
     like: "Like",
     save: "Save",
@@ -6440,8 +6407,6 @@ function renderStoryMarkup(story) {
   const sourceHref = sanitizeStoryUrl(story.url);
   const sourceTarget = sourceHref === "#" ? "" : ' target="_blank" rel="noreferrer"';
   const libraryEntry = readLibraryState().items[String(story.id)] || { liked: false, saved: false };
-  const imageButton = (label, content) =>
-    `<button class="timeline-panel__lens-button" type="button" aria-label="${escapeHtml(label)}">${content}</button>`;
   const actionButton = (label, action, icon, className) => {
     const pressed = action === "like" ? libraryEntry.liked : action === "save" ? libraryEntry.saved : false;
     const activeClass = pressed ? " is-active" : "";
@@ -6475,17 +6440,6 @@ function renderStoryMarkup(story) {
       ${summaryHtml}
     </div>
     <div class="timeline-panel__actions">
-      <div class="timeline-panel__lens">
-        <span>${escapeHtml(labels.aiLens)}</span>
-        <strong>${escapeHtml(labels.askAi)}</strong>
-      </div>
-      <div class="timeline-panel__lens-buttons">
-        ${imageButton(labels.askAi, "AI")}
-        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__lens-button")}
-        ${actionButton(labels.share, "share", "share", "timeline-panel__lens-button")}
-      </div>
-    </div>
-    <div class="timeline-panel__footer">
       <a class="timeline-panel__source" href="${escapeAttribute(sourceHref)}"${sourceTarget}>
         ${escapeHtml(labels.originalSource)}
         <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
@@ -6493,8 +6447,9 @@ function renderStoryMarkup(story) {
           <path fill="none" stroke="currentColor" stroke-width="2" d="M21 3 10 14"></path>
         </svg>
       </a>
-      <div class="timeline-panel__share">
+      <div class="timeline-panel__action-buttons">
         ${actionButton(labels.like, "like", "heart", "timeline-panel__icon-button")}
+        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__icon-button")}
         ${actionButton(labels.share, "share", "share", "timeline-panel__icon-button")}
       </div>
     </div>

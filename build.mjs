@@ -1368,10 +1368,9 @@ function renderPalettePicker(localeKey, extraClass = "") {
         <div class="palette-rail__swatches" data-palette-menu aria-hidden="true">
           ${options
             .map(
-              (option) => `
-          <button class="palette-dock-swatch${option.key === "2" ? " is-active" : ""}" type="button" data-palette-option="${text(option.key)}" aria-label="${text(locale.ui.palette)}: ${text(option.label)}" aria-pressed="${option.key === "2" ? "true" : "false"}" style="--swatch-bg:${text(option.bg)};--swatch-fg:${text(option.fg)}"></button>`,
+              (option) => `<button class="palette-dock-swatch${option.key === "2" ? " is-active" : ""}" type="button" data-palette-option="${text(option.key)}" aria-label="${text(locale.ui.palette)}: ${text(option.label)}" aria-pressed="${option.key === "2" ? "true" : "false"}" style="--swatch-bg:${text(option.bg)};--swatch-fg:${text(option.fg)}"></button>`,
             )
-            .join("")}
+            .join("\n          ")}
         </div>
       </div>`;
 }
@@ -1386,7 +1385,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
   const otherLocale = localeKey === "en" ? "uz" : "en";
   const currentPageOtherLocale = navigationPageOutputPath(otherLocale, pageKey);
   const localeSwitchHref = relativeHref(currentFile, currentPageOtherLocale);
-  const isSignalChrome = pageKey === "home" || pageKey === "library";
+  const isSignalChrome = ["home", "library", "about", "lineup"].includes(pageKey);
   const navItems =
     isSignalChrome
       ? pages.filter((page) => ["about", "lineup", "library"].includes(page.key))
@@ -1420,15 +1419,15 @@ function renderHeader(localeKey, pageKey, currentFile) {
 
       <div class="controls controls--home">
         <nav class="nav nav--home signal-topbar-controls__group signal-topbar-controls__group--reader" aria-label="Primary">
-        <a class="nav__item nav__item--dot" href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "about")))}">
+        <a class="nav__item nav__item--dot${pageKey === "about" ? " is-active" : ""}"${pageKey === "about" ? ' aria-current="page"' : ""} href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "about")))}">
           <span class="nav__bullet" aria-hidden="true">•</span>
           <span>MANIFESTO</span>
         </a>
-        <a class="nav__item nav__item--dot" href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup")))}">
+        <a class="nav__item nav__item--dot${pageKey === "lineup" ? " is-active" : ""}"${pageKey === "lineup" ? ' aria-current="page"' : ""} href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup")))}">
           <span class="nav__bullet" aria-hidden="true">•</span>
           <span>LINEUP</span>
         </a>
-        <a class="nav__item nav__item--library${pageKey === "library" ? " is-active" : ""}"${libraryGateAttr} href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "library")))}">
+        <a class="nav__item nav__item--library${pageKey === "library" ? " is-active" : ""}"${pageKey === "library" ? ' aria-current="page"' : ""}${libraryGateAttr} href="${text(relativeHref(currentFile, navigationPageOutputPath(localeKey, "library")))}">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M4 4.5C4 3.1 5.1 2 6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15Z"></path>
             <path fill="#fff" d="M7.25 5.5h10.5v1.6H7.25zM7.25 9.1h10.5v1.6H7.25zM7.25 12.7h7.8v1.6h-7.8z"></path>
@@ -1442,7 +1441,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
           <button class="language-switch__button${localeKey === "uz" ? " is-active" : " is-inactive"} is-disabled" type="button" disabled aria-disabled="true">UZ</button>
         </div>
 
-        ${renderPalettePicker(localeKey)}
+        ${renderPalettePicker(localeKey).trim()}
       </div>
     </header>`;
   }
@@ -1908,17 +1907,8 @@ function getLineupArticleById(id) {
 
 function renderAbout(localeKey, currentFile) {
   const manifesto = getManifesto(localeKey);
-  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
   return `
   <main id="content" class="static-page manifesto-page">
-    <header class="static-header">
-      <a class="back-link" href="${text(homeHref)}">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
-          <path d="M19 12H5M12 19l-7-7 7-7"></path>
-        </svg>
-        <span>${text(manifesto.back)}</span>
-      </a>
-    </header>
     <article class="manifesto">
       <header class="manifesto__masthead">
         <p class="manifesto__kicker">${text(manifesto.kicker)}</p>
@@ -2158,9 +2148,6 @@ function renderSponsor(localeKey) {
 function renderLineup(localeKey, currentFile) {
   const locale = locales[localeKey];
   const lineup = locale.lineup;
-  const homeHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "home"));
-  const lineupHref = relativeHref(currentFile, navigationPageOutputPath(localeKey, "lineup"));
-  const articleHref = "#lineup-articles";
   const applyHref = "mailto:editor@alomat.uz";
   const featuredArticle = getLineupArticleById("fable-5");
   const listArticle = getLineupArticleById("attention");
@@ -2169,9 +2156,7 @@ function renderLineup(localeKey, currentFile) {
   const labels =
     localeKey === "en"
       ? {
-          brand: "alomat",
           writings: "Writings",
-          login: "Login",
           sectionAll: "See all →",
           staff: "Masthead",
           staffMeta: "Each one by editor invitation",
@@ -2179,9 +2164,7 @@ function renderLineup(localeKey, currentFile) {
           read: "Read →",
         }
       : {
-          brand: "alomat",
           writings: "Yozilar",
-          login: "Kirish",
           sectionAll: "Hammasini ko'r →",
           staff: "Kadro",
           staffMeta: "Har biri muharrir taklifi bilan",
@@ -2195,17 +2178,6 @@ function renderLineup(localeKey, currentFile) {
   return `
   <div id="content" class="lineup-page">
     <main class="lineup-shell">
-      <header class="lineup-topbar">
-        <div class="lineup-topbar__brand">
-          <span class="lineup-topbar__brand-dot" aria-hidden="true"></span>
-          <a class="lineup-topbar__brand-word" href="${text(homeHref)}">${text(labels.brand)}</a>
-          <a class="lineup-topbar__brand-word" href="${text(lineupHref)}">lineup</a>
-        </div>
-        <nav class="lineup-topbar__nav" aria-label="Lineup">
-          <a class="lineup-topbar__link" href="${text(articleHref)}">${text(labels.writings)}</a>
-          <button type="button" class="lineup-topbar__link lineup-topbar__link--primary">${text(labels.login)}</button>
-        </nav>
-      </header>
       <section class="lineup-cover">
         <p class="lineup-epigraph">${text(lineup.lead)}</p>
         <a class="lineup-feature lineup-feature--cover" href="${text(featuredHref)}">
@@ -2424,7 +2396,6 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
   const otherLocaleFile = navigationPageOutputPath(otherLocale, pageKey);
   const currentLocaleHref = relativeHref(currentFile, currentFile);
   const alternateHref = relativeHref(currentFile, otherLocaleFile);
-  const skipSiteHeader = pageKey === "about" || pageKey === "lineup";
   const skipSiteFooter = pageKey === "about";
 
   return `<!doctype html>
@@ -2728,10 +2699,10 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
   </head>
   <body>
     <div class="page-backdrop"></div>
-    <div class="page-shell${["home", "library"].includes(pageKey) ? " page-shell--home" : ""}${skipSiteHeader ? " page-shell--static" : ""}">
-      ${skipSiteHeader ? "" : renderHeader(localeKey, pageKey, currentFile)}
-      ${renderPage(localeKey, pageKey, currentFile)}
-      ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile)}
+    <div class="page-shell${["home", "library", "about", "lineup"].includes(pageKey) ? " page-shell--home" : ""}">
+      ${renderHeader(localeKey, pageKey, currentFile).trim()}
+      ${renderPage(localeKey, pageKey, currentFile).trim()}
+      ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile).trim()}
     </div>
     <script>window.__ALOMAT_SIGNALS_API_BASE__=${serializeJson(process.env.ALOMAT_SIGNALS_API_BASE ?? "")};</script>
     ${renderInlineApp()}

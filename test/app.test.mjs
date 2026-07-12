@@ -662,7 +662,7 @@ test("local library deduplicates stories and sorts the latest action first", asy
   }
 });
 
-test("detail action markup uses like, save, and share SVG controls without download", async () => {
+test("detail action markup uses one compact source, like, save, and share row without AI", async () => {
   const { helpers, cleanup } = await loadAppModule();
   try {
     const markup = helpers.renderStoryMarkup({
@@ -680,6 +680,12 @@ test("detail action markup uses like, save, and share SVG controls without downl
     assert.match(markup, /data-icon="heart"/);
     assert.match(markup, /data-icon="bookmark"/);
     assert.match(markup, /data-icon="share"/);
+    assert.match(markup, /class="timeline-panel__source"/);
+    assert.match(markup, /ORIGINAL SOURCE/);
+    assert.equal((markup.match(/data-story-action="share"/g) || []).length, 1);
+    assert.doesNotMatch(markup, /timeline-panel__footer/);
+    assert.doesNotMatch(markup, /timeline-panel__lens/);
+    assert.doesNotMatch(markup, /AI LENS|Ask AI|AI so'rash|AI LINZASI/);
     assert.doesNotMatch(markup, /data-story-action="download"/);
     assert.doesNotMatch(markup, /Download|Yuklash/);
   } finally {

@@ -41,6 +41,14 @@ test("auth code controls keep hidden elements hidden despite field display style
   assert.match(styles, /\.name-auth-input\[hidden\][\s\S]*display:\s*none;/);
 });
 
+test("body typography uses Noto Sans for Uzbek modifier-letter characters", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(styles, /family=Noto\+Sans:wght@400;500;600;700;800/);
+  assert.match(styles, /--font-body:\s*"Noto Sans",\s*system-ui,\s*sans-serif;/);
+  assert.doesNotMatch(styles, /--font-body:[^;]*Nunito/);
+});
+
 test("library page uses the home signal archive layout instead of generic cards", () => {
   const build = readProjectFile("dist/library/index.html");
   const styles = readProjectFile("styles.css");
@@ -60,15 +68,15 @@ test("library page uses the home signal archive layout instead of generic cards"
   assert.doesNotMatch(build, /class="library-memory__action"/);
   assert.match(
     styles,
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\).*\.topbar--home/,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\).*\.topbar--home/,
   );
   assert.match(
     styles,
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\).*\.site-footer__top/,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\).*\.site-footer__top/,
   );
   assert.match(
     styles,
-    /html:root:is\(\[data-page="home"\], \[data-page="library"\]\)\[data-palette="2"\]\[data-theme="light"\] body::before/,
+    /html:root:is\(\[data-page="home"\], \[data-page="library"\], \[data-page="about"\], \[data-page="lineup"\]\)\[data-palette="2"\]\[data-theme="light"\] body::before/,
   );
   assert.match(
     styles,
@@ -85,4 +93,18 @@ test("library page uses the home signal archive layout instead of generic cards"
   );
   assert.ok(libraryHeroBlocks.some((block) => /white-space:\s*nowrap/.test(block)));
   assert.ok(libraryHeroBlocks.some((block) => /overflow-wrap:\s*normal/.test(block)));
+});
+
+test("manifesto and lineup reuse the home signal topbar without page-local headers", () => {
+  const about = readProjectFile("dist/about.html");
+  const lineup = readProjectFile("dist/lineup.html");
+
+  for (const page of [about, lineup]) {
+    assert.match(page, /class="topbar topbar--home"/);
+  }
+  assert.match(about, /aria-current="page"[^>]*>[\s\S]*?MANIFESTO/);
+  assert.match(lineup, /aria-current="page"[^>]*>[\s\S]*?LINEUP/);
+  assert.doesNotMatch(about, /class="static-header"/);
+  assert.doesNotMatch(lineup, /class="lineup-topbar"/);
+  assert.doesNotMatch(lineup, /class="lineup-topbar__brand"/);
 });

@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
     <style data-alomat-styles>
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap");
 
 :root {
   color-scheme: light;
@@ -22,7 +22,7 @@
   --muted: #747b88;
   --border: rgba(5, 7, 13, 0.1);
   --shadow: 0 26px 70px rgba(15, 23, 42, 0.06);
-  --font-body: "Nunito", "Nunito Fallback", system-ui, sans-serif;
+  --font-body: "Noto Sans", system-ui, sans-serif;
   --font-display: "Iowan Old Style", Georgia, "Times New Roman", serif;
   --radius-xl: 34px;
   --radius-lg: 26px;
@@ -591,6 +591,11 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 
 .nav__item--library svg {
   color: var(--text-readable);
+}
+
+.nav__item.is-active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text-strong);
 }
 
 .controls {
@@ -2201,8 +2206,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 .timeline-panel__audio-label,
 .timeline-panel__player,
 .timeline-panel__actions,
-.timeline-panel__footer,
-.timeline-panel__share {
+.timeline-panel__action-buttons {
   display: flex;
   align-items: center;
 }
@@ -2258,8 +2262,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .timeline-panel__meta-grid span,
-.timeline-panel__audio-label span,
-.timeline-panel__lens span {
+.timeline-panel__audio-label span {
   display: block;
   color: #7a808c;
   font-size: 0.66rem;
@@ -2267,8 +2270,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   text-transform: uppercase;
 }
 
-.timeline-panel__meta-grid strong,
-.timeline-panel__lens strong {
+.timeline-panel__meta-grid strong {
   display: block;
   margin-top: 4px;
   color: #21242a;
@@ -2372,23 +2374,13 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 
 .timeline-panel__actions {
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
 
-.timeline-panel__lens {
-  min-width: 0;
-}
-
-.timeline-panel__lens-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.timeline-panel__lens-button,
 .timeline-panel__icon-button {
   display: grid;
   place-items: center;
@@ -2398,24 +2390,10 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   box-shadow: 0 10px 18px color-mix(in srgb, var(--text) 4%, transparent);
 }
 
-.timeline-panel__lens-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
 .timeline-panel__icon-button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-}
-
-.timeline-panel__footer {
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
 }
 
 .timeline-panel__source {
@@ -2439,7 +2417,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   flex: 0 0 auto;
 }
 
-.timeline-panel__share {
+.timeline-panel__action-buttons {
   gap: 8px;
   flex: 0 0 auto;
 }
@@ -4600,7 +4578,7 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
     padding-bottom: 58vh;
   }
 
-  .signal-detail .timeline-panel__footer,
+  .signal-detail .timeline-panel__actions,
   .signal-detail__actions--intro {
     position: sticky;
     bottom: 0;
@@ -4796,15 +4774,15 @@ html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-vis
   filter: saturate(1);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette="2"][data-theme="light"] body::before {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] body::before {
   background:
     radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--text) 3.5%, transparent), transparent 32%),
     radial-gradient(circle at 82% 16%, color-mix(in srgb, var(--text) 3%, transparent), transparent 30%),
     radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--text) 3%, transparent), transparent 38%);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette="2"][data-theme="light"] .topbar,
-html:root:is([data-page="home"], [data-page="library"])[data-palette="2"][data-theme="light"] .topbar--home {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] .topbar,
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette="2"][data-theme="light"] .topbar--home {
   border: 0;
   border-radius: 0;
   background: color-mix(in srgb, var(--bg-start) 92%, transparent);
@@ -4833,15 +4811,15 @@ html:root[data-page="home"][data-palette="2"][data-theme="light"] .signal-detail
     0 30px 90px rgba(5, 7, 13, 0.28);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .topbar,
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .topbar--home {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar,
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar--home {
   border: 0;
   border-radius: 0;
   background: color-mix(in srgb, var(--bg-start) 92%, transparent);
   box-shadow: none;
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .topbar--home::after {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .topbar--home::after {
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
@@ -4875,7 +4853,7 @@ html:root[data-page="home"][data-theme] .signal-detail__action {
   color: var(--text);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .site-footer__top {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .site-footer__top {
   border-color: color-mix(in srgb, var(--text) 13%, transparent);
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 70%, transparent), transparent 42%),
@@ -4883,7 +4861,7 @@ html:root:is([data-page="home"], [data-page="library"])[data-theme] .site-footer
   box-shadow: 0 18px 42px color-mix(in srgb, var(--text) 7%, transparent);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-theme] .social-chip {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-theme] .social-chip {
   border-color: color-mix(in srgb, var(--text) 12%, transparent);
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--text) 5%, transparent);
@@ -5041,8 +5019,6 @@ html:root[data-page="home"][data-palette="7"][data-theme] .signal-detail.has-sto
     linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
-html:root[data-page="home"][data-palette="4"] .timeline-panel__lens-button,
-html:root[data-page="home"][data-palette="7"] .timeline-panel__lens-button,
 html:root[data-page="home"][data-palette="4"] .timeline-panel__icon-button,
 html:root[data-page="home"][data-palette="7"] .timeline-panel__icon-button,
 html:root[data-page="home"][data-palette="4"] .timeline-panel__source,
@@ -5083,7 +5059,6 @@ html:root[data-page="home"][data-palette="7"] .signal-detail__action {
 
 html:root[data-page="home"][data-palette][data-theme] .signal-detail__action,
 html:root[data-page="home"][data-palette][data-theme] .signal-detail__action--mute,
-html:root[data-page="home"][data-palette][data-theme] .timeline-panel__lens-button,
 html:root[data-page="home"][data-palette][data-theme] .timeline-panel__icon-button,
 html:root[data-page="home"][data-palette][data-theme] .timeline-panel__source {
   background: transparent;
@@ -5152,13 +5127,13 @@ html[data-page="home"][data-palette="0"] .timeline-panel__body p {
   color: var(--text);
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette][data-theme] .site-footer__top {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette][data-theme] .site-footer__top {
   border-color: transparent;
   background: transparent;
   box-shadow: none;
 }
 
-html:root:is([data-page="home"], [data-page="library"])[data-palette][data-theme] .social-chip {
+html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [data-page="lineup"])[data-palette][data-theme] .social-chip {
   border-color: color-mix(in srgb, var(--text) 12%, transparent);
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   box-shadow: 0 10px 22px color-mix(in srgb, var(--text) 5%, transparent);
@@ -5560,8 +5535,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
   <body>
     <div class="page-backdrop"></div>
     <div class="page-shell page-shell--home">
-      
-    <a class="skip-link" href="#content">Kontentga o‘tish</a>
+      <a class="skip-link" href="#content">Kontentga o‘tish</a>
     <header class="topbar topbar--home">
       <a class="brand brand--home" href="index.html">
         <span class="brand__stack">
@@ -5604,8 +5578,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
           <button class="language-switch__button is-active is-disabled" type="button" disabled aria-disabled="true">UZ</button>
         </div>
 
-        
-      <div class="palette-rail" data-palette-picker role="group" aria-label="Rang tanla">
+        <div class="palette-rail" data-palette-picker role="group" aria-label="Rang tanla">
         <button class="palette-rail__trigger" type="button" data-palette-toggle aria-label="Rang tanla" title="Rang tanla" aria-expanded="false">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
             <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
@@ -5618,7 +5591,6 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
           <span class="palette-rail__sample" aria-hidden="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></span>
         </button>
         <div class="palette-rail__swatches" data-palette-menu aria-hidden="true">
-          
           <button class="palette-dock-swatch" type="button" data-palette-option="0" aria-label="Rang tanla: 1. palet" aria-pressed="false" style="--swatch-bg:#05070d;--swatch-fg:#ff4d32"></button>
           <button class="palette-dock-swatch is-active" type="button" data-palette-option="2" aria-label="Rang tanla: 2. palet" aria-pressed="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></button>
           <button class="palette-dock-swatch" type="button" data-palette-option="4" aria-label="Rang tanla: 3. palet" aria-pressed="false" style="--swatch-bg:#ff4d32;--swatch-fg:#efeff2"></button>
@@ -5626,8 +5598,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       </div>
       </div>
     </header>
-      
-  <main id="content" class="page page-home">
+      <main id="content" class="page page-home">
     <section class="hero hero--home">
       <div class="hero__copy hero__copy--home">
         <section class="signal-timeline signal-timeline--home" aria-label=".alomat signal vaqt jadvali">
@@ -5818,8 +5789,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       <script type="application/json" data-signal-stories>[{"id":91805,"title":"Illinois OpenAI va Anthropic qo'llab-quvvatlagan AI xavfsizlik qonunini imzoladi","source":"CBS News","time":"19:01","score":94,"url":"https://www.cbsnews.com/chicago/news/pritzker-to-sign-illinois-bill-aimed-artificial-intelligence-accountability/","image":"https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format\u0026fit=crop\u0026w=1400\u0026q=80","category":"policy","summary":["Illinois gubernatori JB Pritzker sun'iy intellekt uchun hisobdorlik va xavfsizlik doirasini belgilovchi 315-sonli Senat qonunini imzoladi.","Qonun yirik model ishlab chiquvchilardan xavflarni kamaytirish uchun shaffoflik jadvali, qat'iy xavfsizlik protokollari va uchinchi tomon auditorlarini talab qiladi."]},{"id":91804,"title":"Nintendo batareya qonunlari sabab Yevropadagi Switch savdosini 2027 yilgacha to'xtatadi","source":"Andrew Webster / The Verge","time":"10:35 AM","score":94,"url":"https://www.theverge.com/games/961632/nintendo-switch-europe-discontinued","image":"https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-aa1af09d-783dc88f-0927cad6-e09e634b-ba981037-f603826b-3a6e62fb-7f1407ca/2338777_Image.png","category":"policy","summary":["Nintendo 2027 yil fevral o'rtalaridan boshlab Yevropada original Switch oilasining sotuvini to'xtatadi.","Qaror almashtiriladigan batareyalar bo'yicha yangi YI talablariga moslashish uchun qabul qilindi."]},{"id":91803,"title":"MicroStrategy 11,4 milliard dollarlik qog'oz zarar fonida 216 million dollarlik Bitcoin sotdi","source":"James Hunt / The Block","time":"10:25 AM","score":94,"url":"https://www.theblock.co/post/407217/strategy-bitcoin-digital-energy","image":"https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-08a5f804-071a656b-ff5bf5e3-9284e84c-77407ef8-3e37dc86-77078015-979370db/2338743_Image.png","category":"companies","summary":["MicroStrategy imtiyozli aksiyalar taqsimotini moliyalash uchun taxminan 216 million dollarlik 3 588 BTC sotdi.","Shunga qaramay, kompaniya 843 775 BTC ushlab turibdi va qog'ozdagi zarari taxminan 11,4 milliard dollarni tashkil etadi."]},{"id":91802,"title":"Xbox 3 200 ish o'rnini qisqartirdi va Ninja Theory'ni ajratdi","source":"Bloomberg","time":"9:41 AM","score":95,"url":"https://www.bloomberg.com/news/articles/2026-07-06/microsoft-s-xbox-to-cut-3-200-jobs-divest-five-studios-in-major-overhaul","image":"https://cdn1.wiro.ai/22680191-31ed99e6-1ebd7af6-27f8f142-fb91ab86-b27df2b0-f69e80b0-aa89f934-28ff8bf5-005bd550-4e3ca625-2c051cdd/2338588_Image.png","category":"gaming","summary":["Microsoft'ning Xbox bo'limi qariyb 3 200 ish o'rnini qisqartirish va besh studiyani ajratishni rejalashtirmoqda.","Bu qayta sozlash kompaniyaning asosiy seriyalar va obuna xizmatlariga tayanuvchi yalroq o'yin strategiyasiga o'tishini ko'rsatadi."]},{"id":91801,"title":"Agility Robotics bosh direktori Peggy Johnson SPAClar va apparat ustunliklari haqida","source":"Connie Loizos / TechCrunch","time":"6:55 AM","score":94,"url":"https://techcrunch.com/2026/07/05/this-humanoid-robotics-company-is-going-public-but-its-ceo-isnt-promising-a-robot-in-your-home-anytime-soon/","image":"https://cdn1.wiro.ai/2b97ab18-2d87df57-83434db9-df0c4232-f6647792-4132135c-3f4c6319-f0cdcc47-a3a18d9a-c39b8747-c9170b62-cd76e63e/2337916_Image.png","category":"funding","summary":["Agility Robotics Churchill Capital Corp XI bilan birlashib ommaga chiqishni rejalashtirmoqda va kompaniya taxminan 2,5 milliard dollar baholanmoqda.","Peggy Johnson haqiqiy ustunlik zavodga joylashgan robotlar, xavfsizlik ma'lumotlari va real dunyo tajribasidan kelishini aytmoqda."]},{"id":91800,"title":"AI mehnatdan kapitalga siljishi Irlandiyaning texnologiyaga og'ir soliq bazasiga tahdid solmoqda","source":"Olivia Fletcher / Bloomberg","time":"6:40 AM","score":94,"url":"https://www.bloomberg.com/news/articles/2026-07-06/meta-tiktok-jobs-cuts-in-ireland-augur-further-ai-disruption","image":"https://cdn1.wiro.ai/0758c7f7-b1fb7e9d-b31248cd-7f304742-f2a80eb3-a14bd3f3-48d2e738-561d1299-c28afef7-3cefe011-8e3e6fb6-45448c4e/2337810_Image.png","category":"policy","summary":["Meta, TikTok va boshqa yirik texnologik kompaniyalardagi qisqartirishlar AI Irlandiya raqamli iqtisodiyotini qanday o'zgartirayotganini ko'rsatmoqda.","Mehnatga asoslangan modellardan kapitalga asoslangan modellarga o'tish yuqori daromadli texnologiya xodimlariga tayangan soliq bazasini zaiflashtirishi mumkin."]},{"id":91799,"title":"AQSh G'aznachiligi AI bozoridagi xavflar dotcom qulashini eslatishini ogohlantirdi","source":"Eric Katz / NOTUS","time":"5:30 AM","score":94,"url":"https://www.notus.org/economy/treasury-internal-report-warning-dangers-ai-bubble","image":"https://cdn1.wiro.ai/c5563a6a-eabcf8ac-bd199571-30ebe417-5e62a1bf-66455782-f76ba9bc-c3cf7c7a-90d444fd-6a8d78f0-f856a1a3-ba785a35/2337679_Image.png","category":"policy","summary":["Ichki G'aznachilik ogohlantiruvi AI bozoridagi xavflar dotcom pufagiga o'xshab borayotganini aytadi.","Xavotir shundaki, baholashlar va shov-shuv asosiy ko'rsatkichlardan oldinga chiqib ketmoqda."]}]</script>
     </section>
   </main>
-      
-  <footer class="site-footer">
+      <footer class="site-footer">
     <div class="site-footer__top">
       <div class="footer-nav">
         <p class="eyebrow">Kashf et</p>
@@ -5989,8 +5959,6 @@ const detailLabels = {
     source: "MANBA",
     time: "VAQT",
     weight: "DOLZARBLIGI",
-    aiLens: "AI LINZASI",
-    askAi: "AI so'rash",
     originalSource: "ASL MANBA",
     like: "Yoqtirish",
     save: "Saqlash",
@@ -6009,8 +5977,6 @@ const detailLabels = {
     source: "SOURCE",
     time: "TIME",
     weight: "WEIGHT",
-    aiLens: "AI LENS",
-    askAi: "Ask AI",
     originalSource: "ORIGINAL SOURCE",
     like: "Like",
     save: "Save",
@@ -6625,8 +6591,6 @@ function renderStoryMarkup(story) {
   const sourceHref = sanitizeStoryUrl(story.url);
   const sourceTarget = sourceHref === "#" ? "" : ' target="_blank" rel="noreferrer"';
   const libraryEntry = readLibraryState().items[String(story.id)] || { liked: false, saved: false };
-  const imageButton = (label, content) =>
-    `<button class="timeline-panel__lens-button" type="button" aria-label="${escapeHtml(label)}">${content}</button>`;
   const actionButton = (label, action, icon, className) => {
     const pressed = action === "like" ? libraryEntry.liked : action === "save" ? libraryEntry.saved : false;
     const activeClass = pressed ? " is-active" : "";
@@ -6660,17 +6624,6 @@ function renderStoryMarkup(story) {
       ${summaryHtml}
     </div>
     <div class="timeline-panel__actions">
-      <div class="timeline-panel__lens">
-        <span>${escapeHtml(labels.aiLens)}</span>
-        <strong>${escapeHtml(labels.askAi)}</strong>
-      </div>
-      <div class="timeline-panel__lens-buttons">
-        ${imageButton(labels.askAi, "AI")}
-        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__lens-button")}
-        ${actionButton(labels.share, "share", "share", "timeline-panel__lens-button")}
-      </div>
-    </div>
-    <div class="timeline-panel__footer">
       <a class="timeline-panel__source" href="${escapeAttribute(sourceHref)}"${sourceTarget}>
         ${escapeHtml(labels.originalSource)}
         <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
@@ -6678,8 +6631,9 @@ function renderStoryMarkup(story) {
           <path fill="none" stroke="currentColor" stroke-width="2" d="M21 3 10 14"></path>
         </svg>
       </a>
-      <div class="timeline-panel__share">
+      <div class="timeline-panel__action-buttons">
         ${actionButton(labels.like, "like", "heart", "timeline-panel__icon-button")}
+        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__icon-button")}
         ${actionButton(labels.share, "share", "share", "timeline-panel__icon-button")}
       </div>
     </div>

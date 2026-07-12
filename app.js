@@ -132,8 +132,6 @@ const detailLabels = {
     source: "MANBA",
     time: "VAQT",
     weight: "DOLZARBLIGI",
-    aiLens: "AI LINZASI",
-    askAi: "AI so'rash",
     originalSource: "ASL MANBA",
     like: "Yoqtirish",
     save: "Saqlash",
@@ -152,8 +150,6 @@ const detailLabels = {
     source: "SOURCE",
     time: "TIME",
     weight: "WEIGHT",
-    aiLens: "AI LENS",
-    askAi: "Ask AI",
     originalSource: "ORIGINAL SOURCE",
     like: "Like",
     save: "Save",
@@ -768,8 +764,6 @@ function renderStoryMarkup(story) {
   const sourceHref = sanitizeStoryUrl(story.url);
   const sourceTarget = sourceHref === "#" ? "" : ' target="_blank" rel="noreferrer"';
   const libraryEntry = readLibraryState().items[String(story.id)] || { liked: false, saved: false };
-  const imageButton = (label, content) =>
-    `<button class="timeline-panel__lens-button" type="button" aria-label="${escapeHtml(label)}">${content}</button>`;
   const actionButton = (label, action, icon, className) => {
     const pressed = action === "like" ? libraryEntry.liked : action === "save" ? libraryEntry.saved : false;
     const activeClass = pressed ? " is-active" : "";
@@ -803,17 +797,6 @@ function renderStoryMarkup(story) {
       ${summaryHtml}
     </div>
     <div class="timeline-panel__actions">
-      <div class="timeline-panel__lens">
-        <span>${escapeHtml(labels.aiLens)}</span>
-        <strong>${escapeHtml(labels.askAi)}</strong>
-      </div>
-      <div class="timeline-panel__lens-buttons">
-        ${imageButton(labels.askAi, "AI")}
-        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__lens-button")}
-        ${actionButton(labels.share, "share", "share", "timeline-panel__lens-button")}
-      </div>
-    </div>
-    <div class="timeline-panel__footer">
       <a class="timeline-panel__source" href="${escapeAttribute(sourceHref)}"${sourceTarget}>
         ${escapeHtml(labels.originalSource)}
         <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
@@ -821,8 +804,9 @@ function renderStoryMarkup(story) {
           <path fill="none" stroke="currentColor" stroke-width="2" d="M21 3 10 14"></path>
         </svg>
       </a>
-      <div class="timeline-panel__share">
+      <div class="timeline-panel__action-buttons">
         ${actionButton(labels.like, "like", "heart", "timeline-panel__icon-button")}
+        ${actionButton(labels.save, "save", "bookmark", "timeline-panel__icon-button")}
         ${actionButton(labels.share, "share", "share", "timeline-panel__icon-button")}
       </div>
     </div>
