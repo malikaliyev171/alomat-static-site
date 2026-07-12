@@ -126,14 +126,27 @@ test("manifesto and lineup use one flat palette background across the viewport",
 
   assert.match(
     styles,
-    /html:is\(\[data-page="about"\], \[data-page="lineup"\]\) body\s*\{[\s\S]*?background:\s*var\(--bg\);[\s\S]*?\}/,
+    /html:is\(\[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\) body\s*\{[\s\S]*?background:\s*var\(--bg\);[\s\S]*?\}/,
   );
   assert.match(
     styles,
-    /html:is\(\[data-page="about"\], \[data-page="lineup"\]\) body::before,[\s\S]*?body::after\s*\{[\s\S]*?opacity:\s*0;[\s\S]*?\}/,
+    /html:is\(\[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\) body::before,[\s\S]*?body::after\s*\{[\s\S]*?opacity:\s*0;[\s\S]*?\}/,
   );
   assert.match(
     styles,
-    /html\[data-page="about"\] \.static-page,[\s\S]*?html\[data-page="lineup"\] \.lineup-page\s*\{[\s\S]*?background:\s*transparent;/,
+    /html\[data-page="about"\] \.static-page,[\s\S]*?html\[data-page="lineup-article"\] \.lineup-page\s*\{[\s\S]*?background:\s*transparent;/,
+  );
+});
+
+test("lineup article pages use the same flat palette background", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(
+    styles,
+    /html:is\(\[data-page="about"\], \[data-page="lineup"\], \[data-page="lineup-article"\]\) body\s*\{[\s\S]*?background:\s*var\(--bg\);[\s\S]*?\}/,
+  );
+  assert.match(
+    styles,
+    /html\[data-page="lineup-article"\] \.lineup-page\s*\{[\s\S]*?background:\s*transparent;/,
   );
 });

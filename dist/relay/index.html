@@ -358,17 +358,13 @@ html[data-page="home"] {
   padding: 0;
 }
 
-html:is([data-page="about"], [data-page="lineup"]) body {
+html:is([data-page="about"], [data-page="lineup"], [data-page="lineup-article"]) body {
   background: var(--bg);
 }
 
-html:is([data-page="about"], [data-page="lineup"]) body::before,
-html:is([data-page="about"], [data-page="lineup"]) body::after {
+html:is([data-page="about"], [data-page="lineup"], [data-page="lineup-article"]) body::before,
+html:is([data-page="about"], [data-page="lineup"], [data-page="lineup-article"]) body::after {
   opacity: 0;
-}
-
-html[data-page="lineup-article"] body {
-  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
 }
 
 html[data-page="about"] .page-backdrop,
@@ -3477,12 +3473,9 @@ html[data-page="lineup-article"] .lineup-page {
 }
 
 html[data-page="about"] .static-page,
-html[data-page="lineup"] .lineup-page {
-  background: transparent;
-}
-
+html[data-page="lineup"] .lineup-page,
 html[data-page="lineup-article"] .lineup-page {
-  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  background: transparent;
 }
 
 html[data-page="about"] .back-link,
