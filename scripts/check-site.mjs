@@ -194,20 +194,17 @@ if (fs.existsSync(stylesPath)) {
   if (!timelineHeadlineButtonBlock.includes("box-shadow: 0 10px 30px color-mix(in srgb, var(--text) 5%, transparent);")) {
     fail("timeline headline cards must use palette-aware shadows");
   }
-  if (!timelineHeadlineButtonImageBlock.includes('content: "";')) {
-    fail("timeline headline cards must render a story image layer");
+  if (!timelineHeadlineButtonImageBlock.includes("display: none;")) {
+    fail("timeline headline story image layer must stay disabled");
   }
-  if (!timelineHeadlineButtonImageBlock.includes("background-image: var(--signal-story-image);")) {
-    fail("timeline headline story image layer must use the story image variable");
+  if (!timelineHeadlineButtonImageBlock.includes("background-image: none;")) {
+    fail("timeline headline cards must not render story images");
   }
-  if (!timelineHeadlineButtonImageBlock.includes("opacity: var(--timeline-widget-image-opacity, 0);")) {
-    fail("timeline headline story image layer must use the inactive image opacity token");
+  if (!timelineHeadlineButtonImageBlock.includes("opacity: 0;")) {
+    fail("timeline headline story image layer must stay transparent");
   }
-  if (!timelineHeadlineButtonImageBlock.includes("z-index: 0;")) {
-    fail("timeline headline story image layer must sit behind the text");
-  }
-  if (!activeTimelineHeadlineButtonImageBlock.includes("opacity: var(--timeline-widget-active-image-opacity, 0);")) {
-    fail("active timeline headline cards must reveal the story image layer");
+  if (!activeTimelineHeadlineButtonImageBlock.includes("opacity: 0;")) {
+    fail("active timeline headline cards must not reveal story images");
   }
   if (!timelineHeadlineTextBlock.includes("color: var(--text-strong);")) {
     fail("timeline headline text must use the current palette text color");

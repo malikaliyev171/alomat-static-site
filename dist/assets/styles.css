@@ -1560,17 +1560,16 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background-image: var(--signal-story-image);
-  background-size: cover;
-  background-position: center;
-  opacity: var(--timeline-widget-image-opacity, 0);
+  display: none;
+  background-image: none;
+  opacity: 0;
   pointer-events: none;
   z-index: 0;
   transition: opacity 180ms ease;
 }
 
 .signal-timeline__item.is-active .signal-timeline__headline-button::after {
-  opacity: var(--timeline-widget-active-image-opacity, 0);
+  opacity: 0;
 }
 
 .signal-timeline__headline-text {
@@ -2061,11 +2060,13 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail__visual {
+  display: none;
   position: absolute;
   inset: 0;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  background-image: none;
   opacity: 0;
   transform: scale(1.05);
   transition: opacity 180ms ease;
@@ -2073,7 +2074,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail.has-background-image .signal-detail__visual {
-  opacity: 0.1;
+  opacity: 0;
 }
 
 .signal-detail.has-story {

@@ -1570,17 +1570,16 @@ html[data-page="home"][data-locale="uz"] .signal-reader-gate h1 {
   position: absolute;
   inset: 0;
   border-radius: 8px;
-  background-image: var(--signal-story-image);
-  background-size: cover;
-  background-position: center;
-  opacity: var(--timeline-widget-image-opacity, 0);
+  display: none;
+  background-image: none;
+  opacity: 0;
   pointer-events: none;
   z-index: 0;
   transition: opacity 180ms ease;
 }
 
 .signal-timeline__item.is-active .signal-timeline__headline-button::after {
-  opacity: var(--timeline-widget-active-image-opacity, 0);
+  opacity: 0;
 }
 
 .signal-timeline__headline-text {
@@ -2071,11 +2070,13 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail__visual {
+  display: none;
   position: absolute;
   inset: 0;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  background-image: none;
   opacity: 0;
   transform: scale(1.05);
   transition: opacity 180ms ease;
@@ -2083,7 +2084,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
 }
 
 .signal-detail.has-background-image .signal-detail__visual {
-  opacity: 0.1;
+  opacity: 0;
 }
 
 .signal-detail.has-story {
@@ -5733,43 +5734,43 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
               <span class="signal-timeline__day-pill">Bugun</span>
             </div>
             
-    <article class="signal-timeline__item" data-side="left" data-story-id="91805" data-timeline-index="0" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 0px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&amp;fit=crop&amp;w=1400&amp;q=80&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91805" data-timeline-index="0" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 0px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">Illinois OpenAI va Anthropic qo&#39;llab-quvvatlagan AI xavfsizlik qonunini imzoladi</span>
       </button>
     </article>
-    <article class="signal-timeline__item" data-side="left" data-story-id="91804" data-timeline-index="1" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 0px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-aa1af09d-783dc88f-0927cad6-e09e634b-ba981037-f603826b-3a6e62fb-7f1407ca/2338777_Image.png&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91804" data-timeline-index="1" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 0px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">Nintendo batareya qonunlari sabab Yevropadagi Switch savdosini 2027 yilgacha to&#39;xtatadi</span>
       </button>
     </article>
-    <article class="signal-timeline__item" data-side="left" data-story-id="91803" data-timeline-index="2" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 21px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-08a5f804-071a656b-ff5bf5e3-9284e84c-77407ef8-3e37dc86-77078015-979370db/2338743_Image.png&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91803" data-timeline-index="2" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 21px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">MicroStrategy 11,4 milliard dollarlik qog&#39;oz zarar fonida 216 million dollarlik Bitcoin sotdi</span>
       </button>
     </article>
-    <article class="signal-timeline__item" data-side="left" data-story-id="91802" data-timeline-index="3" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: -7px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://cdn1.wiro.ai/22680191-31ed99e6-1ebd7af6-27f8f142-fb91ab86-b27df2b0-f69e80b0-aa89f934-28ff8bf5-005bd550-4e3ca625-2c051cdd/2338588_Image.png&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91802" data-timeline-index="3" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: -7px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">Xbox 3 200 ish o&#39;rnini qisqartirdi va Ninja Theory&#39;ni ajratdi</span>
       </button>
     </article>
-    <article class="signal-timeline__item" data-side="left" data-story-id="91801" data-timeline-index="4" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 14px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://cdn1.wiro.ai/2b97ab18-2d87df57-83434db9-df0c4232-f6647792-4132135c-3f4c6319-f0cdcc47-a3a18d9a-c39b8747-c9170b62-cd76e63e/2337916_Image.png&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91801" data-timeline-index="4" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 14px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">Agility Robotics bosh direktori Peggy Johnson SPAClar va apparat ustunliklari haqida</span>
       </button>
     </article>
-    <article class="signal-timeline__item" data-side="left" data-story-id="91800" data-timeline-index="5" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: -14px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://cdn1.wiro.ai/0758c7f7-b1fb7e9d-b31248cd-7f304742-f2a80eb3-a14bd3f3-48d2e738-561d1299-c28afef7-3cefe011-8e3e6fb6-45448c4e/2337810_Image.png&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91800" data-timeline-index="5" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: -14px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">AI mehnatdan kapitalga siljishi Irlandiyaning texnologiyaga og&#39;ir soliq bazasiga tahdid solmoqda</span>
       </button>
     </article>
-    <article class="signal-timeline__item" data-side="left" data-story-id="91799" data-timeline-index="6" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 7px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --signal-story-image: url(&quot;https://cdn1.wiro.ai/c5563a6a-eabcf8ac-bd199571-30ebe417-5e62a1bf-66455782-f76ba9bc-c3cf7c7a-90d444fd-6a8d78f0-f856a1a3-ba785a35/2337679_Image.png&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="91799" data-timeline-index="6" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 7px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">AQSh G&#39;aznachiligi AI bozoridagi xavflar dotcom qulashini eslatishini ogohlantirdi</span>
@@ -5916,6 +5917,8 @@ let activeUpdateFrame = 0;
 let timelineArmed = false;
 let timelineClosed = false;
 let lastScrollY = window.scrollY || 0;
+let scrollSyncLockedStoryId = null;
+let scrollSyncLockExpiresAt = 0;
 let timelineRevealObserver = null;
 let earlierLiveStoryGroups = [];
 let liveTimelineTodayKey = getLocalDayKey(new Date());
@@ -6705,6 +6708,8 @@ function scrollStoryIntoView(item, behavior = "smooth") {
     return;
   }
 
+  scrollSyncLockedStoryId = String(item.dataset.storyId || "");
+  scrollSyncLockExpiresAt = Date.now() + 1000;
   const target = window.scrollY + rect.top + rect.height / 2 - getTimelineAnchor();
   window.scrollTo({ top: Math.max(0, target), behavior });
 }
@@ -6819,6 +6824,8 @@ function resetDetailPanel() {
   activeStoryId = null;
   timelineArmed = false;
   timelineClosed = true;
+  scrollSyncLockedStoryId = null;
+  scrollSyncLockExpiresAt = 0;
   lastScrollY = window.scrollY || 0;
   detailContent.innerHTML = detailDefaults.html;
   if (detailVisual) {
@@ -6855,11 +6862,9 @@ function getTimelineStoryTitle(story) {
 
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
-  const storyImage = getStoryImageUrl(story);
-  const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
   const timelineTitle = getTimelineStoryTitle(story);
   return `
-    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${escapeHtml(timelineTitle)}</span>
@@ -6952,13 +6957,12 @@ function applyStoryToDetail(story, item, options = {}) {
   timelineArmed = true;
   timelineClosed = false;
   activeStoryId = storyId;
+  if (detailVisual) {
+    detailVisual.style.backgroundImage = "";
+  }
+  detailPanel.classList.remove("has-background-image");
   if (isNewStory || detailContent.innerHTML === detailDefaults?.html) {
     detailContent.innerHTML = renderStoryMarkup(story);
-    if (detailVisual) {
-      const background = createBackgroundImageValue(getStoryImageUrl(story));
-      detailVisual.style.backgroundImage = background;
-      detailPanel.classList.toggle("has-background-image", Boolean(background));
-    }
   }
   resetDetailScroll();
   detailPanel.classList.remove("signal-detail--intro");
@@ -7006,6 +7010,15 @@ function syncActiveStory() {
     lastScrollY = window.scrollY || 0;
     return;
   }
+
+  const scrollSyncIsLocked =
+    scrollSyncLockedStoryId === activeStoryId && Date.now() < scrollSyncLockExpiresAt;
+  if (scrollSyncIsLocked) {
+    lastScrollY = window.scrollY || 0;
+    return;
+  }
+  scrollSyncLockedStoryId = null;
+  scrollSyncLockExpiresAt = 0;
 
   const activeItem = findBestVisibleStoryItem();
   if (!activeItem) {
@@ -7634,6 +7647,7 @@ globalThis.__ALOMAT_APP_TEST__ = {
   getLibraryCounts,
   renderLibraryEntriesMarkup,
   renderLibraryFromStorage,
+  renderLiveTimelineItem,
   renderStoryMarkup,
   shareStory,
 };

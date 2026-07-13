@@ -63,6 +63,8 @@ let activeUpdateFrame = 0;
 let timelineArmed = false;
 let timelineClosed = false;
 let lastScrollY = window.scrollY || 0;
+let scrollSyncLockedStoryId = null;
+let scrollSyncLockExpiresAt = 0;
 let timelineRevealObserver = null;
 let earlierLiveStoryGroups = [];
 let liveTimelineTodayKey = getLocalDayKey(new Date());
@@ -852,6 +854,8 @@ function scrollStoryIntoView(item, behavior = "smooth") {
     return;
   }
 
+  scrollSyncLockedStoryId = String(item.dataset.storyId || "");
+  scrollSyncLockExpiresAt = Date.now() + 1000;
   const target = window.scrollY + rect.top + rect.height / 2 - getTimelineAnchor();
   window.scrollTo({ top: Math.max(0, target), behavior });
 }
@@ -966,6 +970,8 @@ function resetDetailPanel() {
   activeStoryId = null;
   timelineArmed = false;
   timelineClosed = true;
+  scrollSyncLockedStoryId = null;
+  scrollSyncLockExpiresAt = 0;
   lastScrollY = window.scrollY || 0;
   detailContent.innerHTML = detailDefaults.html;
   if (detailVisual) {
@@ -1002,11 +1008,9 @@ function getTimelineStoryTitle(story) {
 
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
-  const storyImage = getStoryImageUrl(story);
-  const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
   const timelineTitle = getTimelineStoryTitle(story);
   return `
-    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${escapeHtml(timelineTitle)}</span>
@@ -1099,13 +1103,12 @@ function applyStoryToDetail(story, item, options = {}) {
   timelineArmed = true;
   timelineClosed = false;
   activeStoryId = storyId;
+  if (detailVisual) {
+    detailVisual.style.backgroundImage = "";
+  }
+  detailPanel.classList.remove("has-background-image");
   if (isNewStory || detailContent.innerHTML === detailDefaults?.html) {
     detailContent.innerHTML = renderStoryMarkup(story);
-    if (detailVisual) {
-      const background = createBackgroundImageValue(getStoryImageUrl(story));
-      detailVisual.style.backgroundImage = background;
-      detailPanel.classList.toggle("has-background-image", Boolean(background));
-    }
   }
   resetDetailScroll();
   detailPanel.classList.remove("signal-detail--intro");
@@ -1153,6 +1156,15 @@ function syncActiveStory() {
     lastScrollY = window.scrollY || 0;
     return;
   }
+
+  const scrollSyncIsLocked =
+    scrollSyncLockedStoryId === activeStoryId && Date.now() < scrollSyncLockExpiresAt;
+  if (scrollSyncIsLocked) {
+    lastScrollY = window.scrollY || 0;
+    return;
+  }
+  scrollSyncLockedStoryId = null;
+  scrollSyncLockExpiresAt = 0;
 
   const activeItem = findBestVisibleStoryItem();
   if (!activeItem) {
@@ -1781,6 +1793,7 @@ globalThis.__ALOMAT_APP_TEST__ = {
   getLibraryCounts,
   renderLibraryEntriesMarkup,
   renderLibraryFromStorage,
+  renderLiveTimelineItem,
   renderStoryMarkup,
   shareStory,
 };

@@ -1696,9 +1696,8 @@ function renderTimelineItem(card, index, localeKey) {
   const titleValue = localizeStoryValue(card.title, localeKey);
   const olderAttr = card.older ? ` data-older="true" hidden` : "";
   const shift = Number.isFinite(card.shift) ? card.shift : 0;
-  const storyImage = card.image ? text(card.image) : text(fallbackLogoImage);
   return `
-    <article class="signal-timeline__item${card.older ? " signal-timeline__item--older" : ""}" data-side="left" data-story-id="${text(card.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: ${card.importance ?? 0.94}; --signal-story-image: url(&quot;${storyImage}&quot;); --timeline-widget-image-opacity: 0.096; --timeline-widget-active-image-opacity: 0.552; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;"${olderAttr}>
+    <article class="signal-timeline__item${card.older ? " signal-timeline__item--older" : ""}" data-side="left" data-story-id="${text(card.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: ${card.importance ?? 0.94}; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;"${olderAttr}>
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${text(titleValue)}</span>

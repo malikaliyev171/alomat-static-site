@@ -78,9 +78,14 @@ function decodeHtml(value) {
 function createTimelineItem({ storyId, title }) {
   const button = {
     attributes: {},
+    listeners: {},
     classList: createClassList(),
-    addEventListener() {},
-    removeEventListener() {},
+    addEventListener(type, listener) {
+      this.listeners[type] = listener;
+    },
+    removeEventListener(type) {
+      delete this.listeners[type];
+    },
     setAttribute(name, value) {
       this.attributes[name] = String(value);
     },
@@ -92,6 +97,9 @@ function createTimelineItem({ storyId, title }) {
     },
     closest() {
       return null;
+    },
+    click() {
+      this.listeners.click?.({ preventDefault() {}, target: this });
     },
   };
   const node = {
@@ -219,6 +227,8 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
   const timeline = createTimelineEnvironment(stories);
   const storyDataElement = { textContent: JSON.stringify(stories) };
   const storage = new Map();
+  const scrollCalls = [];
+  const windowListeners = new Map();
   const createInput = () => ({
     hidden: false,
     value: "",
@@ -448,8 +458,12 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
       }
       return [];
     },
-    addEventListener() {},
-    removeEventListener() {},
+    addEventListener(type, listener) {
+      windowListeners.set(type, listener);
+    },
+    removeEventListener(type) {
+      windowListeners.delete(type);
+    },
     createElement: createElementStub,
   };
   const windowStub = {
@@ -469,7 +483,12 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
       return 1;
     },
     cancelAnimationFrame() {},
-    scrollTo() {},
+    scrollTo(options) {
+      scrollCalls.push(options);
+      if (Number.isFinite(options?.top)) {
+        this.scrollY = options.top;
+      }
+    },
     localStorage: {
       getItem(key) {
         return storage.get(key) ?? null;
@@ -508,7 +527,9 @@ function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
     pageMain,
     signalStatusCount,
     signalStatusTime,
+    scrollCalls,
     timeline,
+    windowListeners,
     globals: {
       window: windowStub,
       document: documentStub,
@@ -1200,6 +1221,68 @@ test("imageless live records do not use fallback backgrounds", async () => {
     assert.equal(helpers.normalizeLiveSignal({ title: "No image", summary: ["Text"] }, 0).image, "");
     assert.equal(environment.detailVisual.style.backgroundImage, "");
     assert.equal(environment.detailPanel.classList.contains("has-background-image"), false);
+  } finally {
+    cleanup();
+  }
+});
+
+test("timeline card clicks scroll smoothly without letting scroll sync replace the selection", async () => {
+  const stories = [
+    {
+      id: "with-image",
+      title: { en: "Story with image" },
+      summary: { en: ["Image summary"] },
+      source: "Image Source",
+      time: "10:00",
+      url: "https://example.com/with-image",
+      image: "https://example.com/story.png",
+    },
+    {
+      id: "without-image",
+      title: { en: "Story without image" },
+      summary: { en: ["Plain summary"] },
+      source: "Plain Source",
+      time: "10:05",
+      url: "https://example.com/without-image",
+      image: "",
+    },
+  ];
+  const { environment, cleanup } = await loadAppModule({ stories });
+  try {
+    const [imageItem, plainItem] = environment.timeline.getItems();
+
+    imageItem.__button.click();
+    assert.match(environment.detailContent.innerHTML, /Story with image/);
+    assert.equal(environment.detailVisual.style.backgroundImage, "");
+    assert.equal(environment.detailPanel.classList.contains("has-background-image"), false);
+    assert.equal(environment.scrollCalls.length, 1);
+    assert.equal(environment.scrollCalls[0]?.behavior, "smooth");
+
+    plainItem.__button.click();
+    environment.windowListeners.get("scroll")?.();
+    assert.match(environment.detailContent.innerHTML, /Story without image/);
+    assert.equal(environment.detailVisual.style.backgroundImage, "");
+    assert.equal(environment.detailPanel.classList.contains("has-background-image"), false);
+    assert.equal(environment.scrollCalls.length, 2);
+    assert.equal(environment.scrollCalls[1]?.behavior, "smooth");
+  } finally {
+    cleanup();
+  }
+});
+
+test("live timeline markup ignores supplied story images", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const markup = helpers.renderLiveTimelineItem(
+      {
+        id: "image-story",
+        title: "Image story",
+        image: "https://example.com/story.png",
+      },
+      0,
+    );
+
+    assert.doesNotMatch(markup, /signal-story-image|story\.png|image-opacity/);
   } finally {
     cleanup();
   }
