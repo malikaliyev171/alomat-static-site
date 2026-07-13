@@ -57,10 +57,12 @@ const pages = [
     title: {
       uz: ".alomat | Muhim bo'lgan narsalar uchun editorial signal qatlami",
       en: ".alomat | Editorial signal layer for what matters now",
+      tr: ".alomat | \u015eimdi \u00f6nemli olanlar i\u00e7in editoryal sinyal katman\u0131",
     },
     description: {
       uz: "Shovqin ichidan kerakli signallarni ajratib beradigan, o'qilishi oson va bilingv editorial sayt.",
       en: "A bilingual editorial site that separates useful signals from the noise.",
+      tr: "G\u00fcr\u00fclt\u00fcn\u00fcn i\u00e7inden yararl\u0131 sinyalleri ay\u0131ran, okunmas\u0131 kolay bir editoryal site.",
     },
   },
   {
@@ -69,10 +71,12 @@ const pages = [
     title: {
       uz: "Manifesto | .alomat",
       en: "Manifesto | .alomat",
+      tr: "Manifesto | .alomat",
     },
     description: {
       uz: ".alomat nima ekanini, nima emasligini va nega borligini tushuntiradigan manifest sahifa.",
       en: "The manifesto page that explains what .alomat is, what it is not, and why it exists.",
+      tr: ".alomat'\u0131n ne oldu\u011funu, ne olmad\u0131\u011f\u0131n\u0131 ve neden var oldu\u011funu anlatan manifesto sayfas\u0131.",
     },
   },
   {
@@ -81,10 +85,12 @@ const pages = [
     title: {
       uz: "Kutubhona | .alomat",
       en: "Library | .alomat",
+      tr: "K\u00fct\u00fcphane | .alomat",
     },
     description: {
       uz: "Saqlangan signallar, yoqtirilgan hikoyalar va shaxsiy ro'yxatlar uchun bilingv kutubxona sahifasi.",
       en: "A bilingual library page for saved signals, liked stories, and personal collections.",
+      tr: "Kaydedilen sinyaller, be\u011fenilen hikâyeler ve ki\u015fisel koleksiyonlar i\u00e7in k\u00fct\u00fcphane sayfas\u0131.",
     },
   },
   {
@@ -93,10 +99,12 @@ const pages = [
     title: {
       uz: "Relay | .alomat",
       en: "Relay | .alomat",
+      tr: "Relay | .alomat",
     },
     description: {
       uz: "Kundalik qisqa xabarnomalar, ritmik yangilanishlar va uzatmalar sahifasi.",
       en: "A page for short briefings, rhythmic updates, and signal delivery.",
+      tr: "K\u0131sa b\u00fcltenler, ritmik g\u00fcncellemeler ve sinyal iletimi i\u00e7in bir sayfa.",
     },
   },
   {
@@ -105,10 +113,12 @@ const pages = [
     title: {
       uz: "Aloqa | .alomat",
       en: "Contact | .alomat",
+      tr: "\u0130leti\u015fim | .alomat",
     },
     description: {
       uz: "Signal yuborish, tahrirga yozish yoki hamkorlik so'rash uchun aloqa sahifasi.",
       en: "A contact page for sending signals, reaching the editors, or asking about partnerships.",
+      tr: "Sinyal g\u00f6ndermek, edit\u00f6rlere ula\u015fmak veya i\u015f birli\u011fi konu\u015fmak i\u00e7in ileti\u015fim sayfas\u0131.",
     },
   },
   {
@@ -117,10 +127,12 @@ const pages = [
     title: {
       uz: "Homiylik | .alomat",
       en: "Sponsor | .alomat",
+      tr: "Sponsorluk | .alomat",
     },
     description: {
       uz: "Brendlar uchun ochiq belgilangan homiylik modellari va joylashuvlar.",
       en: "Clearly labeled sponsorship options and placements for brands.",
+      tr: "Markalar i\u00e7in a\u00e7\u0131k\u00e7a etiketlenmi\u015f sponsorluk se\u00e7enekleri ve yerle\u015fimler.",
     },
   },
   {
@@ -129,10 +141,12 @@ const pages = [
     title: {
       uz: "Alomat Lineup | .alomat",
       en: "Alomat Lineup | .alomat",
+      tr: "Alomat Lineup | .alomat",
     },
     description: {
       uz: "Muharrir tanlagan yozuvchilar, maqolalar va qo'shilish uchun ariza.",
       en: "Editor-selected writers, articles, and the application path to join.",
+      tr: "Edit\u00f6r\u00fcn se\u00e7ti\u011fi yazarlar, yaz\u0131lar ve kat\u0131lmak i\u00e7in ba\u015fvuru yolu.",
     },
   },
   {
@@ -141,10 +155,12 @@ const pages = [
     title: {
       uz: "Maxfiylik siyosati | .alomat",
       en: "Privacy Policy | .alomat",
+      tr: "Gizlilik Politikas\u0131 | .alomat",
     },
     description: {
       uz: "Qaysi ma'lumotlar yig'ilishi, nima uchun va foydalanuvchi nazorati haqida.",
       en: "What data is collected, why it is collected, and what control the user has.",
+      tr: "Hangi verilerin neden topland\u0131\u011f\u0131 ve kullan\u0131c\u0131n\u0131n hangi kontrollere sahip oldu\u011fu hakk\u0131nda.",
     },
   },
 ];
@@ -1247,6 +1263,305 @@ const locales = {
   },
 };
 
+locales.tr = {
+  htmlLang: "tr",
+  localeLabel: "TR",
+  localeName: "T\u00fcrk\u00e7e",
+  switchLabel: "UZ",
+  nav: {
+    about: "Hakk\u0131nda",
+    library: "K\u00fct\u00fcphane",
+    relay: "Relay",
+    contact: "\u0130leti\u015fim",
+    sponsor: "Sponsorluk",
+    lineup: "Lineup",
+    privacy: "Gizlilik",
+  },
+  ui: {
+    skipLink: "\u0130\u00e7eri\u011fe ge\u00e7",
+    follow: "Takip et",
+    explore: "Ke\u015ffet",
+    palette: "Palet",
+    today: "Bug\u00fcn",
+    loading: "Zaman \u00e7izgisi y\u00fckleniyor",
+    preparing: "\u0130lk sinyaller haz\u0131rlan\u0131yor.",
+    brandQuestion: ".alomat, neredeydin?",
+    timeline: ".alomat Sinyal Zaman \u00c7izgisi",
+    activeSignal: "Aktif sinyal",
+    sourceLabel: "Kaynak",
+    timeLabel: "Saat",
+    weightLabel: "\u00d6nem",
+    audioBrief: "Sesli \u00f6zet",
+    aiLens: "AI bak\u0131\u015f\u0131",
+    askAi: "AI'a sor",
+    originalSource: "As\u0131l kaynak",
+    signalCount: "10 sinyal",
+    topbarToday: "Bug\u00fcn\u00fcn \u00e7izgisi",
+    thresholdLabel: "E\u015fik",
+    heroTitle: "Ho\u015f geldin, yabanc\u0131.",
+    heroBody: "Bu \u00e7izgi sana nas\u0131l seslensin? Ad\u0131n\u0131 kaydet.",
+    namePlaceholder: "sen@example.com",
+    nameButton: "Ad\u0131n\u0131 yaz",
+    nameHint: "Kay\u0131tlar\u0131n, be\u011fenilerin ve k\u00fct\u00fcphanen birlikte kals\u0131n diye bir ad b\u0131rak.",
+    authKicker: "01 - Ki\u015fisel haf\u0131za",
+    authTitle: "Sinyallerini kaydet.",
+    authBody: "Kaydetti\u011fin ve be\u011fendi\u011fin sinyalleri .alomat hesab\u0131nda tut.",
+    authEmail: "E-posta",
+    authFirstName: "Ad",
+    authLastName: "Soyad",
+    authCode: "Do\u011frulama kodu",
+    authSubmit: "E-postay\u0131 kaydet",
+    authNameSubmit: "Ad\u0131 kaydet",
+    close: "Kapat",
+    loadEarlier: "\u00d6nceki g\u00fcnleri y\u00fckle",
+    loadedEarlier: "\u00d6nceki g\u00fcnler g\u00f6sterildi",
+    noMore: "Bug\u00fcn\u00fcn t\u00fcm sinyallerini g\u00f6rd\u00fcn",
+    manifesto: "MANIFESTO",
+    manifestoTitle: ".alomat — neredeydin?",
+    manifestoLead: "Bir haber sitesi de\u011fil. Editoryal bir sinyal katman\u0131. G\u00fcr\u00fclt\u00fc ekonomisine kar\u015f\u0131 net bir tav\u0131r.",
+    manifestoLead2: "Daha \u00e7ok okudu\u011fun de\u011fil, daha h\u0131zl\u0131 anlad\u0131\u011f\u0131n yer.",
+    readManifesto: "Manifestoyu oku →",
+    downloadApp: "Uygulamay\u0131 ke\u015ffet",
+    footer: "\u00d6zbekistan'da ♥ ile yap\u0131ld\u0131",
+    backHome: "Ana sayfa",
+    pageIntro: "K\u0131sa, keskin, editoryal.",
+  },
+  home: {
+    timeline: homeSignalStories,
+    older: homeSignalOlderStories,
+  },
+  about: {
+    preface: "Bu bir hakk\u0131m\u0131zda sayfas\u0131 de\u011fil.",
+    title: "Bu bir manifesto.",
+    kicker: "Yak\u0131ndan izle. A\u00e7\u0131k\u00e7a bil.",
+    intro: ".alomat bir haber sitesi de\u011fil. Yaln\u0131zca bir uygulama da de\u011fil. Daha do\u011frusu .alomat her \u015feyden \u00f6nce bir tav\u0131r. \u0130nternetin sonsuzlu\u011funa kar\u015f\u0131 bir s\u0131n\u0131r. G\u00fcr\u00fclt\u00fc ekonomisine bir cevap.",
+    sections: [
+      {
+        num: "01",
+        title: "\u0130nternet sonsuz. Dikkat de\u011fil.",
+        paragraphs: [
+          "Elli sekme a\u00e7\u0131yor, hi\u00e7birini bitirmiyoruz. Bir ba\u015fl\u0131\u011fa sekiz saniye ay\u0131r\u0131yoruz. Ba\u011flam yok, d\u00fczen yok, haf\u0131za yok. Buna g\u00fcr\u00fclt\u00fc ekonomisi diyoruz ve par\u00e7as\u0131 olmay\u0131 reddediyoruz.",
+        ],
+      },
+      {
+        num: "02",
+        title: "Ne oldu\u011fumuzu anlatmak i\u00e7in \u00f6nce ne olmad\u0131\u011f\u0131m\u0131z\u0131 s\u00f6ylemeliyiz.",
+        paragraphs: [
+          "Bir haber uygulamas\u0131 de\u011filiz.",
+          "Bir AI arac\u0131 de\u011filiz.",
+          "Sonsuz bir ak\u0131\u015f de\u011filiz.",
+          "Her \u015fey de\u011filiz.",
+          "Editoryal bir sinyal katman\u0131y\u0131z.",
+          "Bir berrakl\u0131k \u00fcr\u00fcn\u00fcy\u00fcz.",
+          "G\u00fcnl\u00fck se\u00e7kiniz.",
+          "Teknolojiyi ve \u00e7evresindeki k\u00fclt\u00fcr\u00fc izliyoruz.",
+        ],
+      },
+      {
+        num: "03",
+        title: "\u0130\u015fimiz daha fazla i\u00e7erik \u00fcretmek de\u011fil.",
+        paragraphs: [
+          "\u0130\u015fimiz g\u00fcn\u00fcn g\u00fcr\u00fclt\u00fcs\u00fcn\u00fc s\u00fcz\u00fcp en \u00f6nemli sinyalleri \u00f6ne \u00e7\u0131karmak. Bir kart, bir sinyal. Bir ana fikir, k\u0131sa bir \u00f6zet, bir kaynak ve bir eylem. Hepsi bu. Daha az\u0131 eksik, daha fazlas\u0131 g\u00fcr\u00fclt\u00fc.",
+        ],
+      },
+      {
+        num: "04",
+        title: "Kurallar\u0131m\u0131z a\u00e7\u0131k.",
+        bullets: ["Reklam yok.", "Veri sat\u0131\u015f\u0131 yok.", "Okurdan \u00fccret yok — sonsuza kadar."],
+        paragraphs: ["Okur \u00fcr\u00fcn de\u011fildir. \u00dcr\u00fcn okur i\u00e7in vard\u0131r."],
+      },
+      {
+        num: "05",
+        title: "Bu bir ak\u0131\u015f de\u011fil. Bir rit\u00fcel.",
+        paragraphs: [
+          "Sabah a\u00e7, g\u00fcn\u00fc g\u00f6r. G\u00fcn ortas\u0131nda bir karta bak, sonra hayat\u0131na d\u00f6n. Gece neyin de\u011fi\u015fti\u011fini kontrol et. .alomat a\u00e7\u0131p kapatt\u0131\u011f\u0131n bir uygulama de\u011fil; geri d\u00f6nd\u00fc\u011f\u00fcn bir yer. Senin yerin.",
+        ],
+      },
+      {
+        num: "06",
+        title: "Biz bir ki\u015fiyiz.",
+        paragraphs: [
+          "Oktay teknik sistemin her sat\u0131r\u0131n\u0131 yaz\u0131yor ve hangi sinyalin ge\u00e7ece\u011fine karar veriyor. Reklam ajans\u0131, b\u00fcy\u00fcme ekibi ya da \u00fcr\u00fcn stratejisti yok. Karar da hata da ton da bize ait.",
+        ],
+      },
+    ],
+    closingTitle: ".alomat daha \u00e7ok okudu\u011fun yer de\u011fil.",
+    closingBody: "Daha h\u0131zl\u0131 anlad\u0131\u011f\u0131n yer.",
+    signature: "— Oktay",
+    studio: ".alomat · tek ki\u015filik st\u00fcdyo",
+  },
+  library: {
+    title: "K\u00fct\u00fcphane",
+    lead: "Kaydedilen sinyaller, be\u011fenilen hikâyeler ve ki\u015fisel listeler tek bir d\u00fczenli yerde.",
+    stats: [
+      { label: "Kaydedilen", value: "128" },
+      { label: "Be\u011fenilen", value: "42" },
+      { label: "Koleksiyon", value: "9" },
+    ],
+    collections: [
+      { title: "Bug\u00fcn kaydedilenler", summary: "En yeni sinyallerin bir bak\u0131\u015fta." },
+      { title: "Yeniden oku", summary: "Daha sonra uzun okumak i\u00e7in i\u015faretlenen hikâyeler." },
+      { title: "Benim i\u00e7in", summary: "\u00d6zel, sakin ve d\u00fc\u015f\u00fck g\u00fcr\u00fclt\u00fcl\u00fc listeler." },
+    ],
+    highlights: [
+      {
+        title: "Ki\u015fisel sinyaller",
+        summary: "\u0130htiyac\u0131n olan hikâyeler, \u00f6nemsedi\u011fin kategoriler ve daha sonras\u0131 i\u00e7in saklad\u0131\u011f\u0131n kartlar.",
+      },
+      {
+        title: "Haf\u0131za modu",
+        summary: "Nerede kald\u0131\u011f\u0131n\u0131 kaybetme. Okuma, be\u011fenme ve kaydetme durumu birlikte ilerler.",
+      },
+      {
+        title: "Bir bak\u0131\u015fta",
+        summary: "Ba\u015fl\u0131k, \u00f6zet ve kayna\u011f\u0131 tek yerde s\u0131ralayan temiz bir g\u00f6r\u00fcn\u00fcm.",
+      },
+    ],
+    ctaTitle: "K\u00fct\u00fcphane olu\u015fturmak i\u00e7in giri\u015f yapman gerekmiyor.",
+    ctaBody: "Ama bir ad b\u0131rak\u0131rsan kay\u0131tlar\u0131n ve be\u011fenilerin seninle gelir.",
+    ctaAction: "Bir ad b\u0131rak",
+  },
+  relay: {
+    title: "Relay",
+    lead: "K\u0131sa b\u00fcltenler ve ritmik g\u00fcncellemeler i\u00e7in bir sinyal iletim katman\u0131.",
+    cards: [
+      { title: "Sabah \u00f6zeti", summary: "G\u00fcn do\u011farken \u00fc\u00e7 sakin sinyal. K\u0131sa, dingin ve g\u00fcne ba\u015flamak i\u00e7in yeterli." },
+      { title: "\u00d6\u011fle nabz\u0131", summary: "G\u00fcn ortas\u0131nda ya\u015fanan \u00f6nemli d\u00f6n\u00fc\u015fleri yeniden s\u0131ralar." },
+      { title: "Ak\u015fam \u00f6zeti", summary: "Gecenin se\u00e7kisi. Ne de\u011fi\u015fti, ne \u00f6nemliydi, yar\u0131n ne geri d\u00f6necek?" },
+    ],
+    features: ["Y\u00fcksek sinyal yo\u011funlu\u011fu", "K\u0131sa okuma s\u00fcresi", "Yeniden payla\u015fmaya haz\u0131r bloklar"],
+    note: "Relay, g\u00fcn\u00fcn sinyalini yava\u015flatmadan ve kaybetmeden ileri ta\u015f\u0131man\u0131n yoludur.",
+  },
+  contact: {
+    title: "Bir sinyal g\u00f6nder.",
+    lead: "Bir hikâye \u00f6ner, sat\u0131r aralar\u0131n\u0131 sor ya da dikkatini \u00e7eken \u015feyi payla\u015f. .alomat masas\u0131 gelen her sat\u0131r\u0131 okur.",
+    primary: {
+      label: "Sinyal",
+      value: "signal@alomat.uz",
+      note: "Hikâye ipu\u00e7lar\u0131, sinyaller, \u00f6neriler ve okur geri bildirimleri i\u00e7in do\u011frudan kanal.",
+    },
+    editor: {
+      label: "Edit\u00f6r",
+      value: "editor@alomat.uz",
+      note: "Editoryal d\u00fczeltmeler, bas\u0131n talepleri ve i\u00e7erik geri bildirimleri.",
+    },
+    sponsor: {
+      label: "Sponsorluk",
+      value: "sponsorship@alomat.uz",
+      note: "Sponsorluk ve i\u015f birli\u011fi talepleri.",
+    },
+    socialTitle: "G\u00fcnl\u00fck sohbet",
+    response: "Genellikle 24 saat i\u00e7inde yan\u0131t veririz.",
+  },
+  sponsor: {
+    title: ".alomat'ta yerini al.",
+    lead: "Sinyal ak\u0131\u015f\u0131, b\u00fclten ve uygulama genelinde \u00fc\u00e7 sponsorluk modeli var. Her biri i\u00e7eri\u011fin yan\u0131nda durur, asla onun yerini almaz ve a\u00e7\u0131k\u00e7a etiketlenir.",
+    packages: [
+      {
+        name: "Sponsor rozeti",
+        title: "Sinyal ak\u0131\u015f\u0131nda marka ad\u0131nla g\u00f6r\u00fcn.",
+        description: "Haber kartlar\u0131nda 'Destekleyen: [marka]' rozetiyle yer al. Editoryal ak\u0131\u015f korunur ve okur sinyali kimin destekledi\u011fini a\u00e7\u0131k\u00e7a g\u00f6r\u00fcr.",
+        rows: [
+          ["Yerle\u015fim", "G\u00fcn\u00fcn \u00f6ne \u00e7\u0131kan hikâyesi, sinyal ak\u0131\u015f\u0131n\u0131n \u00fcst\u00fc"],
+          ["\u0130\u00e7erik", "Marka ad\u0131, iste\u011fe ba\u011fl\u0131 k\u0131sa slogan ve CTA"],
+          ["Etiket", "A\u00e7\u0131k 'Destekleyen' rozeti"],
+        ],
+      },
+      {
+        name: "B\u00fclten sponsorlu\u011fu",
+        title: "\u00d6zetin ba\u015f\u0131ndaki \u00f6ne \u00e7\u0131kan alan.",
+        description: "Sinyal b\u00fcltenimizde \u00f6zel bir blok. Tek sponsor, y\u00fcksek g\u00f6r\u00fcn\u00fcrl\u00fck ve \u00f6zetlerden \u00f6nce a\u00e7\u0131k bir destek katman\u0131.",
+        rows: [
+          ["Yerle\u015fim", "B\u00fcltenin \u00fcst\u00fcnde \u00f6zel alan"],
+          ["\u0130\u00e7erik", "Marka ad\u0131, 1–2 sat\u0131r, CTA ve iste\u011fe ba\u011fl\u0131 g\u00f6rsel"],
+          ["Etiket", "A\u00e7\u0131k 'sponsorlu destek' etiketi"],
+        ],
+      },
+      {
+        name: "Advertorial",
+        title: "Editoryal formatta bir marka hikâyesi.",
+        description: ".alomat okurunun bekledi\u011fi temiz ve k\u0131sa formatta haz\u0131rlanan sponsorlu hikâye. Verdi\u011fin brief editoryal \u00f6l\u00e7\u00fclerle i\u015flenir, normal bir sinyal gibi okunur ve her zaman sponsorlu olarak i\u015faretlenir.",
+        rows: [
+          ["Yerle\u015fim", "Sinyal ak\u0131\u015f\u0131nda, normal hikâyelerle ayn\u0131 formatta"],
+          ["\u0130\u00e7erik", "Ba\u015fl\u0131k, \u00f6zet, iste\u011fe ba\u011fl\u0131 ses ve g\u00f6rsel"],
+          ["Etiket", "A\u00e7\u0131k sponsorlu i\u00e7erik etiketi"],
+        ],
+      },
+    ],
+    note: "Paketler ve fiyatlar i\u00e7in sponsorship@alomat.uz adresine yaz. Kitleni, hedefini ve tercih etti\u011fin modeli birka\u00e7 sat\u0131rda anlat; sana \u00f6zel bir teklifle d\u00f6nelim.",
+  },
+  lineup: {
+    title: "LINEUP",
+    lead: "\u0130yi yaz\u0131 acele etmez.",
+    featured: {
+      title: "Yapay zekâda yeni bir demir perde: Fable 5 yasa\u011f\u0131 kimi koruyor?",
+      summary: "ABD'nin Anthropic modellerine getirdi\u011fi k\u0131s\u0131tlama, ulusal g\u00fcvenlik ile k\u00fcresel g\u00fc\u00e7 rekabeti aras\u0131ndaki tart\u0131\u015fmay\u0131 yeniden a\u00e7\u0131yor.",
+      author: "Shenol Dak",
+      readTime: "5 dk",
+      date: "1 g\u00fcn \u00f6nce",
+    },
+    articles: [
+      {
+        title: "\u0130nternet art\u0131k bilgi vermiyor. Dikkati t\u00fcketiyor.",
+        author: "Oktay Dak",
+        date: "13 May\u0131s 2026",
+      },
+    ],
+    authors: [
+      {
+        initials: "OD",
+        name: "Oktay Dak",
+        role: "G\u00fcr\u00fclt\u00fcn\u00fcn kendisinden \u00e7ok i\u00e7indeki sinyallerle ilgilenir. Teknoloji, yapay zekâ ve internet k\u00fclt\u00fcr\u00fcndeki k\u0131r\u0131lma noktalar\u0131n\u0131 izler.",
+      },
+      {
+        initials: "ShD",
+        name: "Shenol Dak",
+        role: "\u00d6\u011fretmen · AI e\u011fitmeni · Kitle fonlama veri analiti\u011fi · \u00dcretken AI sistemleri · AI ara\u015ft\u0131rma ve i\u00e7g\u00f6r\u00fcleri",
+      },
+    ],
+    cta: "Ba\u015fvur",
+    ctaNote: "LINEUP'a yazar olarak kat\u0131lmak istiyorsan ba\u015fvurunu b\u0131rak; son karar edit\u00f6r\u00fcn.",
+  },
+  privacy: {
+    title: "Verilerin ve biz",
+    lead: "Neleri toplad\u0131\u011f\u0131m\u0131z, neden toplad\u0131\u011f\u0131m\u0131z ve hangi kontrollerin sende oldu\u011fu.",
+    closing: "Gizlilik veya veri sorular\u0131 i\u00e7in oktay.dak@icloud.com adresine yazabilirsin.",
+    sections: [
+      {
+        title: "Temel ilke",
+        paragraphs: [
+          ".alomat asgari veri ilkesiyle \u00e7al\u0131\u015f\u0131r. Yaln\u0131zca hizmeti i\u015fler tutmak ve deneyimi geli\u015ftirmek i\u00e7in gereken verileri toplar\u0131z. Ki\u015fisel bilgileri payla\u015fmaz, satmaz veya reklam i\u00e7in kullanmay\u0131z.",
+        ],
+      },
+      {
+        title: "\u00c7erezler ve izleyiciler",
+        paragraphs: [
+          "Reklam \u00e7erezleri, \u00fc\u00e7\u00fcnc\u00fc taraf izleyiciler veya siteler aras\u0131 tan\u0131mlay\u0131c\u0131lar kullanmay\u0131z. Kendi sunucumuzdaki Umami analiti\u011fi \u00e7erez yerle\u015ftirmez; ziyaretleri IP adresin ve taray\u0131c\u0131 tan\u0131mlay\u0131c\u0131ndan \u00fcretilen, 24 saatte bir yenilenen anonim bir \u00f6zetle gruplar.",
+          "Analitik beti\u011fi yaln\u0131zca alomat.uz alan adlar\u0131nda \u00e7al\u0131\u015f\u0131r; yans\u0131t\u0131lm\u0131\u015f veya \u00fc\u00e7\u00fcnc\u00fc taraf sitelerde y\u00fcklenmez.",
+          "Oturum a\u00e7t\u0131\u011f\u0131nda yaln\u0131zca zorunlu oturum \u00e7erezi olu\u015fturulur. HttpOnly olarak i\u015faretlenir ve \u00e7\u0131k\u0131\u015f yapt\u0131\u011f\u0131nda silinir. Cihaz\u0131ndaki yerel depolama yaln\u0131zca renk paleti, kapat\u0131lan bildirimler ve benzeri aray\u00fcz tercihleri i\u00e7in kullan\u0131l\u0131r.",
+        ],
+        bullets: [
+          "Reklam \u00e7erezi yok",
+          "\u00dc\u00e7\u00fcnc\u00fc taraf izleyici yok",
+          "Yaln\u0131zca zorunlu oturum \u00e7erezi",
+          "Yerel depolama yaln\u0131zca aray\u00fcz durumu i\u00e7in",
+        ],
+      },
+      {
+        title: "Web sitesinde toplad\u0131klar\u0131m\u0131z",
+        paragraphs: [
+          "Web sitemiz umami.alomat.uz adresinde kendi sunucumuzda \u00e7al\u0131\u015fan Umami analiti\u011fini kullan\u0131r. Analitik beti\u011fi sayfa a\u00e7\u0131ld\u0131\u011f\u0131nda y\u00fcklenir ve yaln\u0131zca alomat.uz alan adlar\u0131yla s\u0131n\u0131rl\u0131d\u0131r.",
+          "Umami \u00fczerinden g\u00f6r\u00fclen sistem verileri; sayfa g\u00f6r\u00fcnt\u00fclemeleri, taray\u0131c\u0131 t\u00fcr\u00fc, i\u015fletim sistemi, cihaz t\u00fcr\u00fc, IP'den t\u00fcretilen \u00fclke/b\u00f6lge, ekran \u00e7\u00f6z\u00fcn\u00fcrl\u00fc\u011f\u00fc, y\u00f6nlendiren adres ve ziyaret zaman\u0131d\u0131r.",
+        ],
+      },
+      {
+        title: "\u0130leti\u015fim",
+        paragraphs: ["Gizlilik veya veri sorular\u0131 i\u00e7in oktay.dak@icloud.com adresine yazabilirsin."],
+      },
+    ],
+  },
+};
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -1267,8 +1582,8 @@ function joinPath(...parts) {
 function pageOutputPath(localeKey, pageKey) {
   const page = pages.find((entry) => entry.key === pageKey);
   const segments = [];
-  if (localeKey === "en") {
-    segments.push("en");
+  if (localeKey !== "uz") {
+    segments.push(localeKey);
   }
   if (page?.slug) {
     segments.push(page.slug);
@@ -1280,13 +1595,13 @@ function pageOutputPath(localeKey, pageKey) {
 function flatPageOutputPath(localeKey, pageKey) {
   const page = pages.find((entry) => entry.key === pageKey);
   const slug = pageKey === "home" ? "index" : page?.slug || "index";
-  if (localeKey === "en" && pageKey === "home") {
-    return path.join(outputRoot, "en.html");
-  }
   if (localeKey === "uz" && pageKey === "home") {
     return path.join(outputRoot, "index.html");
   }
-  const fileName = localeKey === "en" ? `en-${slug}.html` : `${slug}.html`;
+  if (pageKey === "home") {
+    return path.join(outputRoot, `${localeKey}.html`);
+  }
+  const fileName = localeKey === "uz" ? `${slug}.html` : `${localeKey}-${slug}.html`;
   return path.join(outputRoot, fileName);
 }
 
@@ -1299,8 +1614,8 @@ function navigationPageOutputPath(localeKey, pageKey) {
 
 function lineupArticleOutputPath(localeKey, article) {
   const segments = [];
-  if (localeKey === "en") {
-    segments.push("en");
+  if (localeKey !== "uz") {
+    segments.push(localeKey);
   }
   segments.push("lineup", article.authorSlug, article.slug, "index.html");
   return path.join(outputRoot, ...segments);
@@ -1324,6 +1639,30 @@ function localizeStoryValue(value, localeKey) {
     return value;
   }
   return value?.[localeKey] ?? value?.en ?? value?.uz ?? "";
+}
+
+const hreflangLocaleKeys = ["uz", "en", "tr"];
+const languageSwitchLocaleKeys = ["en", "uz", "tr"];
+
+function renderLanguageSwitch(localeKey, currentFile, localeOutputPath) {
+  return `<div class="language-switch" role="group" aria-label="Language">
+          ${languageSwitchLocaleKeys
+            .map((targetLocaleKey) => {
+              const isCurrent = targetLocaleKey === localeKey;
+              const targetFile = isCurrent ? currentFile : localeOutputPath(targetLocaleKey);
+              return `<a class="language-switch__button ${isCurrent ? "is-active" : "is-inactive"}"${isCurrent ? ' aria-current="page"' : ""} href="${text(relativeHref(currentFile, targetFile))}">${text(targetLocaleKey.toUpperCase())}</a>`;
+            })
+            .join("\n          ")}
+        </div>`;
+}
+
+function renderAlternateLinks(localeKey, currentFile, localeOutputPath) {
+  return hreflangLocaleKeys
+    .map((targetLocaleKey) => {
+      const targetFile = targetLocaleKey === localeKey ? currentFile : localeOutputPath(targetLocaleKey);
+      return `<link rel="alternate" hreflang="${text(locales[targetLocaleKey].htmlLang)}" href="${text(relativeHref(currentFile, targetFile))}" />`;
+    })
+    .join("\n    ");
 }
 
 function renderList(items, className = "stack-list") {
@@ -1379,22 +1718,22 @@ function renderThemeBootScript() {
   return `<script>(function(){try{var allowed=["0","2","4","5","6","7"];var saved=localStorage.getItem("alomat-palette")||localStorage.getItem("oesnada-feed-palette")||"2";if(allowed.indexOf(saved)<0){saved="2"}document.documentElement.dataset.palette=saved;document.documentElement.dataset.theme={0:"dark",2:"light",4:"signal",5:"light",6:"dark",7:"signal"}[saved];}catch(error){document.documentElement.dataset.palette="2";document.documentElement.dataset.theme="light";}})();</script>`;
 }
 
-function renderHeader(localeKey, pageKey, currentFile) {
+function renderHeader(
+  localeKey,
+  pageKey,
+  currentFile,
+  localeOutputPath = (targetLocaleKey) => navigationPageOutputPath(targetLocaleKey, pageKey),
+) {
   const locale = locales[localeKey];
   const homeFile = navigationPageOutputPath(localeKey, "home");
-  const otherLocale = localeKey === "en" ? "uz" : "en";
-  const currentPageOtherLocale = navigationPageOutputPath(otherLocale, pageKey);
-  const localeSwitchHref = relativeHref(currentFile, currentPageOtherLocale);
   const isSignalChrome = ["home", "library", "about", "lineup"].includes(pageKey);
   const navItems =
     isSignalChrome
       ? pages.filter((page) => ["about", "lineup", "library"].includes(page.key))
       : pages.filter((page) => page.key !== "home");
-  const libraryLabel = localeKey === "en" ? "LIBRARY" : "KUTUBXONA";
+  const libraryLabel = { en: "LIBRARY", uz: "KUTUBXONA", tr: "K\u00dcT\u00dcPHANE" }[localeKey];
 
   if (isSignalChrome) {
-    const enHomeHref = relativeHref(currentFile, navigationPageOutputPath("en", "home"));
-    const uzHomeHref = relativeHref(currentFile, navigationPageOutputPath("uz", "home"));
     const libraryGateAttr = pageKey === "home" ? " data-library-gate" : "";
 
     return `
@@ -1436,10 +1775,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
         </a>
       </nav>
 
-        <div class="language-switch" role="group" aria-label="Dil">
-          <button class="language-switch__button${localeKey === "en" ? " is-active" : " is-inactive"} is-disabled" type="button" disabled aria-disabled="true">EN</button>
-          <button class="language-switch__button${localeKey === "uz" ? " is-active" : " is-inactive"} is-disabled" type="button" disabled aria-disabled="true">UZ</button>
-        </div>
+        ${renderLanguageSwitch(localeKey, currentFile, localeOutputPath)}
 
         ${renderPalettePicker(localeKey).trim()}
       </div>
@@ -1465,9 +1801,7 @@ function renderHeader(localeKey, pageKey, currentFile) {
         .join("")}
     </nav>
     <div class="controls">
-      <a class="locale-switch" href="${text(localeSwitchHref)}" aria-label="Switch locale">
-        ${text(locale.switchLabel)}
-      </a>
+      ${renderLanguageSwitch(localeKey, currentFile, localeOutputPath)}
       ${renderPalettePicker(localeKey)}
     </div>
   </header>`;
@@ -1706,6 +2040,63 @@ function renderTimelineItem(card, index, localeKey) {
 }
 
 function getManifesto(localeKey) {
+  if (localeKey === "tr") {
+    return {
+      back: "ana sayfa",
+      kicker: "Bu bir hakk\u0131m\u0131zda sayfas\u0131 de\u011fil.",
+      kickerStrong: "Bu bir manifesto.",
+      titleA: "Yak\u0131ndan izle.",
+      titleB: "A\u00e7\u0131k\u00e7a bil.",
+      titleSub: "G\u00fcr\u00fclt\u00fcye de\u011fil, \u00f6ze bak.",
+      lede: ".alomat bir haber sitesi de\u011fil. Yaln\u0131zca bir uygulama da de\u011fil. Daha do\u011frusu .alomat her \u015feyden \u00f6nce bir <strong>tav\u0131r.</strong> \u0130nternetin sonsuzlu\u011funa kar\u015f\u0131 bir s\u0131n\u0131r. G\u00fcr\u00fclt\u00fc ekonomisine bir cevap.",
+      tenets: [
+        {
+          num: "01",
+          title: `\u0130nternet sonsuz.<br><span class="signal">Dikkat de\u011fil.</span>`,
+          body: "Elli sekme a\u00e7\u0131yor, hi\u00e7birini bitirmiyoruz. Bir ba\u015fl\u0131\u011fa sekiz saniye ay\u0131r\u0131yoruz. Ba\u011flam yok, d\u00fczen yok, haf\u0131za yok. Buna <strong>g\u00fcr\u00fclt\u00fc ekonomisi</strong> diyoruz ve par\u00e7as\u0131 olmay\u0131 reddediyoruz.",
+        },
+        {
+          num: "02",
+          title: "Ne oldu\u011fumuzu anlatmak i\u00e7in \u00f6nce ne olmad\u0131\u011f\u0131m\u0131z\u0131 s\u00f6ylemeliyiz.",
+          not: ["Bir haber uygulamas\u0131 de\u011filiz.", "Bir AI arac\u0131 de\u011filiz.", "Sonsuz bir ak\u0131\u015f de\u011filiz.", "Her \u015fey de\u011filiz."],
+          is: [
+            `Editoryal bir <span class="signal">sinyal katman\u0131y\u0131z.</span>`,
+            `Bir <span class="signal">berrakl\u0131k</span> \u00fcr\u00fcn\u00fcy\u00fcz.`,
+            `<span class="signal">G\u00fcnl\u00fck se\u00e7kiniz.</span>`,
+            `<span class="signal">Teknolojiyi ve \u00e7evresindeki k\u00fclt\u00fcr\u00fc izliyoruz.</span>`,
+          ],
+        },
+        {
+          num: "03",
+          title: `\u0130\u015fimiz <span class="signal">daha fazla i\u00e7erik \u00fcretmek de\u011fil.</span>`,
+          body: "\u0130\u015fimiz g\u00fcn\u00fcn g\u00fcr\u00fclt\u00fcs\u00fcn\u00fc s\u00fcz\u00fcp en \u00f6nemli sinyalleri \u00f6ne \u00e7\u0131karmak. Bir kart, bir sinyal. Bir ana fikir, k\u0131sa bir \u00f6zet, bir kaynak ve bir eylem. Hepsi bu. Daha az\u0131 eksik, daha fazlas\u0131 g\u00fcr\u00fclt\u00fc.",
+        },
+        {
+          num: "04",
+          title: `Kurallar\u0131m\u0131z <span class="signal">a\u00e7\u0131k.</span>`,
+          rules: ["Reklam yok.", "Veri sat\u0131\u015f\u0131 yok.", "Okurdan \u00fccret yok — sonsuza kadar."],
+          body: "Okur <em>\u00fcr\u00fcn</em> de\u011fildir. <strong class=\"signal\">\u00dcr\u00fcn okur i\u00e7in vard\u0131r.</strong>",
+        },
+        {
+          num: "05",
+          title: `Bu bir ak\u0131\u015f de\u011fil. <span class="signal">Bir rit\u00fcel.</span>`,
+          body: "Sabah a\u00e7, g\u00fcn\u00fc g\u00f6r. G\u00fcn ortas\u0131nda bir karta bak, sonra hayat\u0131na d\u00f6n. Gece neyin de\u011fi\u015fti\u011fini kontrol et. .alomat a\u00e7\u0131p kapatt\u0131\u011f\u0131n bir uygulama de\u011fil; geri d\u00f6nd\u00fc\u011f\u00fcn bir yer. Senin yerin.",
+        },
+        {
+          num: "06",
+          title: `Biz <span class="signal">bir ki\u015fiyiz.</span>`,
+          body: "Oktay teknik sistemin her sat\u0131r\u0131n\u0131 yaz\u0131yor ve hangi sinyalin ge\u00e7ece\u011fine karar veriyor. Reklam ajans\u0131, b\u00fcy\u00fcme ekibi ya da \u00fcr\u00fcn stratejisti yok. <strong>Karar da hata da ton da bize ait.</strong>",
+        },
+      ],
+      closingKicker: "Son sat\u0131r.",
+      closingQuoteA: ".alomat daha \u00e7ok okudu\u011fun yer de\u011fil.",
+      closingQuoteB: "Daha h\u0131zl\u0131 anlad\u0131\u011f\u0131n yer.",
+      closingSub: "Daha az oku. Daha h\u0131zl\u0131 anla.",
+      sign: "— Oktay",
+      studio: ".alomat · tek ki\u015filik st\u00fcdyo",
+    };
+  }
+
   if (localeKey === "en") {
     return {
       back: "home",
@@ -1841,14 +2232,15 @@ const lineupArticleDetails = [
     slug: "aida-yangi-temir-parda-fable-5-taqiqi-kimni-himoya-qiladi",
     image:
       "https://cdn1.wiro.ai/94ba0b39-504e320f-0b1a182a-a37a2a0c-e28daf4a-1ff0d4d9-a30cfff8-0bff6445-26581401-464e6371-181d8a7c-effaf4d5/2212310_Image.png",
-    category: { uz: "Siyosat", en: "Politics" },
-    date: { uz: "2026-yil 13-iyun", en: "13 June 2026" },
+    category: { uz: "Siyosat", en: "Politics", tr: "Siyaset" },
+    date: { uz: "2026-yil 13-iyun", en: "13 June 2026", tr: "13 Haziran 2026" },
     title: {
       uz: "Sun’iy intellektdagi yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?",
       en: "A new iron curtain in AI: who does the Fable 5 ban protect?",
+      tr: "Yapay zekâda yeni bir demir perde: Fable 5 yasa\u011f\u0131 kimi koruyor?",
     },
     author: { initials: "ShD", name: "Shenol Dak" },
-    readTime: { uz: "5 daqiqalik mutolaa", en: "5 min read" },
+    readTime: { uz: "5 daqiqalik mutolaa", en: "5 min read", tr: "5 dk okuma" },
     audioTime: "0:00 / 6:11",
     body: {
       uz: [
@@ -1867,6 +2259,14 @@ const lineupArticleDetails = [
         "That is why the question of who the ban protects remains open: users, the market, national security, or the existing balance of power.",
         "The important point is this: future AI competition will not only be about who builds the best model. It will also be about who controls access to it.",
       ],
+      tr: [
+        "Yapay zekâ tarihinin en sert d\u00f6n\u00fcm noktalar\u0131ndan birini izliyoruz. ABD'nin geli\u015fmi\u015f Anthropic modellerine eri\u015fimi k\u0131s\u0131tlamas\u0131yla teknoloji art\u0131k yaln\u0131zca bir \u00fcr\u00fcn de\u011fil, stratejik bir alan.",
+        "Soru basit g\u00f6r\u00fcn\u00fcyor: en g\u00fc\u00e7l\u00fc modeller kimin elinde olmal\u0131? Yan\u0131t ekonomi, diplomasi ve g\u00fcvenlik aras\u0131ndaki ince \u00e7izgide duruyor.",
+        "Fable 5 yasa\u011f\u0131 tek bir \u015firkete bask\u0131 kurmaktan daha b\u00fcy\u00fck bir sinyal veriyor. AI altyap\u0131s\u0131n\u0131n \u00e7evresine yeni s\u0131n\u0131rlar \u00e7izildi\u011fini g\u00f6steriyor.",
+        "Modellere eri\u015fim art\u0131k \u00e7ip, bulut, veri ve yetenekle birlikte jeopolitik bir kald\u0131ra\u00e7. Bir modeli ihra\u00e7 etmek, karar verme h\u0131z\u0131n\u0131 da ihra\u00e7 etmek anlam\u0131na gelebilir.",
+        "Bu nedenle yasa\u011f\u0131n kimi korudu\u011fu sorusu a\u00e7\u0131k kal\u0131yor: kullan\u0131c\u0131lar\u0131 m\u0131, piyasay\u0131 m\u0131, ulusal g\u00fcvenli\u011fi mi, yoksa mevcut g\u00fc\u00e7 dengesini mi?",
+        "As\u0131l nokta \u015fu: gelecekteki AI rekabeti yaln\u0131zca en iyi modeli kimin kurdu\u011fu \u00fczerinden ilerlemeyecek. Eri\u015fimi kimin kontrol etti\u011fi de oyunun merkezinde olacak.",
+      ],
     },
   },
   {
@@ -1875,14 +2275,15 @@ const lineupArticleDetails = [
     slug: "internet-endi-malumot-bermaydi-diqqatni-yutadi",
     image:
       "https://cdn1.wiro.ai/f7c0c2a1-d7a0bdcf-a060f16f-23986f17-d3617ce3-0ce7a132-2cc2a246-28880a97-03a40838-a420fa9d-850c160f-71a17c6d/1867404_Image.png",
-    category: { uz: "AI", en: "AI" },
-    date: { uz: "2026-yil 13-may", en: "13 May 2026" },
+    category: { uz: "AI", en: "AI", tr: "AI" },
+    date: { uz: "2026-yil 13-may", en: "13 May 2026", tr: "13 May\u0131s 2026" },
     title: {
       uz: "Internet endi ma’lumot bermaydi. U diqqatni yutadi.",
       en: "AI internet is no longer informing. It is consuming attention.",
+      tr: "\u0130nternet art\u0131k bilgi vermiyor. Dikkati t\u00fcketiyor.",
     },
     author: { initials: "OD", name: "Oktay Dak" },
-    readTime: { uz: "3 daqiqalik mutolaa", en: "3 min read" },
+    readTime: { uz: "3 daqiqalik mutolaa", en: "3 min read", tr: "3 dk okuma" },
     audioTime: "0:00 / 4:38",
     body: {
       uz: [
@@ -1900,6 +2301,14 @@ const lineupArticleDetails = [
         "What mattered was no longer only truth, but retention: what gets clicked, what gets scrolled, what creates reaction.",
         "The problem is not a lack of information. It is information without scale. Important news, noise, memes, and ads arrive with the same weight on the same screen.",
         "That is why .alomat is not here to produce more content. It is here to restore rhythm and show, more calmly, what matters, what is hype, and what may change the future.",
+      ],
+      tr: [
+        "Bir zamanlar internetin insanl\u0131\u011f\u0131n en b\u00fcy\u00fck bilgi a\u011f\u0131 oldu\u011funu d\u00fc\u015f\u00fcn\u00fcyorduk. Belki ger\u00e7ekten \u00f6yleydi.",
+        "Bir \u015fey \u00f6\u011frenmek istedi\u011finde arard\u0131n. D\u00fcnyan\u0131n ba\u015fka yerlerindeki insanlarla konu\u015fur, yeni bir beceri edinir ve daha \u00f6nce g\u00f6rmedi\u011fin fikirlerle kar\u015f\u0131la\u015f\u0131rd\u0131n.",
+        "Sonra de\u011fi\u015fim sessizce ba\u015flad\u0131. \u0130nternet bilgiyi ta\u015f\u0131may\u0131 b\u0131rak\u0131p dikkati ta\u015f\u0131maya ba\u015flad\u0131.",
+        "\u00d6nemli olan art\u0131k yaln\u0131zca ger\u00e7ek de\u011fil, elde tutma g\u00fcc\u00fcyd\u00fc: neye t\u0131klan\u0131yor, ne kayd\u0131r\u0131l\u0131yor, ne tepki yarat\u0131yor?",
+        "Sorun bilgi eksikli\u011fi de\u011fil. \u00d6l\u00e7e\u011fi olmayan bilgi fazlal\u0131\u011f\u0131. \u00d6nemli haber, g\u00fcr\u00fclt\u00fc, mem ve reklam ayn\u0131 a\u011f\u0131rl\u0131kla ayn\u0131 ekrana geliyor.",
+        "Bu y\u00fczden .alomat daha fazla i\u00e7erik \u00fcretmek i\u00e7in de\u011fil, ritmi geri getirmek i\u00e7in var. Neyin \u00f6nemli, neyin yaln\u0131zca abart\u0131 ve neyin gelece\u011fi de\u011fi\u015ftirebilece\u011fini daha sakin g\u00f6stermek i\u00e7in.",
       ],
     },
   },
@@ -1977,32 +2386,32 @@ function renderAbout(localeKey, currentFile) {
 function renderLibrary(localeKey, currentFile) {
   const locale = locales[localeKey];
   const library = locale.library;
-  const archiveLabel = localeKey === "en" ? "Saved signal archive" : "Saqlangan signal arxivi";
-  const metrics =
-    localeKey === "en"
-      ? [
-          ["saved", "Saved"],
-          ["liked", "Liked"],
-          ["total", "Total"],
-        ]
-      : [
-          ["saved", "Saqlangan"],
-          ["liked", "Yoqtirilgan"],
-          ["total", "Jami"],
-        ];
-  const emptyLabel =
-    localeKey === "en"
-      ? "No saved or liked signals yet."
-      : "Hali saqlangan yoki yoqtirilgan signallar yo'q.";
-  const noteLabel = localeKey === "en" ? "Library state" : "Kutubxona holati";
-  const localStateTitle =
-    localeKey === "en"
-      ? "Your library stays in this browser."
-      : "Kutubxonangiz shu brauzerda saqlanadi.";
-  const localStateBody =
-    localeKey === "en"
-      ? "Saved and liked signals appear here immediately. Account synchronization can be added later."
-      : "Saqlangan va yoqtirilgan signallar darhol shu yerda ko'rinadi. Hisoblararo sinxronizatsiya keyinroq qo'shiladi.";
+  const labels = {
+    en: {
+      archive: "Saved signal archive",
+      metrics: [["saved", "Saved"], ["liked", "Liked"], ["total", "Total"]],
+      empty: "No saved or liked signals yet.",
+      note: "Library state",
+      localTitle: "Your library stays in this browser.",
+      localBody: "Saved and liked signals appear here immediately. Account synchronization can be added later.",
+    },
+    uz: {
+      archive: "Saqlangan signal arxivi",
+      metrics: [["saved", "Saqlangan"], ["liked", "Yoqtirilgan"], ["total", "Jami"]],
+      empty: "Hali saqlangan yoki yoqtirilgan signallar yo'q.",
+      note: "Kutubxona holati",
+      localTitle: "Kutubxonangiz shu brauzerda saqlanadi.",
+      localBody: "Saqlangan va yoqtirilgan signallar darhol shu yerda ko'rinadi. Hisoblararo sinxronizatsiya keyinroq qo'shiladi.",
+    },
+    tr: {
+      archive: "Kaydedilen sinyal ar\u015fivi",
+      metrics: [["saved", "Kaydedilen"], ["liked", "Be\u011fenilen"], ["total", "Toplam"]],
+      empty: "Hen\u00fcz kaydedilen veya be\u011fenilen sinyal yok.",
+      note: "K\u00fct\u00fcphane durumu",
+      localTitle: "K\u00fct\u00fcphanen bu taray\u0131c\u0131da kal\u0131r.",
+      localBody: "Kaydetti\u011fin ve be\u011fendi\u011fin sinyaller burada hemen g\u00f6r\u00fcn\u00fcr. Hesap e\u015fitleme daha sonra eklenebilir.",
+    },
+  }[localeKey];
   return `
   <main id="content" class="page page-library">
     <section class="library-shell" aria-labelledby="library-title">
@@ -2012,8 +2421,8 @@ function renderLibrary(localeKey, currentFile) {
         <p>${text(library.lead)}</p>
       </div>
 
-      <div class="library-status-strip" aria-label="${text(archiveLabel)}">
-        ${metrics
+      <div class="library-status-strip" aria-label="${text(labels.archive)}">
+        ${labels.metrics
           .map(
             ([key, label]) => `
           <span class="library-status-strip__item">
@@ -2024,14 +2433,14 @@ function renderLibrary(localeKey, currentFile) {
           .join("")}
       </div>
 
-      <section class="library-signal-list" data-library-list aria-label="${text(archiveLabel)}"></section>
-      <p class="library-empty" data-library-empty>${text(emptyLabel)}</p>
+      <section class="library-signal-list" data-library-list aria-label="${text(labels.archive)}"></section>
+      <p class="library-empty" data-library-empty>${text(labels.empty)}</p>
 
       <section class="library-memory">
         <div>
-          <p class="library-memory__label">${text(noteLabel)}</p>
-          <h2>${text(localStateTitle)}</h2>
-          <p>${text(localStateBody)}</p>
+          <p class="library-memory__label">${text(labels.note)}</p>
+          <h2>${text(labels.localTitle)}</h2>
+          <p>${text(labels.localBody)}</p>
         </div>
       </section>
     </section>
@@ -2061,7 +2470,7 @@ function renderRelay(localeKey) {
     </section>
     <section class="relay-panel">
       <div class="relay-panel__col">
-        <h2>${text(locale.nav.relay)} features</h2>
+        <h2>${text({ en: "Relay features", uz: "Relay imkoniyatlari", tr: "Relay \u00f6zellikleri" }[localeKey])}</h2>
         <ul class="stack-list">
           ${relay.features.map((feature) => `<li>${text(feature)}</li>`).join("")}
         </ul>
@@ -2167,7 +2576,16 @@ function renderLineup(localeKey, currentFile) {
           category: "Politics",
           read: "Read →",
         }
-      : {
+      : localeKey === "tr"
+        ? {
+            writings: "Yaz\u0131lar",
+            sectionAll: "T\u00fcm\u00fcn\u00fc g\u00f6r →",
+            staff: "Yazarlar",
+            staffMeta: "Her yazar edit\u00f6r davetiyle",
+            category: "Siyaset",
+            read: "Oku →",
+          }
+        : {
           writings: "Yozuvlar",
           sectionAll: "Barchasini ko‘rish →",
           staff: "Mualliflar",
@@ -2226,7 +2644,7 @@ function renderLineup(localeKey, currentFile) {
           <span class="lineup-section__meta">${text(labels.staffMeta)}</span>
         </div>
         <div class="lineup-masthead lineup-masthead--empty">
-          <p>${text(localeKey === "en" ? "The masthead will open here soon." : "Mualliflar ro‘yxati tez orada shu yerda e’lon qilinadi.")}</p>
+          <p>${text({ en: "The masthead will open here soon.", uz: "Mualliflar ro‘yxati tez orada shu yerda e’lon qilinadi.", tr: "Yazar listesi yak\u0131nda burada a\u00e7\u0131lacak." }[localeKey])}</p>
         </div>
       </section>
       <section class="lineup-cta-row">
@@ -2251,7 +2669,16 @@ function renderLineupArticle(localeKey, currentFile, article) {
           larger: "Make text larger",
           share: "Share",
         }
-      : {
+      : localeKey === "tr"
+        ? {
+            writtenBy: "Yazan",
+            allPosts: "T\u00fcm yaz\u0131lar",
+            back: "← LINEUP",
+            smaller: "Metni k\u00fc\u00e7\u00fclt",
+            larger: "Metni b\u00fcy\u00fct",
+            share: "Payla\u015f",
+          }
+        : {
           writtenBy: "Muallif",
           allPosts: "Barcha yozuvlar",
           back: "← Lineup",
@@ -2373,11 +2800,8 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
   const locale = locales[localeKey];
   const pageMeta = pages.find((entry) => entry.key === pageKey);
   const currentFile = outputFile;
-  const homeFile = navigationPageOutputPath(localeKey, "home");
-  const otherLocale = localeKey === "en" ? "uz" : "en";
-  const otherLocaleFile = navigationPageOutputPath(otherLocale, pageKey);
+  const localeOutputPath = (targetLocaleKey) => navigationPageOutputPath(targetLocaleKey, pageKey);
   const currentLocaleHref = relativeHref(currentFile, currentFile);
-  const alternateHref = relativeHref(currentFile, otherLocaleFile);
   const skipSiteFooter = pageKey === "about";
 
   return `<!doctype html>
@@ -2675,14 +3099,13 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
         }
       }
     </style>
-    <link rel="alternate" hreflang="${text(locale.htmlLang)}" href="${text(currentLocaleHref)}" />
-    <link rel="alternate" hreflang="${text(otherLocale)}" href="${text(alternateHref)}" />
+    ${renderAlternateLinks(localeKey, currentFile, localeOutputPath)}
     <link rel="canonical" href="${text(currentLocaleHref)}" />
   </head>
   <body>
     <div class="page-backdrop"></div>
     <div class="page-shell${["home", "library", "about", "lineup"].includes(pageKey) ? " page-shell--home" : ""}">
-      ${renderHeader(localeKey, pageKey, currentFile).trim()}
+      ${renderHeader(localeKey, pageKey, currentFile, localeOutputPath).trim()}
       ${renderPage(localeKey, pageKey, currentFile).trim()}
       ${skipSiteFooter ? "" : renderFooter(localeKey, pageKey, currentFile).trim()}
     </div>
@@ -2694,8 +3117,7 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
 
 function renderLineupArticleDocument(localeKey, article) {
   const currentFile = lineupArticleOutputPath(localeKey, article);
-  const otherLocale = localeKey === "en" ? "uz" : "en";
-  const alternateFile = lineupArticleOutputPath(otherLocale, article);
+  const localeOutputPath = (targetLocaleKey) => lineupArticleOutputPath(targetLocaleKey, article);
   const title = `${localizeStoryValue(article.title, localeKey)} | .alomat Lineup`;
   const description = article.body[localeKey][0];
 
@@ -2710,13 +3132,12 @@ function renderLineupArticleDocument(localeKey, article) {
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
     ${renderInlineStyles()}
     ${renderThemeBootScript()}
-    <link rel="alternate" hreflang="${text(locales[localeKey].htmlLang)}" href="${text(relativeHref(currentFile, currentFile))}" />
-    <link rel="alternate" hreflang="${text(otherLocale)}" href="${text(relativeHref(currentFile, alternateFile))}" />
+    ${renderAlternateLinks(localeKey, currentFile, localeOutputPath)}
   </head>
   <body>
     <div class="page-backdrop"></div>
     <div class="page-shell page-shell--home">
-      ${renderHeader(localeKey, "lineup", currentFile).trim()}
+      ${renderHeader(localeKey, "lineup", currentFile, localeOutputPath).trim()}
       ${renderLineupArticle(localeKey, currentFile, article)}
       ${renderFooter(localeKey, "lineup", currentFile)}
     </div>

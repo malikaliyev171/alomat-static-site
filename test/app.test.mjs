@@ -1,6 +1,74 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const distRoot = path.join(projectRoot, "dist");
+
+function readBuiltPage(relativePath) {
+  return readFileSync(path.join(distRoot, relativePath), "utf8")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "");
+}
+
+test("build generates Turkish routes with equivalent EN UZ TR navigation and hreflang links", () => {
+  execFileSync(process.execPath, ["build.mjs"], { cwd: projectRoot, stdio: "pipe" });
+
+  const turkishRoutes = [
+    "tr.html",
+    "tr/index.html",
+    "tr-about.html",
+    "tr/about/index.html",
+    "tr-lineup.html",
+    "tr/lineup/index.html",
+    "tr/library/index.html",
+    "tr/relay/index.html",
+    "tr/contact/index.html",
+    "tr/sponsor/index.html",
+    "tr/privacy/index.html",
+    "tr/lineup/senol-dak/aida-yangi-temir-parda-fable-5-taqiqi-kimni-himoya-qiladi/index.html",
+    "tr/lineup/oktay-dak/internet-endi-malumot-bermaydi-diqqatni-yutadi/index.html",
+  ];
+
+  for (const route of turkishRoutes) {
+    assert.equal(existsSync(path.join(distRoot, route)), true, `${route} should be generated`);
+  }
+
+  const equivalents = [
+    ["index.html", ["en.html", "index.html", "tr.html"]],
+    ["en-about.html", ["en-about.html", "about.html", "tr-about.html"]],
+    ["tr-lineup.html", ["en-lineup.html", "lineup.html", "tr-lineup.html"]],
+    ["tr/library/index.html", ["../../en/library/index.html", "../../library/index.html", "index.html"]],
+  ];
+
+  for (const [route, expectedHrefs] of equivalents) {
+    const html = readBuiltPage(route);
+    const switchMarkup = /<div class="language-switch"[\s\S]*?<\/div>/.exec(html)?.[0] ?? "";
+    const links = Array.from(switchMarkup.matchAll(/<a\b([^>]*)>(EN|UZ|TR)<\/a>/g));
+
+    assert.deepEqual(links.map((match) => match[2]), ["EN", "UZ", "TR"], `${route} locale order`);
+    assert.deepEqual(
+      links.map((match) => /href="([^"]+)"/.exec(match[1])?.[1]),
+      expectedHrefs,
+      `${route} equivalent locale routes`,
+    );
+    assert.equal(links.filter((match) => match[1].includes("is-active")).length, 1, `${route} active locale`);
+    assert.equal(links.filter((match) => match[1].includes('aria-current="page"')).length, 1, `${route} current locale`);
+    assert.equal(links.filter((match) => match[1].includes("is-inactive")).length, 2, `${route} inactive locales`);
+    assert.doesNotMatch(switchMarkup, /disabled|aria-disabled/, `${route} enabled locale links`);
+
+    const hreflangs = Array.from(html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)" \/>/g));
+    assert.deepEqual(hreflangs.map((match) => match[1]), ["uz", "en", "tr"], `${route} hreflang set`);
+  }
+
+  const turkishHome = readBuiltPage("tr.html");
+  assert.match(turkishHome, /<html lang="tr" data-locale="tr"/);
+  assert.match(turkishHome, />KÜTÜPHANE<\/span>/);
+  assert.match(turkishHome, /Bugünün çizgisi/);
+});
 
 function createClassList(initial = []) {
   const values = new Set(initial);

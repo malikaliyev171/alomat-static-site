@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="uz" data-locale="uz" data-page="sponsor" data-palette="2" data-theme="light">
+<html lang="tr" data-locale="tr" data-page="home" data-palette="2" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Homiylik | .alomat</title>
-    <meta name="description" content="Brendlar uchun ochiq belgilangan homiylik modellari va joylashuvlar." />
+    <title>.alomat | Şimdi önemli olanlar için editoryal sinyal katmanı</title>
+    <meta name="description" content="Gürültünün içinden yararlı sinyalleri ayıran, okunması kolay bir editoryal site." />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff7a59'/%3E%3Cpath d='M20 50h60' stroke='%230b0d0f' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E" />
     <style data-alomat-styles>
@@ -5564,35 +5564,60 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
         }
       }
     </style>
-    <link rel="alternate" hreflang="uz" href="index.html" />
-    <link rel="alternate" hreflang="en" href="../en/sponsor/index.html" />
-    <link rel="alternate" hreflang="tr" href="../tr/sponsor/index.html" />
+    <link rel="alternate" hreflang="uz" href="../index.html" />
+    <link rel="alternate" hreflang="en" href="../en.html" />
+    <link rel="alternate" hreflang="tr" href="index.html" />
     <link rel="canonical" href="index.html" />
   </head>
   <body>
     <div class="page-backdrop"></div>
-    <div class="page-shell">
-      <a class="skip-link" href="#content">Kontentga o‘tish</a>
-  <header class="topbar">
-    <a class="brand" href="../index.html">
-      <span class="brand__dot"></span>
-      <span class="brand__stack">
-        <span class="brand__name">.alomat</span>
-        <span class="brand__sub">.alomat signal vaqt jadvali</span>
-      </span>
-    </a>
-    <nav class="nav" aria-label="Primary">
-      <a href="../about.html">Haqida</a><a href="../library/index.html">Kutubhona</a><a href="../relay/index.html">Relay</a><a href="../contact/index.html">Aloqa</a><a href="index.html">Homiylik</a><a href="../lineup.html">Lineup</a><a href="../privacy/index.html">Maxfiylik</a>
-    </nav>
-    <div class="controls">
-      <div class="language-switch" role="group" aria-label="Language">
-          <a class="language-switch__button is-inactive" href="../en/sponsor/index.html">EN</a>
-          <a class="language-switch__button is-active" aria-current="page" href="index.html">UZ</a>
-          <a class="language-switch__button is-inactive" href="../tr/sponsor/index.html">TR</a>
+    <div class="page-shell page-shell--home">
+      <a class="skip-link" href="#content">İçeriğe geç</a>
+    <header class="topbar topbar--home">
+      <a class="brand brand--home" href="../tr.html">
+        <span class="brand__stack">
+          <span class="brand__topline">
+            <span class="brand__name">.alomat</span>
+            <span class="brand__sub">SIGNAL TIMELINE</span>
+          </span>
+          <span class="brand__status">
+            <span>Bugünün çizgisi</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Aktif sinyal</span>
+            <span data-signal-status-time>19:01</span>
+            <span aria-hidden="true">&middot;</span>
+            <span data-signal-status-count>10 sinyal</span>
+          </span>
+        </span>
+      </a>
+
+      <div class="controls controls--home">
+        <nav class="nav nav--home signal-topbar-controls__group signal-topbar-controls__group--reader" aria-label="Primary">
+        <a class="nav__item nav__item--dot" href="../tr-about.html">
+          <span class="nav__bullet" aria-hidden="true">•</span>
+          <span>MANIFESTO</span>
+        </a>
+        <a class="nav__item nav__item--dot" href="../tr-lineup.html">
+          <span class="nav__bullet" aria-hidden="true">•</span>
+          <span>LINEUP</span>
+        </a>
+        <a class="nav__item nav__item--library" data-library-gate href="library/index.html">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M4 4.5C4 3.1 5.1 2 6.5 2H20v20H6.5C5.1 22 4 20.9 4 19.5v-15Z"></path>
+            <path fill="#fff" d="M7.25 5.5h10.5v1.6H7.25zM7.25 9.1h10.5v1.6H7.25zM7.25 12.7h7.8v1.6h-7.8z"></path>
+          </svg>
+          <span>KÜTÜPHANE</span>
+        </a>
+      </nav>
+
+        <div class="language-switch" role="group" aria-label="Language">
+          <a class="language-switch__button is-inactive" href="../en.html">EN</a>
+          <a class="language-switch__button is-inactive" href="../index.html">UZ</a>
+          <a class="language-switch__button is-active" aria-current="page" href="index.html">TR</a>
         </div>
-      
-      <div class="palette-rail" data-palette-picker role="group" aria-label="Rang tanla">
-        <button class="palette-rail__trigger" type="button" data-palette-toggle aria-label="Rang tanla" title="Rang tanla" aria-expanded="false">
+
+        <div class="palette-rail" data-palette-picker role="group" aria-label="Palet">
+        <button class="palette-rail__trigger" type="button" data-palette-toggle aria-label="Palet" title="Palet" aria-expanded="false">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
             <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
             <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
@@ -5600,101 +5625,219 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
             <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.12 0-.93.74-1.67 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
-          <span class="palette-rail__label" data-palette-label>Rang tanla</span>
+          <span class="palette-rail__label" data-palette-label>Palet</span>
           <span class="palette-rail__sample" aria-hidden="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></span>
         </button>
         <div class="palette-rail__swatches" data-palette-menu aria-hidden="true">
-          <button class="palette-dock-swatch" type="button" data-palette-option="0" aria-label="Rang tanla: 1. palet" aria-pressed="false" style="--swatch-bg:#05070d;--swatch-fg:#ff4d32"></button>
-          <button class="palette-dock-swatch is-active" type="button" data-palette-option="2" aria-label="Rang tanla: 2. palet" aria-pressed="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></button>
-          <button class="palette-dock-swatch" type="button" data-palette-option="4" aria-label="Rang tanla: 3. palet" aria-pressed="false" style="--swatch-bg:#ff4d32;--swatch-fg:#efeff2"></button>
+          <button class="palette-dock-swatch" type="button" data-palette-option="0" aria-label="Palet: 1. palet" aria-pressed="false" style="--swatch-bg:#05070d;--swatch-fg:#ff4d32"></button>
+          <button class="palette-dock-swatch is-active" type="button" data-palette-option="2" aria-label="Palet: 2. palet" aria-pressed="true" style="--swatch-bg:#efeff2;--swatch-fg:#05070d"></button>
+          <button class="palette-dock-swatch" type="button" data-palette-option="4" aria-label="Palet: 3. palet" aria-pressed="false" style="--swatch-bg:#ff4d32;--swatch-fg:#efeff2"></button>
         </div>
       </div>
-    </div>
-  </header>
-      <main id="content" class="page page-detail">
-    <section class="page-hero">
-      <p class="eyebrow">Homiylik</p>
-      <h1>.alomat&#39;da joy oling.</h1>
-      <p class="lede">Signal oqimi, byulleten va ilovada uch xil homiylik modeli bor. Hammasi kontent yonida turadi, o‘rnini egallamaydi va ochiq belgilanadi.</p>
-    </section>
-    <section class="package-grid">
-      
-        <article class="package-card">
-          <p class="package-card__eyebrow">Sponsor nishoni</p>
-          <h2>Signal oqimida brendingiz nomi bilan ko‘rining.</h2>
-          <p>Habar kartalarida “Supported by [brand]” nishoni bilan ko‘rinadigan joy. Redaksiyaviy oqim buzilmaydi, o‘quvchi kim qo‘llab-quvvatlayotganini aniq ko‘radi.</p>
-          <dl class="package-card__dl">
+      </div>
+    </header>
+      <main id="content" class="page page-home">
+    <section class="hero hero--home">
+      <div class="hero__copy hero__copy--home">
+        <section class="signal-timeline signal-timeline--home" aria-label=".alomat Sinyal Zaman Çizgisi">
+          <div class="signal-timeline__line" aria-hidden="true"></div>
+          <header class="signal-reader-gate is-guest">
+            <span class="signal-reader-gate__axis" aria-hidden="true">
+              <span class="signal-reader-gate__sigil">
+                <span class="signal-reader-gate__broadcast" aria-hidden="true">
+                  <span></span>
+                </span>
+              </span>
+            </span>
+            <div class="signal-reader-gate__content">
+              <p class="eyebrow">Eşik</p>
+              <h1 data-hero-title>Hoş geldin, yabancı.</h1>
+              <p class="lede" data-hero-body>Bu çizgi sana nasıl seslensin? Adını kaydet.</p>
+            </div>
+            <button class="signal-reader-gate__action" type="button" aria-expanded="false" aria-controls="name-form-gate">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M20 20a8 8 0 0 0-16 0"></path>
+                <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle>
+              </svg>
+              <span>Adını yaz</span>
+            </button>
+            <p class="signal-reader-gate__note" data-name-display>Kayıtların, beğenilerin ve kütüphanen birlikte kalsın diye bir ad bırak.</p>
+          </header>
+          <div class="name-auth-backdrop" data-name-modal hidden>
+            <div class="name-auth-modal" role="dialog" aria-modal="true" aria-labelledby="name-form-title">
+              <button type="button" class="name-auth-modal__close" data-name-modal-close aria-label="Kapat">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+                  <path fill="none" stroke="currentColor" stroke-width="2" d="M18 6 6 18"></path>
+                  <path fill="none" stroke="currentColor" stroke-width="2" d="m6 6 12 12"></path>
+                </svg>
+              </button>
+              <p class="name-auth-modal__kicker">01 - Kişisel hafıza</p>
+              <h2 class="name-auth-modal__title" id="name-form-title">Sinyallerini kaydet.</h2>
+              <p class="name-auth-modal__body-copy">Kaydettiğin ve beğendiğin sinyalleri .alomat hesabında tut.</p>
+              <form class="name-auth-modal__form name-form" id="name-form-gate" data-name-form novalidate>
+                <div class="name-auth-step" data-name-email-step>
+                <label class="name-auth-field" for="reader-email">
+                  <span>E-posta</span>
+                  <input
+                    id="reader-email"
+                    class="name-auth-input"
+                    data-name-input
+                    type="email"
+                    autocomplete="email"
+                    placeholder="sen@example.com"
+                    aria-label="E-posta"
+                  />
+                </label>
+                </div>
+                <div class="name-auth-step name-auth-step--profile" data-name-profile-step hidden>
+                  <label class="name-auth-field" for="reader-first-name">
+                    <span>Ad</span>
+                    <input
+                      id="reader-first-name"
+                      class="name-auth-input"
+                      data-name-first-input
+                      type="text"
+                      autocomplete="given-name"
+                      aria-label="Ad"
+                    />
+                  </label>
+                  <label class="name-auth-field" for="reader-last-name">
+                    <span>Soyad</span>
+                    <input
+                      id="reader-last-name"
+                      class="name-auth-input"
+                      data-name-last-input
+                      type="text"
+                      autocomplete="family-name"
+                      aria-label="Soyad"
+                    />
+                  </label>
+                </div>
+                <label class="name-auth-field name-auth-field--code" for="reader-code" data-name-code-field hidden>
+                  <span>Doğrulama kodu</span>
+                  <input
+                    id="reader-code"
+                    class="name-auth-input"
+                    data-name-code-input
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    placeholder="123456"
+                    aria-label="Doğrulama kodu"
+                    hidden
+                  />
+                </label>
+                <p class="name-auth-status" data-name-auth-status hidden></p>
+                <button type="submit" class="name-auth-primary-button" data-name-auth-submit>
+                  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
+                    <path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"></path>
+                    <path fill="none" stroke="currentColor" stroke-width="2" d="m4 7 8 6 8-6"></path>
+                  </svg>
+                  <span data-name-submit-label>E-postayı kaydet</span>
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="signal-timeline__items" data-signal-timeline-items>
+            <div class="signal-timeline__day-marker" aria-hidden="true">
+              <span class="signal-timeline__day-pill">Bugün</span>
+            </div>
             
-              <div>
-                <dt>Joylashuv</dt>
-                <dd>Kunlik asosiy hikoya uchun joy, signal oqimining yuqori qismi</dd>
-              </div>
-              <div>
-                <dt>Mazmun</dt>
-                <dd>Brend nomi, ixtiyoriy qisqa shior va harakatga chaqiriq</dd>
-              </div>
-              <div>
-                <dt>Belgilar</dt>
-                <dd>Ochiq “Supported by” nishoni</dd>
-              </div>
-          </dl>
-        </article>
-        <article class="package-card">
-          <p class="package-card__eyebrow">Byulleten homiyligi</p>
-          <h2>Byulleten boshidagi ajratilgan joy.</h2>
-          <p>Signal byulletenimizdagi alohida bo‘lim. Bitta homiy, yuqori ko‘rinish; byulletenning boshida xulosalardan oldin turadigan aniq qo‘llab-quvvatlash qatlami.</p>
-          <dl class="package-card__dl">
-            
-              <div>
-                <dt>Joylashuv</dt>
-                <dd>Byulleten boshida alohida joy</dd>
-              </div>
-              <div>
-                <dt>Mazmun</dt>
-                <dd>Marka nomi, 1–2 jumla, CTA, ixtiyoriy rasm</dd>
-              </div>
-              <div>
-                <dt>Belgilar</dt>
-                <dd>“Sponsorli qo‘llab-quvvatlash” yorlig‘i</dd>
-              </div>
-          </dl>
-        </article>
-        <article class="package-card">
-          <p class="package-card__eyebrow">Advertorial</p>
-          <h2>Tahririy formatdagi brend hikoyasi.</h2>
-          <p>.alomat o‘quvchisi kutadigan toza va qisqa formatda yozilgan homiylik materiali. Siz taqdim etgan ma’lumotlar asosida tahririy mezonlarda tayyorlanadi; oddiy signal kabi o‘qiladi, ammo doimo “homiylik” yorlig‘i bilan beriladi.</p>
-          <dl class="package-card__dl">
-            
-              <div>
-                <dt>Joylashuv</dt>
-                <dd>Signal oqimida, oddiy xabarlar bilan bir formatda</dd>
-              </div>
-              <div>
-                <dt>Mazmun</dt>
-                <dd>Sarlavha, qisqa xulosa, ixtiyoriy audio va rasm</dd>
-              </div>
-              <div>
-                <dt>Belgilar</dt>
-                <dd>Ochiq “homiylik” yorlig‘i</dd>
-              </div>
-          </dl>
-        </article>
-    </section>
-    <section class="closing-panel closing-panel--support">
-      <p>Paketlar va narxlar uchun sponsorship@alomat.uz ga yozing. Auditoriyangiz, maqsadingiz va qaysi model kerakligini qisqacha yuborsangiz, maxsus taklif bilan qaytamiz.</p>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91805" data-timeline-index="0" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 0px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">Illinois signs AI safety bill backed by OpenAI and Anthropic</span>
+      </button>
+    </article>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91804" data-timeline-index="1" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 0px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">Nintendo Ending European Switch Sales by 2027 Over Battery Laws</span>
+      </button>
+    </article>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91803" data-timeline-index="2" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 21px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">MicroStrategy sells $216M in Bitcoin amid $11.4B paper loss</span>
+      </button>
+    </article>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91802" data-timeline-index="3" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: -7px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">Xbox cuts 3,200 jobs and divests Ninja Theory in major reset</span>
+      </button>
+    </article>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91801" data-timeline-index="4" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 14px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">Agility Robotics CEO Peggy Johnson on SPACs and hardware moats</span>
+      </button>
+    </article>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91800" data-timeline-index="5" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: -14px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">AI labor-to-capital shift threatens Ireland&#39;s tech-heavy tax base</span>
+      </button>
+    </article>
+    <article class="signal-timeline__item" data-side="left" data-story-id="91799" data-timeline-index="6" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: 7px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
+      <button type="button" class="signal-timeline__headline-button">
+        <span class="signal-timeline__headline-text">US Treasury warns AI market risks echo dotcom crash</span>
+      </button>
+    </article>
+            <div class="signal-timeline__sentinel" aria-hidden="true"></div>
+            <div class="signal-timeline__earlier-gate">
+              <span class="signal-timeline__earlier-hint">Bugünün tüm sinyallerini gördün</span>
+              <button class="signal-timeline__load-earlier" type="button" data-load-earlier aria-disabled="true" tabindex="-1">
+                <span class="signal-timeline__load-earlier-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+                    <path fill="none" stroke="currentColor" stroke-width="2" d="m6 9 6 6 6-6"></path>
+                  </svg>
+                </span>
+                Önceki günleri yükle
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="signal-detail signal-detail--intro" data-signal-detail>
+        <div class="signal-detail__visual" data-signal-detail-visual aria-hidden="true"></div>
+        <div class="signal-detail__content" data-signal-detail-content>
+          <p class="signal-detail__topline">MANIFESTO</p>
+          <h2>.alomat — neredeydin?</h2>
+          <div class="signal-detail__summary">
+            <p>Bir haber sitesi değil. Editoryal bir sinyal katmanı. Gürültü ekonomisine karşı net bir tavır.</p>
+            <p>Daha çok okuduğun değil, daha hızlı anladığın yer.</p>
+          </div>
+          <div class="signal-detail__lower">
+            <div class="signal-detail__actions signal-detail__actions--intro">
+              <a class="signal-detail__action signal-detail__action--ghost" href="../tr-about.html">
+                Manifestoyu oku →
+              </a>
+              <a class="signal-detail__action signal-detail__action--ghost signal-detail__action--mute" data-library-gate href="library/index.html">
+                Kütüphane
+              </a>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <script type="application/json" data-signal-stories>[{"id":91805,"title":"Illinois signs AI safety bill backed by OpenAI and Anthropic","source":"CBS News","time":"19:01","score":94,"url":"https://www.cbsnews.com/chicago/news/pritzker-to-sign-illinois-bill-aimed-artificial-intelligence-accountability/","image":"https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format\u0026fit=crop\u0026w=1400\u0026q=80","category":"policy","summary":["Illinois Gov. JB Pritzker signed Senate Bill 315, creating a framework for AI accountability and safety.","The law requires large model developers to publish transparency frameworks, adopt strict safety protocols, and use third-party auditors."]},{"id":91804,"title":"Nintendo Ending European Switch Sales by 2027 Over Battery Laws","source":"Andrew Webster / The Verge","time":"10:35 AM","score":94,"url":"https://www.theverge.com/games/961632/nintendo-switch-europe-discontinued","image":"https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-aa1af09d-783dc88f-0927cad6-e09e634b-ba981037-f603826b-3a6e62fb-7f1407ca/2338777_Image.png","category":"policy","summary":["Nintendo will stop selling the original Switch family in Europe by mid-February 2027.","The move is tied to new EU rules that require handheld devices to use replaceable batteries."]},{"id":91803,"title":"MicroStrategy sells $216M in Bitcoin amid $11.4B paper loss","source":"James Hunt / The Block","time":"10:25 AM","score":94,"url":"https://www.theblock.co/post/407217/strategy-bitcoin-digital-energy","image":"https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-08a5f804-071a656b-ff5bf5e3-9284e84c-77407ef8-3e37dc86-77078015-979370db/2338743_Image.png","category":"companies","summary":["MicroStrategy sold 3,588 BTC for about $216 million as it manages preferred stock distributions and reserve needs.","The company still holds 843,775 BTC and faces roughly $11.4 billion in paper losses."]},{"id":91802,"title":"Xbox cuts 3,200 jobs and divests Ninja Theory in major reset","source":"Bloomberg","time":"9:41 AM","score":95,"url":"https://www.bloomberg.com/news/articles/2026-07-06/microsoft-s-xbox-to-cut-3-200-jobs-divest-five-studios-in-major-overhaul","image":"https://cdn1.wiro.ai/22680191-31ed99e6-1ebd7af6-27f8f142-fb91ab86-b27df2b0-f69e80b0-aa89f934-28ff8bf5-005bd550-4e3ca625-2c051cdd/2338588_Image.png","category":"gaming","summary":["Microsoft's Xbox division is cutting about 3,200 jobs and divesting five studios, including Ninja Theory.","The reset points to a leaner gaming strategy centered on key franchises and subscriptions."]},{"id":91801,"title":"Agility Robotics CEO Peggy Johnson on SPACs and hardware moats","source":"Connie Loizos / TechCrunch","time":"6:55 AM","score":94,"url":"https://techcrunch.com/2026/07/05/this-humanoid-robotics-company-is-going-public-but-its-ceo-isnt-promising-a-robot-in-your-home-anytime-soon/","image":"https://cdn1.wiro.ai/2b97ab18-2d87df57-83434db9-df0c4232-f6647792-4132135c-3f4c6319-f0cdcc47-a3a18d9a-c39b8747-c9170b62-cd76e63e/2337916_Image.png","category":"funding","summary":["Agility Robotics plans to go public through a SPAC merger, valuing the company at about $2.5 billion.","Peggy Johnson says the real hardware moat comes from industrial safety data and factory deployment, not demos."]},{"id":91800,"title":"AI labor-to-capital shift threatens Ireland's tech-heavy tax base","source":"Olivia Fletcher / Bloomberg","time":"6:40 AM","score":94,"url":"https://www.bloomberg.com/news/articles/2026-07-06/meta-tiktok-jobs-cuts-in-ireland-augur-further-ai-disruption","image":"https://cdn1.wiro.ai/0758c7f7-b1fb7e9d-b31248cd-7f304742-f2a80eb3-a14bd3f3-48d2e738-561d1299-c28afef7-3cefe011-8e3e6fb6-45448c4e/2337810_Image.png","category":"policy","summary":["Layoffs at Meta, TikTok, and other tech firms show how AI is shifting Ireland's digital economy away from labor-heavy operations.","That could weaken the tax base long supported by high-income tech workers."]},{"id":91799,"title":"US Treasury warns AI market risks echo dotcom crash","source":"Eric Katz / NOTUS","time":"5:30 AM","score":94,"url":"https://www.notus.org/economy/treasury-internal-report-warning-dangers-ai-bubble","image":"https://cdn1.wiro.ai/c5563a6a-eabcf8ac-bd199571-30ebe417-5e62a1bf-66455782-f76ba9bc-c3cf7c7a-90d444fd-6a8d78f0-f856a1a3-ba785a35/2337679_Image.png","category":"policy","summary":["An internal Treasury warning says AI market risks are starting to look like the dot-com bubble.","The concern is that valuations and hype may be running ahead of fundamentals."]}]</script>
     </section>
   </main>
       <footer class="site-footer">
     <div class="site-footer__top">
       <div class="footer-nav">
-        <p class="eyebrow">Kashf et</p>
+        <p class="eyebrow">Keşfet</p>
         <div class="footer-nav__links">
-          <a href="../index.html">Ana sahifa</a>
-          <a href="../about.html">Haqida</a><a href="../library/index.html" data-library-gate>Kutubhona</a><a aria-disabled="true">Relay</a><a aria-disabled="true">Aloqa</a><a aria-disabled="true">Homiylik</a><a aria-disabled="true">Lineup</a><a aria-disabled="true">Maxfiylik</a>
+          <a href="../tr.html">Ana sayfa</a>
+          <a href="../tr-about.html">Hakkında</a><a href="library/index.html" data-library-gate>Kütüphane</a><a aria-disabled="true">Relay</a><a aria-disabled="true">İletişim</a><a aria-disabled="true">Sponsorluk</a><a aria-disabled="true">Lineup</a><a aria-disabled="true">Gizlilik</a>
         </div>
       </div>
       <div>
-        <p class="eyebrow">Kuzatish</p>
+        <p class="eyebrow">Takip et</p>
         <div class="social-grid">
           <button class="social-chip" type="button" aria-label="X @alomat">
         <span class="social-chip__abbr">X</span>
@@ -5713,8 +5856,8 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       </div>
     </div>
     <div class="site-footer__bottom">
-      <p>made with ♥ in O‘zbekiston</p>
-      <p>.alomat · O‘zbekcha</p>
+      <p>Özbekistan&#39;da ♥ ile yapıldı</p>
+      <p>.alomat · Türkçe</p>
     </div>
   </footer>
     </div>

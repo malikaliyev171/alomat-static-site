@@ -33,13 +33,36 @@ if (!fs.existsSync(distRoot)) {
   const files = walk(distRoot);
   const htmlFiles = files.filter((file) => file.endsWith(".html"));
 
-  if (htmlFiles.length < 20) {
-    fail(`expected at least 20 generated HTML files, found ${htmlFiles.length}`);
+  if (htmlFiles.length < 38) {
+    fail(`expected at least 38 generated HTML files, found ${htmlFiles.length}`);
   }
 
-  for (const fallbackPage of ["en.html", "about.html", "lineup.html", "en-about.html", "en-lineup.html"]) {
+  const requiredTurkishPages = [
+    "tr.html",
+    "tr/index.html",
+    "tr-about.html",
+    "tr/about/index.html",
+    "tr-lineup.html",
+    "tr/lineup/index.html",
+    "tr/library/index.html",
+    "tr/relay/index.html",
+    "tr/contact/index.html",
+    "tr/sponsor/index.html",
+    "tr/privacy/index.html",
+    "tr/lineup/senol-dak/aida-yangi-temir-parda-fable-5-taqiqi-kimni-himoya-qiladi/index.html",
+    "tr/lineup/oktay-dak/internet-endi-malumot-bermaydi-diqqatni-yutadi/index.html",
+  ];
+
+  for (const fallbackPage of [
+    "en.html",
+    "about.html",
+    "lineup.html",
+    "en-about.html",
+    "en-lineup.html",
+    ...requiredTurkishPages,
+  ]) {
     if (!fs.existsSync(path.join(distRoot, fallbackPage))) {
-      fail(`${fallbackPage} must exist as a flat Cloudflare fallback page`);
+      fail(`${fallbackPage} must exist as a generated locale page`);
     }
   }
 
@@ -55,6 +78,9 @@ if (!fs.existsSync(distRoot)) {
     if (!homeHtml.includes('href="en.html"')) {
       fail("home EN link must use en.html for Cloudflare upload reliability");
     }
+    if (!homeHtml.includes('href="tr.html"')) {
+      fail("home TR link must use tr.html for Cloudflare upload reliability");
+    }
   }
 
   for (const file of htmlFiles) {
@@ -63,6 +89,31 @@ if (!fs.existsSync(distRoot)) {
       .replace(/<style\b[\s\S]*?<\/style>/gi, "")
       .replace(/<script\b[\s\S]*?<\/script>/gi, "");
     const localRefs = htmlWithoutInlineAssets.matchAll(/(?:href|src)="([^"]+)"/g);
+    const relativeName = path.relative(distRoot, file);
+    const languageSwitch = /<div class="language-switch"[\s\S]*?<\/div>/.exec(htmlWithoutInlineAssets)?.[0] ?? "";
+    const localeLinks = Array.from(languageSwitch.matchAll(/<a\b([^>]*)>(EN|UZ|TR)<\/a>/g));
+    const alternateLocales = Array.from(
+      htmlWithoutInlineAssets.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)" \/>/g),
+    ).map((match) => match[1]);
+
+    if (localeLinks.map((match) => match[2]).join("/") !== "EN/UZ/TR") {
+      fail(`${relativeName} must render exactly three locale anchors in EN / UZ / TR order`);
+    }
+    if (localeLinks.filter((match) => match[1].includes("is-active")).length !== 1) {
+      fail(`${relativeName} must mark exactly one locale anchor active`);
+    }
+    if (localeLinks.filter((match) => match[1].includes('aria-current="page"')).length !== 1) {
+      fail(`${relativeName} must expose exactly one current locale`);
+    }
+    if (localeLinks.filter((match) => match[1].includes("is-inactive")).length !== 2) {
+      fail(`${relativeName} must mark exactly two locale anchors inactive`);
+    }
+    if (/disabled|aria-disabled/.test(languageSwitch)) {
+      fail(`${relativeName} locale anchors must not use disabled semantics`);
+    }
+    if (alternateLocales.join("/") !== "uz/en/tr") {
+      fail(`${relativeName} must emit uz, en, and tr hreflang alternates`);
+    }
 
     if (!html.includes("<style data-alomat-styles>")) {
       fail(`${path.relative(distRoot, file)} must inline the site styles for Cloudflare upload reliability`);
@@ -713,11 +764,15 @@ if (fs.existsSync(appPath)) {
   if (!app.includes('5: { bg: "#efeff2", fg: "#ff4d32" }')) {
     fail("app palette swatches must include light orange-text");
   }
-  if (!app.includes('7: locale === "en" ? "Palette 1" : "1. palet"')) {
-    fail("app palette labels must include dark-text orange");
+  const themeLabelsBlock = /const themeLabels = \{[\s\S]*?\}\[locale\];/.exec(app)?.[0] ?? "";
+  if (!/uz: \{[^}]*5: "3\. palet"[^}]*7: "1\. palet"/.test(themeLabelsBlock)) {
+    fail("app Uzbek palette labels must include both derived signal palettes");
   }
-  if (!app.includes('5: locale === "en" ? "Palette 3" : "3. palet"')) {
-    fail("app palette labels must include light orange-text");
+  if (!/en: \{[^}]*5: "Palette 3"[^}]*7: "Palette 1"/.test(themeLabelsBlock)) {
+    fail("app English palette labels must include both derived signal palettes");
+  }
+  if (!/tr: \{[^}]*5: "Palet 3"[^}]*7: "Palet 1"/.test(themeLabelsBlock)) {
+    fail("app Turkish palette labels must include both derived signal palettes");
   }
   if (!/function pickPalette\(value\)\s*\{[\s\S]*?target = current === "2" \? "6" : "2";[\s\S]*?setPalette\(target\);[\s\S]*?\}/.test(app)) {
     fail("monochrome swatch must toggle between light and dark monochrome");

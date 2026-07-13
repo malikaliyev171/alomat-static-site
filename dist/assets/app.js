@@ -16,7 +16,9 @@ const paletteSwatches = {
   7: { bg: "#ff4d32", fg: "#05070d" },
 };
 
-const locale = document.documentElement.lang === "en" ? "en" : "uz";
+const supportedLocales = ["uz", "en", "tr"];
+const documentLocale = String(document.documentElement.lang || "").toLowerCase().split("-")[0];
+const locale = supportedLocales.includes(documentLocale) ? documentLocale : "uz";
 const themePickers = Array.from(document.querySelectorAll("[data-palette-picker]"));
 const themeButtons = Array.from(document.querySelectorAll("[data-palette-toggle]"));
 const themeOptions = Array.from(document.querySelectorAll("[data-palette-option]"));
@@ -117,15 +119,29 @@ const labelMap = {
     invalidName: "Please enter your first and last name.",
     saveFailed: "The details could not be saved. Please try again.",
   },
+  tr: {
+    palette: "Palet",
+    save: "Kaydedilenler",
+    greeting: (name) => `Merhaba, ${name}. Adınız kaydedildi.`,
+    hint: (name) => `Merhaba, ${name}. Kayıtlar ve beğeniler bu ada bağlı.`,
+    heroGreeting: (name) => `Hoş geldiniz, ${name}.`,
+    heroBody:
+      "Günün en önemli değişimleri zaman, kaynak ve ilgileriyle tek bir çizgide. Bir sinyali açın ve neden önemli olduğunu hızla görün.",
+    reveal: "Önceki günler gösterildi",
+    savedEmail: "E-posta kaydedildi",
+    requestSubmit: "E-postayı kaydet",
+    nameSubmit: "Adı kaydet",
+    invalidEmail: "Lütfen geçerli bir e-posta adresi girin.",
+    invalidName: "Lütfen adınızı ve soyadınızı girin.",
+    saveFailed: "Bilgiler kaydedilemedi. Lütfen tekrar deneyin.",
+  },
 };
 
 const themeLabels = {
-  0: locale === "en" ? "Palette 1" : "1. palet",
-  2: locale === "en" ? "Palette 2" : "2. palet",
-  4: locale === "en" ? "Palette 3" : "3. palet",
-  5: locale === "en" ? "Palette 3" : "3. palet",
-  7: locale === "en" ? "Palette 1" : "1. palet",
-};
+  uz: { 0: "1. palet", 2: "2. palet", 4: "3. palet", 5: "3. palet", 6: "2. palet", 7: "1. palet" },
+  en: { 0: "Palette 1", 2: "Palette 2", 4: "Palette 3", 5: "Palette 3", 6: "Palette 2", 7: "Palette 1" },
+  tr: { 0: "Palet 1", 2: "Palet 2", 4: "Palet 3", 5: "Palet 3", 6: "Palet 2", 7: "Palet 1" },
+}[locale];
 
 const detailLabels = {
   uz: {
@@ -164,6 +180,24 @@ const detailLabels = {
     copied: "Link copied",
     shareFailed: "The link could not be shared",
   },
+  tr: {
+    active: "AKTİF SİNYAL",
+    close: "Paneli kapat",
+    source: "KAYNAK",
+    time: "SAAT",
+    weight: "ÖNEM",
+    originalSource: "ORİJİNAL KAYNAK",
+    like: "Beğen",
+    save: "Kaydet",
+    share: "Paylaş",
+    liked: "Beğenildi",
+    unliked: "Beğeni kaldırıldı",
+    saved: "Kaydedildi",
+    unsaved: "Kayıt kaldırıldı",
+    shared: "Paylaşıldı",
+    copied: "Bağlantı kopyalandı",
+    shareFailed: "Bağlantı paylaşılamadı",
+  },
 };
 
 function safeStorage() {
@@ -180,7 +214,8 @@ function parseStoryData() {
   }
 
   try {
-    return JSON.parse(storyDataElement.textContent);
+    const stories = JSON.parse(storyDataElement.textContent);
+    return Array.isArray(stories) ? stories.map(withDigestClassification) : [];
   } catch {
     return [];
   }
@@ -190,15 +225,65 @@ function emptyLibraryState() {
   return { version: 1, items: {} };
 }
 
+function normalizeLocalizedText(value) {
+  const values = typeof value === "string" ? { uz: value } : value && typeof value === "object" ? value : {};
+  const clean = (entry) => typeof entry === "string" ? entry.trim() : "";
+  const uz = clean(values.uz) || clean(values.en) || clean(values.tr);
+  return {
+    uz,
+    en: clean(values.en) || uz,
+    tr: clean(values.tr) || uz,
+  };
+}
+
+function normalizeLocalizedArray(value, normalizeEntries = (entries) => entries) {
+  const values = Array.isArray(value) ? { uz: value } : value && typeof value === "object" ? value : {};
+  const clean = (entries) => Array.isArray(entries) ? normalizeEntries(entries) : [];
+  const uzCandidate = clean(values.uz);
+  const enCandidate = clean(values.en);
+  const trCandidate = clean(values.tr);
+  const uz = uzCandidate.length ? uzCandidate : enCandidate.length ? enCandidate : trCandidate;
+  return {
+    uz,
+    en: enCandidate.length ? enCandidate : uz,
+    tr: trCandidate.length ? trCandidate : uz,
+  };
+}
+
+function localizeStoryArray(value) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+  const candidates = [value[locale], value.uz, value.en, value.tr];
+  return candidates.find((entry) => Array.isArray(entry) && entry.length) || [];
+}
+
+function withDigestClassification(story) {
+  if (!story || typeof story !== "object" || typeof story.isDigest === "boolean") {
+    return story;
+  }
+
+  const title = normalizeLocalizedText(story.title);
+  return {
+    ...story,
+    isDigest: supportedLocales.some((language) => isAiDigestTitle(title[language])),
+  };
+}
+
 function normalizeLibraryStory(story) {
+  const classifiedStory = withDigestClassification(story);
   const id = String(story?.id ?? "").trim();
-  const title = String(localizeStoryValue(story?.title) ?? "").trim();
-  const localizedSummary = Array.isArray(story?.summary) ? story.summary : localizeStoryValue(story?.summary);
-  const summary = (Array.isArray(localizedSummary) ? localizedSummary : [])
+  const title = normalizeLocalizedText(story?.title);
+  const normalizeSummary = (entries) => entries
     .filter((entry) => typeof entry === "string")
     .map((entry) => entry.trim())
     .filter(Boolean);
-  if (!id || !title) {
+  const summary = normalizeLocalizedArray(story?.summary, normalizeSummary);
+  const richSummary = normalizeLocalizedArray(story?.richSummary ?? story?.rich_summary, normalizeLiveRichSummary);
+  if (!id || !title.uz) {
     return null;
   }
 
@@ -206,6 +291,8 @@ function normalizeLibraryStory(story) {
     id,
     title,
     summary,
+    richSummary,
+    isDigest: classifiedStory?.isDigest === true,
     source: String(story?.source ?? "").trim(),
     time: String(story?.time ?? "").trim(),
     score: Number.isFinite(story?.score) ? story.score : 94,
@@ -310,17 +397,18 @@ function toggleLibraryAction(story, action, storage = safeStorage(), now = new D
 }
 
 function renderLibraryEntriesMarkup(entries) {
-  const labels =
-    locale === "en"
-      ? { liked: "Liked", saved: "Saved", source: "Source" }
-      : { liked: "Yoqtirildi", saved: "Saqlandi", source: "Manba" };
+  const labels = {
+    uz: { liked: "Yoqtirildi", saved: "Saqlandi", source: "Manba" },
+    en: { liked: "Liked", saved: "Saved", source: "Source" },
+    tr: { liked: "Beğenildi", saved: "Kaydedildi", source: "Kaynak" },
+  }[locale];
 
   return entries
     .map((entry, index) => {
       const story = entry?.story || {};
       const href = sanitizeStoryUrl(story.url);
-      const title = escapeHtml(story.title ?? "");
-      const summary = escapeHtml(Array.isArray(story.summary) ? story.summary[0] ?? "" : "");
+      const title = escapeHtml(localizeStoryValue(story.title));
+      const summary = escapeHtml(localizeStoryArray(story.summary)[0] ?? "");
       const source = escapeHtml(story.source ?? "");
       const time = escapeHtml(story.time ?? "");
       const titleMarkup =
@@ -464,8 +552,7 @@ function getSiteLabelFromUrl(value) {
 }
 
 function getStorySourceLabel(story) {
-  const title = localizeStoryValue(story?.title);
-  if (isAiDigestTitle(title)) {
+  if (story?.isDigest === true) {
     return "ALOMAT";
   }
 
@@ -525,7 +612,7 @@ function normalizeOperationalText(value) {
 }
 
 function isBotOperationalMessage(story) {
-  const text = normalizeOperationalText([story?.title, ...(Array.isArray(story?.summary) ? story.summary : [])].join(" "));
+  const text = normalizeOperationalText([localizeStoryValue(story?.title), ...localizeStoryArray(story?.summary)].join(" "));
   return (
     text.includes("manba matni taqdim etilmagan") ||
     text.includes("post yozib bo'lmadi") ||
@@ -536,7 +623,9 @@ function isBotOperationalMessage(story) {
 }
 
 function isPublishableSignal(story) {
-  return Boolean(story?.title && Array.isArray(story.summary) && story.summary.length && !isBotOperationalMessage(story));
+  const title = localizeStoryValue(story?.title);
+  const summary = localizeStoryArray(story?.summary);
+  return Boolean(title && summary.length && !isBotOperationalMessage(story));
 }
 
 function normalizeLiveSignalSummary(summary) {
@@ -586,9 +675,24 @@ function isAiDigestTitle(value) {
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
-  const title = String(signal.title || "").trim();
-  const summary = normalizeLiveSignalSummary(signal.summary);
-  const richSummary = isAiDigestTitle(title) ? normalizeLiveRichSummary(signal.rich_summary) : [];
+  const title = normalizeLocalizedText({
+    uz: signal.title,
+    en: signal.title_en,
+    tr: signal.title_tr,
+  });
+  const summary = normalizeLocalizedArray({
+    uz: signal.summary,
+    en: signal.summary_en,
+    tr: signal.summary_tr,
+  }, normalizeLiveSignalSummary);
+  const isDigest = withDigestClassification({ title }).isDigest;
+  const richSummary = isDigest
+    ? normalizeLocalizedArray({
+        uz: signal.rich_summary,
+        en: signal.rich_summary_en,
+        tr: signal.rich_summary_tr,
+      }, normalizeLiveRichSummary)
+    : normalizeLocalizedArray([], normalizeLiveRichSummary);
   const sourceUrl = signal.url || firstVisibleLinkFromSummary(signal.summary);
 
   return {
@@ -604,6 +708,7 @@ function normalizeLiveSignal(signal, index) {
     category: String(signal.category || "general").trim(),
     summary,
     richSummary,
+    isDigest,
   };
 }
 
@@ -664,12 +769,16 @@ function partitionStoriesByToday(stories, now = new Date()) {
 function formatTimelineDayLabel(dayKey, todayKey = liveTimelineTodayKey) {
   const distance = getDayDistance(todayKey, dayKey);
   if (distance <= 0) {
-    return locale === "en" ? "Today" : "Bugun";
+    return { uz: "Bugun", en: "Today", tr: "Bugün" }[locale];
   }
   if (distance === 1) {
-    return locale === "en" ? "Yesterday" : "Kecha";
+    return { uz: "Kecha", en: "Yesterday", tr: "Dün" }[locale];
   }
-  return locale === "en" ? `${distance} days ago` : `${distance} kun oldin`;
+  return {
+    uz: `${distance} kun oldin`,
+    en: `${distance} days ago`,
+    tr: `${distance} gün önce`,
+  }[locale];
 }
 
 function formatSignalTime(value) {
@@ -677,7 +786,7 @@ function formatSignalTime(value) {
   if (Number.isNaN(date.getTime())) {
     return "";
   }
-  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "uz-UZ", {
+  return new Intl.DateTimeFormat({ uz: "uz-UZ", en: "en-US", tr: "tr-TR" }[locale], {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
@@ -687,7 +796,7 @@ function formatSignalCount(count) {
   if (locale === "en") {
     return `${count} ${count === 1 ? "signal" : "signals"}`;
   }
-  return `${count} signal`;
+  return locale === "tr" ? `${count} sinyal` : `${count} signal`;
 }
 
 function findLatestStory(stories) {
@@ -747,16 +856,21 @@ function localizeStoryValue(value) {
   if (typeof value === "string") {
     return value;
   }
-
-  return value?.[locale] ?? value?.en ?? value?.uz ?? "";
+  if (!value || typeof value !== "object") {
+    return "";
+  }
+  const candidates = [value[locale], value.uz, value.en, value.tr];
+  return candidates.find((entry) => typeof entry === "string" && entry.trim()) || "";
 }
 
 function buildExpandedSummary(story) {
   const title = localizeStoryValue(story.title);
-  const source = getStorySourceLabel(story) || (locale === "en" ? "the original source" : "asl manba");
-  const time = story.time ?? (locale === "en" ? "today" : "bugun");
+  const sourceFallback = { uz: "asl manba", en: "the original source", tr: "orijinal kaynak" }[locale];
+  const timeFallback = { uz: "bugun", en: "today", tr: "bugün" }[locale];
+  const source = getStorySourceLabel(story) || sourceFallback;
+  const time = story.time ?? timeFallback;
   const category = story.category ?? "signal";
-  const summary = Array.isArray(story.summary) ? [...story.summary] : [];
+  const summary = [...localizeStoryArray(story.summary)];
   const currentLength = summary.join(" ").length;
 
   if (currentLength >= 650) {
@@ -767,6 +881,14 @@ function buildExpandedSummary(story) {
     summary.push(
       `The signal matters because "${title}" is not just a single headline; it points to a broader shift in how ${category} decisions are being made, funded, and explained in public. The timing from ${time} gives the story a current edge, while ${source} provides the first frame for judging what changed and what remains uncertain.`,
       `For readers, the practical takeaway is to watch the second-order effects: which teams, markets, users, or regulators respond next. A useful signal is not only what happened, but what it makes easier to predict. This card keeps the focus on that context so the line stays readable without turning into a full news feed.`,
+    );
+    return summary;
+  }
+
+  if (locale === "tr") {
+    summary.push(
+      `Bu sinyal önemli, çünkü "${title}" yalnızca tek bir başlık değil; ${category} alanındaki kararların nasıl alındığı, finanse edildiği ve kamuya nasıl anlatıldığı konusunda daha geniş bir değişime işaret ediyor. ${time} zamanlaması hikayeyi güncel tutarken ${source}, neyin değiştiğini ve neyin belirsiz kaldığını değerlendirmek için ilk çerçeveyi sunuyor.`,
+      "Okurlar için pratik sonuç, ikinci dereceden etkileri izlemektir: hangi ekiplerin, pazarların, kullanıcıların veya düzenleyicilerin sırada tepki vereceği. Yararlı bir sinyal sadece ne olduğunu değil, bundan sonra neyin izlenmesi gerektiğini de gösterir.",
     );
     return summary;
   }
@@ -873,14 +995,14 @@ function resetDetailScroll() {
 function renderStoryMarkup(story) {
   const labels = detailLabels[locale];
   const storyTitle = localizeStoryValue(story.title);
-  const isDigest = isAiDigestTitle(storyTitle);
-  const panelTitle = isDigest ? getTimelineStoryTitle({ ...story, title: storyTitle }) : storyTitle;
+  const isDigest = story?.isDigest === true;
+  const panelTitle = isDigest ? getTimelineStoryTitle(story) : storyTitle;
   const title = escapeHtml(panelTitle);
   const source = escapeHtml(getStorySourceLabel(story));
   const time = escapeHtml(story.time ?? "");
   const weight = `${escapeHtml(String(story.score ?? 94))}/100`;
   const summary = buildExpandedSummary(story);
-  const richSummary = isDigest ? normalizeLiveRichSummary(story.richSummary) : [];
+  const richSummary = isDigest ? normalizeLiveRichSummary(localizeStoryArray(story.richSummary)) : [];
   const paragraphCount = Math.max(summary.length, richSummary.length);
   const summaryHtml = Array.from({ length: paragraphCount }, (_, index) =>
     richSummary[index]
@@ -996,8 +1118,8 @@ function updateTimelineActiveState(activeItem) {
 }
 
 function getTimelineStoryTitle(story) {
-  const title = String(story?.title ?? "").trim();
-  if (!isAiDigestTitle(title)) {
+  const title = String(localizeStoryValue(story?.title) ?? "").trim();
+  if (story?.isDigest !== true) {
     return title;
   }
 
@@ -1315,10 +1437,11 @@ function updateNameDisplay(name) {
   if (!nameDisplay) return;
   const trimmed = name.trim();
   if (!trimmed) {
-    nameDisplay.textContent =
-      locale === "en"
-        ? "Leave a name so saves, likes, and your library stay in sync."
-        : "Saqlash, yoqtirish va kutubxonangizni sinxronlash uchun bir ism qoldiring.";
+    nameDisplay.textContent = {
+      uz: "Saqlash, yoqtirish va kutubxonangizni sinxronlash uchun bir ism qoldiring.",
+      en: "Leave a name so saves, likes, and your library stay in sync.",
+      tr: "Kayıtları, beğenileri ve kütüphanenizi eşitlemek için bir ad bırakın.",
+    }[locale];
     return;
   }
 
@@ -1787,6 +1910,7 @@ globalThis.__ALOMAT_APP_TEST__ = {
   isPublishableSignal,
   loadLiveSignals,
   normalizeLiveSignal,
+  localizeStoryArray,
   readLibraryState,
   toggleLibraryAction,
   getLibraryEntries,
