@@ -1,0 +1,6 @@
+ALTER TABLE signals ADD COLUMN title_en TEXT NOT NULL DEFAULT '';
+ALTER TABLE signals ADD COLUMN summary_en_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE signals ADD COLUMN rich_summary_en_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE signals ADD COLUMN title_tr TEXT NOT NULL DEFAULT '';
+ALTER TABLE signals ADD COLUMN summary_tr_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE signals ADD COLUMN rich_summary_tr_json TEXT NOT NULL DEFAULT '[]';

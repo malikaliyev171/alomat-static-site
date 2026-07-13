@@ -50,7 +50,10 @@ export async function handleRequest(request, env, now = new Date(), services = {
 async function listSignals(url, env) {
   const limit = parseLimit(url.searchParams.get("limit"));
   const result = await env.DB.prepare(
-    `SELECT id, external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at
+    `SELECT id, external_id, title, summary_json, rich_summary_json,
+            title_en, summary_en_json, rich_summary_en_json,
+            title_tr, summary_tr_json, rich_summary_tr_json,
+            source, url, category, image, language, created_at
      FROM signals
      ORDER BY created_at DESC, id DESC
      LIMIT ?`,
@@ -179,12 +182,23 @@ async function handleReaderProfile(request, env, now) {
 async function insertSignal(env, signal) {
   try {
     await env.DB.prepare(
-      `INSERT INTO signals (external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO signals (
+         external_id, title, summary_json, rich_summary_json,
+         title_en, summary_en_json, rich_summary_en_json,
+         title_tr, summary_tr_json, rich_summary_tr_json,
+         source, url, category, image, language, created_at
+       )
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(external_id) DO UPDATE SET
          title = excluded.title,
          summary_json = excluded.summary_json,
          rich_summary_json = excluded.rich_summary_json,
+         title_en = excluded.title_en,
+         summary_en_json = excluded.summary_en_json,
+         rich_summary_en_json = excluded.rich_summary_en_json,
+         title_tr = excluded.title_tr,
+         summary_tr_json = excluded.summary_tr_json,
+         rich_summary_tr_json = excluded.rich_summary_tr_json,
          source = excluded.source,
          url = excluded.url,
          category = excluded.category,
@@ -197,6 +211,12 @@ async function insertSignal(env, signal) {
         signal.title,
         signal.summary_json,
         signal.rich_summary_json,
+        signal.title_en,
+        signal.summary_en_json,
+        signal.rich_summary_en_json,
+        signal.title_tr,
+        signal.summary_tr_json,
+        signal.rich_summary_tr_json,
         signal.source,
         signal.url,
         signal.category,

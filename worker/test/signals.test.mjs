@@ -38,14 +38,36 @@ class FakeStatement {
 
   async run() {
     if (this.sql.includes("INSERT INTO signals")) {
-      const [external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at] =
-        this.values;
+      const [
+        external_id,
+        title,
+        summary_json,
+        rich_summary_json,
+        title_en,
+        summary_en_json,
+        rich_summary_en_json,
+        title_tr,
+        summary_tr_json,
+        rich_summary_tr_json,
+        source,
+        url,
+        category,
+        image,
+        language,
+        created_at,
+      ] = this.values;
       const existing = external_id ? this.db.rows.find((row) => row.external_id === external_id) : null;
       if (existing && this.sql.includes("ON CONFLICT(external_id)")) {
         Object.assign(existing, {
           title,
           summary_json,
           rich_summary_json,
+          title_en,
+          summary_en_json,
+          rich_summary_en_json,
+          title_tr,
+          summary_tr_json,
+          rich_summary_tr_json,
           source,
           url,
           category,
@@ -66,6 +88,12 @@ class FakeStatement {
         title,
         summary_json,
         rich_summary_json,
+        title_en,
+        summary_en_json,
+        rich_summary_en_json,
+        title_tr,
+        summary_tr_json,
+        rich_summary_tr_json,
         source,
         url,
         category,
@@ -156,6 +184,19 @@ function testEnv() {
     AUTH_DEV_CODE: "123456",
   };
 }
+
+const translatedSignal = {
+  external_id: "translated-1",
+  title: "O'zbekcha sarlavha",
+  title_en: "English headline",
+  title_tr: "Turkce baslik",
+  summary: ["O'zbekcha paragraf"],
+  summary_en: ["English paragraph"],
+  summary_tr: ["Turkce paragraf"],
+  rich_summary: [],
+  rich_summary_en: [],
+  rich_summary_tr: [],
+};
 
 function resendFetchRecorder() {
   const calls = [];
@@ -265,6 +306,12 @@ test("normalizeSignalInput accepts the bot payload and fills defaults", () => {
     title: "Signal card title",
     summary_json: JSON.stringify(["Short explanation 1", "Short explanation 2"]),
     rich_summary_json: "[]",
+    title_en: "",
+    summary_en_json: "[]",
+    rich_summary_en_json: "[]",
+    title_tr: "",
+    summary_tr_json: "[]",
+    rich_summary_tr_json: "[]",
     source: "Source name",
     url: "https://example.com/source",
     category: "ai",
@@ -272,6 +319,18 @@ test("normalizeSignalInput accepts the bot payload and fills defaults", () => {
     language: "uz",
     created_at: "2026-07-10T13:20:00.000Z",
   });
+});
+
+test("normalizeSignalInput stores optional English and Turkish fields", () => {
+  const result = normalizeSignalInput(translatedSignal, "2026-07-13T12:00:00.000Z");
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.title_en, "English headline");
+  assert.equal(result.value.summary_en_json, JSON.stringify(["English paragraph"]));
+  assert.equal(result.value.rich_summary_en_json, "[]");
+  assert.equal(result.value.title_tr, "Turkce baslik");
+  assert.equal(result.value.summary_tr_json, JSON.stringify(["Turkce paragraf"]));
+  assert.equal(result.value.rich_summary_tr_json, "[]");
 });
 
 test("normalizeSignalInput rejects missing title", () => {
@@ -360,6 +419,29 @@ test("normalizeSignalInput preserves rich summary links and removes unsafe hrefs
       ],
     },
   ]);
+});
+
+test("normalizeSignalInput preserves every translated AI Digest URL exactly", () => {
+  const urls = {
+    uz: "https://example.com/uz/news?source=digest&lang=uz#bir",
+    en: "https://example.com/en/news?source=digest&lang=en#one",
+    tr: "https://example.com/tr/news?source=digest&lang=tr#bir",
+  };
+  const result = normalizeSignalInput(
+    {
+      ...translatedSignal,
+      title: "AI Digest - 2026-07-13",
+      rich_summary: [{ segments: [{ text: "O'zbekcha havola", url: urls.uz }] }],
+      rich_summary_en: [{ segments: [{ text: "English link", url: urls.en }] }],
+      rich_summary_tr: [{ segments: [{ text: "Turkce baglanti", url: urls.tr }] }],
+    },
+    "2026-07-13T12:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(JSON.parse(result.value.rich_summary_json)[0].segments[0].url, urls.uz);
+  assert.equal(JSON.parse(result.value.rich_summary_en_json)[0].segments[0].url, urls.en);
+  assert.equal(JSON.parse(result.value.rich_summary_tr_json)[0].segments[0].url, urls.tr);
 });
 
 test("normalizeSignalInput derives multi-word Digest links from Markdown and HTML summaries", () => {
@@ -500,6 +582,12 @@ test("rowToSignal parses summary_json and exposes API fields", () => {
           ],
         },
       ],
+      title_en: "",
+      summary_en: [],
+      rich_summary_en: [],
+      title_tr: "",
+      summary_tr: [],
+      rich_summary_tr: [],
       source: "Source name",
       url: "https://example.com/source",
       category: "ai",
@@ -508,6 +596,29 @@ test("rowToSignal parses summary_json and exposes API fields", () => {
       created_at: "2026-07-10T13:20:00.000Z",
     },
   );
+});
+
+test("rowToSignal returns empty translated fields for legacy rows", () => {
+  const signal = rowToSignal({
+    id: 43,
+    external_id: "legacy-1",
+    title: "Legacy signal",
+    summary_json: '["Legacy summary"]',
+    rich_summary_json: "[]",
+    source: "",
+    url: "",
+    category: "general",
+    image: "",
+    language: "uz",
+    created_at: "2026-07-10T13:20:00.000Z",
+  });
+
+  assert.equal(signal.title_en, "");
+  assert.deepEqual(signal.summary_en, []);
+  assert.deepEqual(signal.rich_summary_en, []);
+  assert.equal(signal.title_tr, "");
+  assert.deepEqual(signal.summary_tr, []);
+  assert.deepEqual(signal.rich_summary_tr, []);
 });
 
 test("jsonResponse returns JSON with CORS headers", async () => {
@@ -594,6 +705,65 @@ test("POST and GET /api/signals preserve rich summary link segments", async () =
   assert.equal(created.status, 201);
   assert.equal(listed.status, 200);
   assert.deepEqual(body.signals[0].rich_summary, richSummary);
+});
+
+test("POST upsert and GET /api/signals preserve translated fields", async () => {
+  const env = testEnv();
+  const postSignal = (body, now) =>
+    handleRequest(
+      new Request("https://xabar.alomat.workers.dev/api/signals", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer secret-for-tests",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }),
+      env,
+      new Date(now),
+    );
+
+  const created = await postSignal(translatedSignal, "2026-07-13T12:00:00.000Z");
+  assert.equal(created.status, 201);
+  assert.equal(env.DB.rows[0].title_en, "English headline");
+  assert.equal(env.DB.rows[0].summary_en_json, JSON.stringify(["English paragraph"]));
+  assert.equal(env.DB.rows[0].rich_summary_en_json, "[]");
+  assert.equal(env.DB.rows[0].title_tr, "Turkce baslik");
+  assert.equal(env.DB.rows[0].summary_tr_json, JSON.stringify(["Turkce paragraf"]));
+  assert.equal(env.DB.rows[0].rich_summary_tr_json, "[]");
+  const translatedUpdate = {
+    ...translatedSignal,
+    title_en: "Updated English headline",
+    summary_en: ["Updated English paragraph"],
+    title_tr: "Guncel Turkce baslik",
+    summary_tr: ["Guncel Turkce paragraf"],
+  };
+  const updated = await postSignal(translatedUpdate, "2026-07-13T12:01:00.000Z");
+  const listed = await handleRequest(new Request("https://xabar.alomat.workers.dev/api/signals"), env);
+  const body = await listed.json();
+
+  assert.equal(updated.status, 201);
+  assert.equal(env.DB.rows.length, 1);
+  assert.equal(listed.status, 200);
+  assert.deepEqual(body.signals[0], {
+    id: 1,
+    external_id: "translated-1",
+    title: "O'zbekcha sarlavha",
+    summary: ["O'zbekcha paragraf"],
+    rich_summary: [],
+    title_en: "Updated English headline",
+    summary_en: ["Updated English paragraph"],
+    rich_summary_en: [],
+    title_tr: "Guncel Turkce baslik",
+    summary_tr: ["Guncel Turkce paragraf"],
+    rich_summary_tr: [],
+    source: "",
+    url: "",
+    category: "general",
+    image: "",
+    language: "uz",
+    created_at: "2026-07-13T12:01:00.000Z",
+  });
 });
 
 test("POST /api/telegram-webhook rejects missing Telegram secret", async () => {
