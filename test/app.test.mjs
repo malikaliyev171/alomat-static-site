@@ -586,6 +586,25 @@ async function loadAppModule(options = {}) {
   };
 }
 
+function createTrilingualLiveSignal(overrides = {}) {
+  return {
+    id: 601,
+    title: "O'zbekcha jonli signal",
+    title_en: "English live signal",
+    title_tr: "Turkce canli sinyal",
+    summary: ["O'zbekcha tafsilot."],
+    summary_en: ["English detail."],
+    summary_tr: ["Turkce ayrinti."],
+    rich_summary: [],
+    rich_summary_en: [],
+    rich_summary_tr: [],
+    source: "Live Source",
+    created_at: "2026-07-13T09:00:00Z",
+    url: "https://example.com/live",
+    ...overrides,
+  };
+}
+
 test("client helpers keep valid http and https urls unchanged", async () => {
   const { helpers, cleanup } = await loadAppModule();
   try {
@@ -657,7 +676,11 @@ test("local library recovers from malformed storage and toggles like and save in
     };
 
     helpers.toggleLibraryAction(story, "save", storage, "2026-07-12T10:00:00.000Z");
-    assert.deepEqual(helpers.getLibraryEntries(storage)[0].story.summary, ["Stored summary"]);
+    assert.deepEqual(helpers.getLibraryEntries(storage)[0].story.summary, {
+      uz: ["Stored summary"],
+      en: ["Stored summary"],
+      tr: ["Stored summary"],
+    });
     assert.deepEqual(helpers.getLibraryCounts(helpers.getLibraryEntries(storage)), {
       liked: 0,
       saved: 1,
@@ -839,6 +862,47 @@ test("library entry renderer outputs one story with liked and saved states", asy
     assert.match(markup, /Liked/);
     assert.match(markup, /Saved/);
     assert.equal((markup.match(/class="library-signal-row"/g) || []).length, 1);
+  } finally {
+    cleanup();
+  }
+});
+
+test("local library snapshots retain and render every localized story variant", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule({ lang: "tr" });
+  try {
+    const storage = environment.globals.localStorage;
+    const story = helpers.normalizeLiveSignal(
+      createTrilingualLiveSignal({
+        title: "AI Digest - 2026-07-13 Ozbekcha",
+        title_en: "AI Digest - 2026-07-13 English",
+        title_tr: "AI Digest - 2026-07-13 Turkce",
+        rich_summary: [{ segments: [{ text: "Ozbekcha", url: "https://example.com/uz" }] }],
+        rich_summary_en: [{ segments: [{ text: "English", url: "https://example.com/en" }] }],
+        rich_summary_tr: [{ segments: [{ text: "Turkce", url: "https://example.com/tr" }] }],
+      }),
+      0,
+    );
+
+    helpers.toggleLibraryAction(story, "save", storage, "2026-07-13T10:00:00.000Z");
+    const [entry] = helpers.getLibraryEntries(storage);
+
+    assert.deepEqual(entry.story.title, {
+      uz: "AI Digest - 2026-07-13 Ozbekcha",
+      en: "AI Digest - 2026-07-13 English",
+      tr: "AI Digest - 2026-07-13 Turkce",
+    });
+    assert.deepEqual(entry.story.summary, {
+      uz: ["O'zbekcha tafsilot."],
+      en: ["English detail."],
+      tr: ["Turkce ayrinti."],
+    });
+    assert.equal(entry.story.richSummary.tr[0].segments[0].url, "https://example.com/tr");
+
+    const markup = helpers.renderLibraryEntriesMarkup([entry]);
+    assert.match(markup, /AI Digest - 2026-07-13 Turkce/);
+    assert.match(markup, /Turkce ayrinti\./);
+    assert.match(markup, /Kaydedildi/);
+    assert.doesNotMatch(markup, /English detail|O&#39;zbekcha tafsilot/);
   } finally {
     cleanup();
   }
@@ -1026,6 +1090,129 @@ test("valid live records replace demo cards and hydrate the detail panel", async
   }
 });
 
+test("the same live API record renders its English translation", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule({ lang: "en" });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({ signals: [createTrilingualLiveSignal()] }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
+
+    assert.deepEqual(environment.timeline.getTitles(), ["English live signal"]);
+    assert.match(environment.detailContent.innerHTML, /English live signal/);
+    assert.match(environment.detailContent.innerHTML, /English detail\./);
+    assert.doesNotMatch(environment.detailContent.innerHTML, /O&#39;zbekcha tafsilot|Turkce ayrinti/);
+  } finally {
+    cleanup();
+  }
+});
+
+test("the same live API record renders its Turkish translation and labels", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule({ lang: "tr" });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({ signals: [createTrilingualLiveSignal()] }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
+
+    assert.deepEqual(environment.timeline.getTitles(), ["Turkce canli sinyal"]);
+    assert.match(environment.detailContent.innerHTML, /Turkce canli sinyal/);
+    assert.match(environment.detailContent.innerHTML, /Turkce ayrinti\./);
+    assert.match(environment.detailContent.innerHTML, /AKTIF SINYAL|AKTİF SİNYAL/);
+    assert.match(environment.detailContent.innerHTML, /ORIJINAL KAYNAK|ORİJİNAL KAYNAK/);
+    assert.doesNotMatch(environment.detailContent.innerHTML, /English detail|O&#39;zbekcha tafsilot/);
+  } finally {
+    cleanup();
+  }
+});
+
+test("missing Turkish live fields fall back to canonical Uzbek text", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule({ lang: "tr" });
+  try {
+    const record = createTrilingualLiveSignal({
+      title_tr: "",
+      summary_tr: [],
+      rich_summary_tr: [],
+    });
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [record],
+      }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
+
+    const normalized = helpers.normalizeLiveSignal(record, 0);
+    assert.equal(normalized.title.tr, normalized.title.uz);
+    assert.deepEqual(normalized.summary.tr, normalized.summary.uz);
+    assert.deepEqual(environment.timeline.getTitles(), ["O'zbekcha jonli signal"]);
+    assert.match(environment.detailContent.innerHTML, /O&#39;zbekcha jonli signal/);
+    assert.match(environment.detailContent.innerHTML, /O&#39;zbekcha tafsilot\./);
+  } finally {
+    cleanup();
+  }
+});
+
+test("unknown document locales use canonical Uzbek live text", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule({ lang: "de" });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({ signals: [createTrilingualLiveSignal()] }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
+
+    assert.deepEqual(environment.timeline.getTitles(), ["O'zbekcha jonli signal"]);
+    assert.match(environment.detailContent.innerHTML, /O&#39;zbekcha tafsilot\./);
+  } finally {
+    cleanup();
+  }
+});
+
+test("Turkish AI Digest keeps localized linked segments", async () => {
+  const { environment, helpers, cleanup } = await loadAppModule({ lang: "tr" });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [
+          createTrilingualLiveSignal({
+            title: "AI Digest - 2026-07-13 Ozbekcha",
+            title_en: "AI Digest - 2026-07-13 English",
+            title_tr: "AI Digest - 2026-07-13 Turkce ozet",
+            summary_tr: ["OpenAI Turkce bir guncelleme yayimladi."],
+            rich_summary_tr: [
+              {
+                segments: [
+                  { text: "OpenAI", url: "https://openai.com/tr-news" },
+                  { text: " Turkce bir guncelleme yayimladi." },
+                ],
+              },
+            ],
+          }),
+        ],
+      }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
+
+    assert.deepEqual(environment.timeline.getTitles(), ["AI Digest - 2026-07-13"]);
+    assert.match(environment.detailContent.innerHTML, />OpenAI<\/a> Turkce bir guncelleme yayimladi\./);
+    assert.match(
+      environment.detailContent.innerHTML,
+      /<a class="timeline-panel__inline-link" href="https:\/\/openai\.com\/tr-news"[^>]*>OpenAI<\/a>/,
+    );
+  } finally {
+    cleanup();
+  }
+});
+
 test("AI Digest uses a compact dated timeline title and keeps linked detail text", async () => {
   const fallbackStories = [
     {
@@ -1098,11 +1285,16 @@ test("live summary text hides visible links without replacing the bot source URL
       0,
     );
 
-    assert.deepEqual(signal.summary, [
+    const expectedSummary = [
       "Sayt orqali ochildi.",
       "Tadqiqot e'lon qilindi.",
       "Markdown manba matni qoladi.",
-    ]);
+    ];
+    assert.deepEqual(signal.summary, {
+      uz: expectedSummary,
+      en: expectedSummary,
+      tr: expectedSummary,
+    });
     assert.equal(signal.url, "https://wrong.example/about");
   } finally {
     cleanup();
@@ -1147,14 +1339,19 @@ test("live signal normalization keeps structured rich-summary links", async () =
       0,
     );
 
-    assert.deepEqual(signal.richSummary, [
+    const expectedRichSummary = [
       {
         segments: [
           { text: "OpenAI", url: "https://openai.com/news" },
           { text: " yangiligi." },
         ],
       },
-    ]);
+    ];
+    assert.deepEqual(signal.richSummary, {
+      uz: expectedRichSummary,
+      en: expectedRichSummary,
+      tr: expectedRichSummary,
+    });
   } finally {
     cleanup();
   }
@@ -1180,7 +1377,7 @@ test("live signal normalization drops rich-summary links from normal news", asyn
       0,
     );
 
-    assert.deepEqual(signal.richSummary, []);
+    assert.deepEqual(signal.richSummary, { uz: [], en: [], tr: [] });
   } finally {
     cleanup();
   }
