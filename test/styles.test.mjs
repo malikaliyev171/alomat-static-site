@@ -119,6 +119,21 @@ test("signal navigation keeps the same horizontal position across pages", () => 
   assert.doesNotMatch(styles, /html:root\[data-page="home"\] \.language-switch\s*\{/);
 });
 
+test("desktop language control keeps the same position across locales", () => {
+  const styles = readProjectFile("styles.css");
+  const navigation = cssBlock(styles, ".nav--home");
+  const palette = cssBlock(styles, ".palette-rail");
+
+  assert.match(navigation, /flex:\s*0 0 402px;/);
+  assert.match(navigation, /width:\s*402px;/);
+  assert.match(palette, /flex:\s*0 0 156px;/);
+  assert.match(palette, /width:\s*156px;/);
+  assert.match(
+    styles,
+    /@media \(max-width: 780px\)[\s\S]*?\.topbar--home \.palette-rail\s*\{[\s\S]*?flex:\s*0 0 38px;[\s\S]*?width:\s*38px;/,
+  );
+});
+
 test("active signal navigation item keeps the shared background", () => {
   const styles = readProjectFile("styles.css");
   const activeItem = cssBlock(styles, ".nav__item.is-active");

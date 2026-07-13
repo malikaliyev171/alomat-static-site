@@ -530,7 +530,8 @@ html[data-page="lineup-article"] .page-backdrop {
 }
 
 .nav--home {
-  flex: 0 0 auto;
+  flex: 0 0 402px;
+  width: 402px;
   justify-content: flex-start;
   align-items: center;
   gap: 0;
@@ -1260,6 +1261,11 @@ html[data-page="home"][data-locale="uz"] .hero--home h1 {
   margin-left: var(--home-gate-margin-left, 128px);
   max-width: 660px;
   min-height: 137px;
+}
+
+.palette-rail {
+  flex: 0 0 156px;
+  width: 156px;
 }
 
 .signal-reader-gate__axis {
@@ -4360,7 +4366,8 @@ html[data-page="lineup-article"] .lineup-cta-pill--ghost {
   }
 
   .topbar--home .palette-rail {
-    flex: 0 0 auto;
+    flex: 0 0 38px;
+    width: 38px;
     min-height: 38px;
   }
 
