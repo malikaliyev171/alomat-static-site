@@ -757,6 +757,7 @@ test("detail markup renders safe rich-summary links on their original words", as
     const markup = helpers.renderStoryMarkup({
       id: "digest-1",
       title: "AI digest",
+      isDigest: true,
       summary: ["OpenAI va Anthropic yangiliklari."],
       richSummary: [
         {
@@ -1175,34 +1176,38 @@ test("unknown document locales use canonical Uzbek live text", async () => {
   }
 });
 
-test("Turkish AI Digest keeps localized linked segments", async () => {
+test("Turkish translated Digest keeps compact rendering and localized linked segments", async () => {
   const { environment, helpers, cleanup } = await loadAppModule({ lang: "tr" });
   try {
+    const record = createTrilingualLiveSignal({
+      title: "AI Digest - 2026-07-13 Ozbekcha",
+      title_en: "AI Digest - 2026-07-13 English",
+      title_tr: "Yapay Zeka Özeti",
+      summary_tr: ["OpenAI Turkce bir guncelleme yayimladi."],
+      rich_summary_tr: [
+        {
+          segments: [
+            { text: "OpenAI", url: "https://openai.com/tr-news" },
+            { text: " Turkce bir guncelleme yayimladi." },
+          ],
+        },
+      ],
+    });
     globalThis.fetch = async () => ({
       ok: true,
-      json: async () => ({
-        signals: [
-          createTrilingualLiveSignal({
-            title: "AI Digest - 2026-07-13 Ozbekcha",
-            title_en: "AI Digest - 2026-07-13 English",
-            title_tr: "AI Digest - 2026-07-13 Turkce ozet",
-            summary_tr: ["OpenAI Turkce bir guncelleme yayimladi."],
-            rich_summary_tr: [
-              {
-                segments: [
-                  { text: "OpenAI", url: "https://openai.com/tr-news" },
-                  { text: " Turkce bir guncelleme yayimladi." },
-                ],
-              },
-            ],
-          }),
-        ],
-      }),
+      json: async () => ({ signals: [record] }),
     });
+
+    const normalized = helpers.normalizeLiveSignal(record, 0);
+    assert.equal(normalized.isDigest, true);
+    helpers.toggleLibraryAction(normalized, "save", environment.globals.localStorage);
+    assert.equal(helpers.getLibraryEntries(environment.globals.localStorage)[0].story.isDigest, true);
 
     await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
 
     assert.deepEqual(environment.timeline.getTitles(), ["AI Digest - 2026-07-13"]);
+    assert.match(environment.detailContent.innerHTML, /<h2>AI Digest - 2026-07-13<\/h2>/);
+    assert.match(environment.detailContent.innerHTML, /<span>KAYNAK<\/span>\s*<strong>ALOMAT<\/strong>/);
     assert.match(environment.detailContent.innerHTML, />OpenAI<\/a> Turkce bir guncelleme yayimladi\./);
     assert.match(
       environment.detailContent.innerHTML,

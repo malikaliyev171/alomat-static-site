@@ -214,7 +214,8 @@ function parseStoryData() {
   }
 
   try {
-    return JSON.parse(storyDataElement.textContent);
+    const stories = JSON.parse(storyDataElement.textContent);
+    return Array.isArray(stories) ? stories.map(withDigestClassification) : [];
   } catch {
     return [];
   }
@@ -260,7 +261,20 @@ function localizeStoryArray(value) {
   return candidates.find((entry) => Array.isArray(entry) && entry.length) || [];
 }
 
+function withDigestClassification(story) {
+  if (!story || typeof story !== "object" || typeof story.isDigest === "boolean") {
+    return story;
+  }
+
+  const title = normalizeLocalizedText(story.title);
+  return {
+    ...story,
+    isDigest: supportedLocales.some((language) => isAiDigestTitle(title[language])),
+  };
+}
+
 function normalizeLibraryStory(story) {
+  const classifiedStory = withDigestClassification(story);
   const id = String(story?.id ?? "").trim();
   const title = normalizeLocalizedText(story?.title);
   const normalizeSummary = (entries) => entries
@@ -278,6 +292,7 @@ function normalizeLibraryStory(story) {
     title,
     summary,
     richSummary,
+    isDigest: classifiedStory?.isDigest === true,
     source: String(story?.source ?? "").trim(),
     time: String(story?.time ?? "").trim(),
     score: Number.isFinite(story?.score) ? story.score : 94,
@@ -537,8 +552,7 @@ function getSiteLabelFromUrl(value) {
 }
 
 function getStorySourceLabel(story) {
-  const title = localizeStoryValue(story?.title);
-  if (isAiDigestTitle(title)) {
+  if (story?.isDigest === true) {
     return "ALOMAT";
   }
 
@@ -671,7 +685,7 @@ function normalizeLiveSignal(signal, index) {
     en: signal.summary_en,
     tr: signal.summary_tr,
   }, normalizeLiveSignalSummary);
-  const isDigest = supportedLocales.some((language) => isAiDigestTitle(title[language]));
+  const isDigest = withDigestClassification({ title }).isDigest;
   const richSummary = isDigest
     ? normalizeLocalizedArray({
         uz: signal.rich_summary,
@@ -694,6 +708,7 @@ function normalizeLiveSignal(signal, index) {
     category: String(signal.category || "general").trim(),
     summary,
     richSummary,
+    isDigest,
   };
 }
 
@@ -980,8 +995,8 @@ function resetDetailScroll() {
 function renderStoryMarkup(story) {
   const labels = detailLabels[locale];
   const storyTitle = localizeStoryValue(story.title);
-  const isDigest = isAiDigestTitle(storyTitle);
-  const panelTitle = isDigest ? getTimelineStoryTitle({ ...story, title: storyTitle }) : storyTitle;
+  const isDigest = story?.isDigest === true;
+  const panelTitle = isDigest ? getTimelineStoryTitle(story) : storyTitle;
   const title = escapeHtml(panelTitle);
   const source = escapeHtml(getStorySourceLabel(story));
   const time = escapeHtml(story.time ?? "");
@@ -1104,7 +1119,7 @@ function updateTimelineActiveState(activeItem) {
 
 function getTimelineStoryTitle(story) {
   const title = String(localizeStoryValue(story?.title) ?? "").trim();
-  if (!isAiDigestTitle(title)) {
+  if (story?.isDigest !== true) {
     return title;
   }
 
