@@ -267,12 +267,13 @@ const homeSignalStories = [
       "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1400&q=80",
     score: 94,
     source: "CBS News",
-    time: "19:01",
+    time: { uz: "19:01", en: "19:01", tr: "19:01" },
     url: "https://www.cbsnews.com/chicago/news/pritzker-to-sign-illinois-bill-aimed-artificial-intelligence-accountability/",
     category: "policy",
     title: {
       uz: "Illinois OpenAI va Anthropic qo'llab-quvvatlagan AI xavfsizlik qonunini imzoladi",
       en: "Illinois signs AI safety bill backed by OpenAI and Anthropic",
+      tr: "Illinois, OpenAI ve Anthropic'in destekledi\u011fi AI g\u00fcvenli\u011fi yasas\u0131n\u0131 imzalad\u0131",
     },
     summary: {
       uz: [
@@ -283,6 +284,10 @@ const homeSignalStories = [
         "Illinois Gov. JB Pritzker signed Senate Bill 315, creating a framework for AI accountability and safety.",
         "The law requires large model developers to publish transparency frameworks, adopt strict safety protocols, and use third-party auditors.",
       ],
+      tr: [
+        "Illinois Valisi JB Pritzker, yapay zek\u00e2da hesap verebilirlik ve g\u00fcvenlik \u00e7er\u00e7evesi olu\u015fturan 315 say\u0131l\u0131 Senato tasar\u0131s\u0131n\u0131 imzalad\u0131.",
+        "Yasa, b\u00fcy\u00fck model geli\u015ftiricilerinin \u015feffafl\u0131k \u00e7er\u00e7eveleri yay\u0131mlamas\u0131n\u0131, s\u0131k\u0131 g\u00fcvenlik protokolleri uygulamas\u0131n\u0131 ve ba\u011f\u0131ms\u0131z denet\u00e7ilerle \u00e7al\u0131\u015fmas\u0131n\u0131 zorunlu k\u0131l\u0131yor.",
+      ],
     },
   },
   {
@@ -292,12 +297,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-aa1af09d-783dc88f-0927cad6-e09e634b-ba981037-f603826b-3a6e62fb-7f1407ca/2338777_Image.png",
     score: 94,
     source: "Andrew Webster / The Verge",
-    time: "10:35 AM",
+    time: { uz: "10:35 AM", en: "10:35 AM", tr: "10:35" },
     url: "https://www.theverge.com/games/961632/nintendo-switch-europe-discontinued",
     category: "policy",
     title: {
       uz: "Nintendo batareya qonunlari sabab Yevropadagi Switch savdosini 2027 yilgacha to'xtatadi",
       en: "Nintendo Ending European Switch Sales by 2027 Over Battery Laws",
+      tr: "Nintendo, batarya kurallar\u0131 nedeniyle Avrupa'da Switch sat\u0131\u015f\u0131n\u0131 2027'de bitirecek",
     },
     summary: {
       uz: [
@@ -308,6 +314,10 @@ const homeSignalStories = [
         "Nintendo will stop selling the original Switch family in Europe by mid-February 2027.",
         "The move is tied to new EU rules that require handheld devices to use replaceable batteries.",
       ],
+      tr: [
+        "Nintendo, \u015eubat 2027 ortas\u0131ndan itibaren Avrupa'da orijinal Switch ailesinin sat\u0131\u015f\u0131n\u0131 durduracak.",
+        "Karar, ta\u015f\u0131nabilir cihazlarda de\u011fi\u015ftirilebilir batarya zorunlulu\u011fu getiren yeni AB kurallar\u0131yla ba\u011flant\u0131l\u0131.",
+      ],
     },
   },
   {
@@ -317,12 +327,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/a6d0665b-c73b6c09-73c55090-9fa45d58-08a5f804-071a656b-ff5bf5e3-9284e84c-77407ef8-3e37dc86-77078015-979370db/2338743_Image.png",
     score: 94,
     source: "James Hunt / The Block",
-    time: "10:25 AM",
+    time: { uz: "10:25 AM", en: "10:25 AM", tr: "10:25" },
     url: "https://www.theblock.co/post/407217/strategy-bitcoin-digital-energy",
     category: "companies",
     title: {
       uz: "MicroStrategy 11,4 milliard dollarlik qog'oz zarar fonida 216 million dollarlik Bitcoin sotdi",
       en: "MicroStrategy sells $216M in Bitcoin amid $11.4B paper loss",
+      tr: "MicroStrategy, 11,4 milyar dolarl\u0131k ger\u00e7ekle\u015fmemi\u015f zarara ra\u011fmen 216 milyon dolarl\u0131k Bitcoin satt\u0131",
     },
     summary: {
       uz: [
@@ -333,6 +344,10 @@ const homeSignalStories = [
         "MicroStrategy sold 3,588 BTC for about $216 million as it manages preferred stock distributions and reserve needs.",
         "The company still holds 843,775 BTC and faces roughly $11.4 billion in paper losses.",
       ],
+      tr: [
+        "MicroStrategy, imtiyazl\u0131 hisse da\u011f\u0131t\u0131mlar\u0131n\u0131 ve rezerv ihtiya\u00e7lar\u0131n\u0131 y\u00f6netmek i\u00e7in yakla\u015f\u0131k 216 milyon dolar de\u011ferinde 3.588 BTC satt\u0131.",
+        "\u015eirket h\u00e2l\u00e2 843.775 BTC tutuyor ve yakla\u015f\u0131k 11,4 milyar dolarl\u0131k ger\u00e7ekle\u015fmemi\u015f zararla kar\u015f\u0131 kar\u015f\u0131ya.",
+      ],
     },
   },
   {
@@ -342,12 +357,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/22680191-31ed99e6-1ebd7af6-27f8f142-fb91ab86-b27df2b0-f69e80b0-aa89f934-28ff8bf5-005bd550-4e3ca625-2c051cdd/2338588_Image.png",
     score: 95,
     source: "Bloomberg",
-    time: "9:41 AM",
+    time: { uz: "9:41 AM", en: "9:41 AM", tr: "09:41" },
     url: "https://www.bloomberg.com/news/articles/2026-07-06/microsoft-s-xbox-to-cut-3-200-jobs-divest-five-studios-in-major-overhaul",
     category: "gaming",
     title: {
       uz: "Xbox 3 200 ish o'rnini qisqartirdi va Ninja Theory'ni ajratdi",
       en: "Xbox cuts 3,200 jobs and divests Ninja Theory in major reset",
+      tr: "Xbox, b\u00fcy\u00fck yeniden yap\u0131lanmada 3.200 ki\u015fiyi i\u015ften \u00e7\u0131kar\u0131p Ninja Theory'yi elden \u00e7\u0131kar\u0131yor",
     },
     summary: {
       uz: [
@@ -358,6 +374,10 @@ const homeSignalStories = [
         "Microsoft's Xbox division is cutting about 3,200 jobs and divesting five studios, including Ninja Theory.",
         "The reset points to a leaner gaming strategy centered on key franchises and subscriptions.",
       ],
+      tr: [
+        "Microsoft'un Xbox birimi, Ninja Theory dahil be\u015f st\u00fdyoyu elden \u00e7\u0131kar\u0131rken yakla\u015f\u0131k 3.200 ki\u015fiyi i\u015ften \u00e7\u0131kar\u0131yor.",
+        "Yeniden yap\u0131lanma, temel seriler ve aboneliklere odaklanan daha yal\u0131n bir oyun stratejisine i\u015faret ediyor.",
+      ],
     },
   },
   {
@@ -367,12 +387,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/2b97ab18-2d87df57-83434db9-df0c4232-f6647792-4132135c-3f4c6319-f0cdcc47-a3a18d9a-c39b8747-c9170b62-cd76e63e/2337916_Image.png",
     score: 94,
     source: "Connie Loizos / TechCrunch",
-    time: "6:55 AM",
+    time: { uz: "6:55 AM", en: "6:55 AM", tr: "06:55" },
     url: "https://techcrunch.com/2026/07/05/this-humanoid-robotics-company-is-going-public-but-its-ceo-isnt-promising-a-robot-in-your-home-anytime-soon/",
     category: "funding",
     title: {
       uz: "Agility Robotics bosh direktori Peggy Johnson SPAClar va apparat ustunliklari haqida",
       en: "Agility Robotics CEO Peggy Johnson on SPACs and hardware moats",
+      tr: "Agility Robotics CEO'su Peggy Johnson, SPAC'ler ve donan\u0131m avantaj\u0131n\u0131 anlatt\u0131",
     },
     summary: {
       uz: [
@@ -383,6 +404,10 @@ const homeSignalStories = [
         "Agility Robotics plans to go public through a SPAC merger, valuing the company at about $2.5 billion.",
         "Peggy Johnson says the real hardware moat comes from industrial safety data and factory deployment, not demos.",
       ],
+      tr: [
+        "Agility Robotics, \u015firkete yakla\u015f\u0131k 2,5 milyar dolar de\u011fer bi\u00e7en bir SPAC birle\u015fmesiyle halka a\u00e7\u0131lmay\u0131 planl\u0131yor.",
+        "Peggy Johnson'a g\u00f6re as\u0131l donan\u0131m avantaj\u0131 g\u00f6sterilerden de\u011fil, end\u00fcstriyel g\u00fcvenlik verileri ve fabrika uygulamalar\u0131ndan geliyor.",
+      ],
     },
   },
   {
@@ -392,12 +417,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/0758c7f7-b1fb7e9d-b31248cd-7f304742-f2a80eb3-a14bd3f3-48d2e738-561d1299-c28afef7-3cefe011-8e3e6fb6-45448c4e/2337810_Image.png",
     score: 94,
     source: "Olivia Fletcher / Bloomberg",
-    time: "6:40 AM",
+    time: { uz: "6:40 AM", en: "6:40 AM", tr: "06:40" },
     url: "https://www.bloomberg.com/news/articles/2026-07-06/meta-tiktok-jobs-cuts-in-ireland-augur-further-ai-disruption",
     category: "policy",
     title: {
       uz: "AI mehnatdan kapitalga siljishi Irlandiyaning texnologiyaga og'ir soliq bazasiga tahdid solmoqda",
       en: "AI labor-to-capital shift threatens Ireland's tech-heavy tax base",
+      tr: "AI'\u0131n emekten sermayeye kay\u0131\u015f\u0131, \u0130rlanda'n\u0131n teknoloji a\u011f\u0131rl\u0131kl\u0131 vergi taban\u0131n\u0131 tehdit ediyor",
     },
     summary: {
       uz: [
@@ -408,6 +434,10 @@ const homeSignalStories = [
         "Layoffs at Meta, TikTok, and other tech firms show how AI is shifting Ireland's digital economy away from labor-heavy operations.",
         "That could weaken the tax base long supported by high-income tech workers.",
       ],
+      tr: [
+        "Meta, TikTok ve di\u011fer teknoloji \u015firketlerindeki i\u015ften \u00e7\u0131karmalar, AI'\u0131n \u0130rlanda'n\u0131n dijital ekonomisini emek yo\u011fun faaliyetlerden uzakla\u015ft\u0131rd\u0131\u011f\u0131n\u0131 g\u00f6steriyor.",
+        "Bu de\u011fi\u015fim, uzun s\u00fcredir y\u00fcksek gelirli teknoloji \u00e7al\u0131\u015fanlar\u0131na dayanan vergi taban\u0131n\u0131 zay\u0131flatabilir.",
+      ],
     },
   },
   {
@@ -417,12 +447,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/c5563a6a-eabcf8ac-bd199571-30ebe417-5e62a1bf-66455782-f76ba9bc-c3cf7c7a-90d444fd-6a8d78f0-f856a1a3-ba785a35/2337679_Image.png",
     score: 94,
     source: "Eric Katz / NOTUS",
-    time: "5:30 AM",
+    time: { uz: "5:30 AM", en: "5:30 AM", tr: "05:30" },
     url: "https://www.notus.org/economy/treasury-internal-report-warning-dangers-ai-bubble",
     category: "policy",
     title: {
       uz: "AQSh G'aznachiligi AI bozoridagi xavflar dotcom qulashini eslatishini ogohlantirdi",
       en: "US Treasury warns AI market risks echo dotcom crash",
+      tr: "ABD Hazinesi, AI piyasas\u0131ndaki risklerin dot-com \u00e7\u00f6k\u00fc\u015f\u00fcn\u00fc and\u0131rd\u0131\u011f\u0131 konusunda uyard\u0131",
     },
     summary: {
       uz: [
@@ -433,6 +464,10 @@ const homeSignalStories = [
         "An internal Treasury warning says AI market risks are starting to look like the dot-com bubble.",
         "The concern is that valuations and hype may be running ahead of fundamentals.",
       ],
+      tr: [
+        "ABD Hazinesi'nin \u015firket i\u00e7i uyar\u0131s\u0131, AI piyasas\u0131ndaki risklerin dot-com balonuna benzemeye ba\u015flad\u0131\u011f\u0131n\u0131 s\u00f6yl\u00fcyor.",
+        "Kayg\u0131, de\u011ferlemelerin ve abart\u0131n\u0131n temel g\u00f6stergelerin \u00f6n\u00fcne ge\u00e7mesi.",
+      ],
     },
   },
   {
@@ -442,12 +477,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/ecdaf7dc-21467c72-3b324a8b-38aaf8a5-dee6e18b-0be8657a-fa727095-3f2235d6-fc3a909e-b2e6effb-0d801de8-79dc9949/2337525_Image.png",
     score: 94,
     source: "Armin Ronacher / Armin Ronacher's Thoughts and Writings",
-    time: "4:35 AM",
+    time: { uz: "4:35 AM", en: "4:35 AM", tr: "04:35" },
     url: "https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/",
     category: "ai",
     title: {
       uz: "Claude Opus 4.8 va Sonnet 5 vosita chaqirish samaradorligida pasaydi",
       en: "Claude Opus 4.8 and Sonnet 5 regress on tool-calling performance",
+      tr: "Claude Opus 4.8 ve Sonnet 5'in ara\u00e7 \u00e7a\u011f\u0131rma performans\u0131 geriledi",
     },
     summary: {
       uz: [
@@ -458,6 +494,10 @@ const homeSignalStories = [
         "Recent tests suggest Anthropic's newest models are less reliable at tool calling, even when the reasoning is sound.",
         "That creates validation problems for third-party agent workflows.",
       ],
+      tr: [
+        "Son testler, Anthropic'in en yeni modellerinin ak\u0131l y\u00fcr\u00fctmeleri sa\u011flam olsa bile ara\u00e7 \u00e7a\u011f\u0131rmada daha az g\u00fcvenilir oldu\u011funu g\u00f6steriyor.",
+        "Bu durum, \u00fc\u00e7\u00fcnc\u00fc taraf ajan i\u015f ak\u0131\u015flar\u0131nda do\u011frulama sorunlar\u0131 yarat\u0131yor.",
+      ],
     },
   },
   {
@@ -466,12 +506,13 @@ const homeSignalStories = [
     image: fallbackLogoImage,
     score: 94,
     source: "Anniek Bao / CNBC",
-    time: "1:35 AM",
+    time: { uz: "1:35 AM", en: "1:35 AM", tr: "01:35" },
     url: "https://www.cnbc.com/2026/07/06/nvidia-kyber-rack-system-delays-manufacturing-taiwan-rubin-chips-.html",
     category: "products",
     title: {
       uz: "Nvidia Kyber NVL144 ni 2028 yilga kechiktirdi va NVL72x2 ni bekor qildi",
       en: "Nvidia delays Kyber NVL144 to 2028 and scraps NVL72x2",
+      tr: "Nvidia, Kyber NVL144'\u00fc 2028'e erteledi ve NVL72x2'yi iptal etti",
     },
     summary: {
       uz: [
@@ -482,6 +523,10 @@ const homeSignalStories = [
         "Nvidia has delayed Kyber NVL144 to 2028 and scrapped its NVL72x2 backup design.",
         "Manufacturing issues and cloud-provider pushback are slowing the rack-scale roadmap.",
       ],
+      tr: [
+        "Nvidia, Kyber NVL144'\u00fc 2028'e erteledi ve yedek NVL72x2 tasar\u0131m\u0131ndan vazge\u00e7ti.",
+        "\u00dcretim sorunlar\u0131 ve bulut sa\u011flay\u0131c\u0131lar\u0131n\u0131n itirazlar\u0131, raf \u00f6l\u00e7ekli yol haritas\u0131n\u0131 yava\u015flat\u0131yor.",
+      ],
     },
   },
   {
@@ -491,12 +536,13 @@ const homeSignalStories = [
       "https://cdn1.wiro.ai/d95e93a4-e0b4417a-c35960df-22479007-2bfff055-d85105c4-efc17e8a-ee84da82-acdf1e2e-9afa08a1-0ade5a45-03ffd3c6/2337069_Image.png",
     score: 95,
     source: "Bill Toulas / BleepingComputer",
-    time: "12:15 AM",
+    time: { uz: "12:15 AM", en: "12:15 AM", tr: "00:15" },
     url: "https://www.bleepingcomputer.com/news/security/jadepuffer-ransomware-used-ai-agent-to-automate-entire-attack/",
     category: "security",
     title: {
       uz: "Dunyoning ilk o'zini moslashtiruvchi agentli ransomware JadePuffer bilan tanishing",
       en: "Meet JadePuffer, the world's first self-adapting agentic ransomware",
+      tr: "D\u00fcnyan\u0131n ilk kendini uyarlayan ajan tabanl\u0131 fidye yaz\u0131l\u0131m\u0131 JadePuffer ile tan\u0131\u015f\u0131n",
     },
     summary: {
       uz: [
@@ -506,6 +552,10 @@ const homeSignalStories = [
       en: [
         "Researchers say JadePuffer is the first documented ransomware run by an autonomous AI agent.",
         "The malware automates reconnaissance, credential theft, and encryption while adapting in real time.",
+      ],
+      tr: [
+        "Ara\u015ft\u0131rmac\u0131lar, JadePuffer'\u0131n otonom bir AI ajan\u0131 taraf\u0131ndan y\u00f6netilen ilk belgelenmi\u015f fidye yaz\u0131l\u0131m\u0131 oldu\u011funu s\u00f6yl\u00fcyor.",
+        "Zararl\u0131 yaz\u0131l\u0131m ke\u015fif, kimlik bilgisi h\u0131rs\u0131zl\u0131\u011f\u0131 ve \u015fifrelemeyi ger\u00e7ek zamanl\u0131 uyum sa\u011flayarak otomatikle\u015ftiriyor.",
       ],
     },
   },
@@ -519,12 +569,13 @@ const homeSignalOlderStories = [
       "https://cdn1.wiro.ai/2b97ab18-2d87df57-83434db9-df0c4232-f6647792-4132135c-3f4c6319-f0cdcc47-a3a18d9a-c39b8747-c9170b62-cd76e63e/2337916_Image.png",
     score: 93,
     source: "OpenAI",
-    time: "Earlier today",
+    time: { uz: "Bugun ertaroq", en: "Earlier today", tr: "Bug\u00fcn erken saatlerde" },
     url: "https://openai.com",
     category: "ai",
     title: {
       uz: "OpenAI agent vositalari uchun strukturali chaqiruvlarni yanada qattiqroq sinamoqda",
       en: "OpenAI tightens agent tool workflows as structured calls matter more",
+      tr: "OpenAI, yap\u0131land\u0131r\u0131lm\u0131\u015f \u00e7a\u011fr\u0131lar \u00f6nem kazand\u0131k\u00e7a ajan ara\u00e7lar\u0131n\u0131n i\u015f ak\u0131\u015f\u0131n\u0131 s\u0131k\u0131la\u015ft\u0131r\u0131yor",
     },
     summary: {
       uz: [
@@ -535,6 +586,10 @@ const homeSignalOlderStories = [
         "OpenAI is pushing agent tools toward stricter structured calls as reliability matters more.",
         "The change reflects a wider move toward schema-safe workflows over loose, free-form tool use.",
       ],
+      tr: [
+        "OpenAI, g\u00fcvenilirlik daha \u00f6nemli h\u00e2le geldik\u00e7e ajan ara\u00e7lar\u0131n\u0131 daha kat\u0131 yap\u0131land\u0131r\u0131lm\u0131\u015f \u00e7a\u011fr\u0131lara y\u00f6neltiyor.",
+        "Bu de\u011fi\u015fim, serbest bi\u00e7imli ara\u00e7 kullan\u0131m\u0131ndan \u015femaya uygun i\u015f ak\u0131\u015flar\u0131na do\u011fru daha geni\u015f bir ge\u00e7i\u015fi yans\u0131t\u0131yor.",
+      ],
     },
   },
   {
@@ -543,12 +598,13 @@ const homeSignalOlderStories = [
     image: fallbackLogoImage,
     score: 93,
     source: "Meta / Apple",
-    time: "Earlier today",
+    time: { uz: "Bugun ertaroq", en: "Earlier today", tr: "Bug\u00fcn erken saatlerde" },
     url: "https://www.apple.com/newsroom/",
     category: "ai",
     title: {
       uz: "Meta va Apple ilovalar ichida chuqurroq AI xulosa qatlamlarini sinamoqda",
       en: "Meta and Apple keep testing deeper AI summary layers inside apps",
+      tr: "Meta ve Apple, uygulamalarda daha derin AI \u00f6zet katmanlar\u0131n\u0131 test etmeyi s\u00fcrd\u00fcr\u00fcyor",
     },
     summary: {
       uz: [
@@ -558,6 +614,10 @@ const homeSignalOlderStories = [
       en: [
         "Meta and Apple are still testing deeper AI summary layers inside their apps.",
         "Both companies are exploring how far on-device or in-app summaries can replace longer reading flows.",
+      ],
+      tr: [
+        "Meta ve Apple, uygulamalar\u0131nda daha derin AI \u00f6zet katmanlar\u0131n\u0131 test etmeyi s\u00fcrd\u00fcr\u00fcyor.",
+        "Her iki \u015firket de cihaz veya uygulama i\u00e7i \u00f6zetlerin uzun okuma ak\u0131\u015flar\u0131n\u0131n ne kadar\u0131n\u0131n yerini alabilece\u011fini ara\u015ft\u0131r\u0131yor.",
       ],
     },
   },
@@ -579,6 +639,7 @@ const locales = {
       privacy: "Maxfiylik",
     },
     ui: {
+      language: "Til",
       skipLink: "Kontentga o‘tish",
       follow: "Kuzatish",
       explore: "Kashf et",
@@ -928,6 +989,7 @@ const locales = {
       privacy: "Privacy",
     },
     ui: {
+      language: "Language",
       skipLink: "Skip to content",
       follow: "Follow",
       explore: "Explore",
@@ -1278,6 +1340,7 @@ locales.tr = {
     privacy: "Gizlilik",
   },
   ui: {
+    language: "Dil",
     skipLink: "\u0130\u00e7eri\u011fe ge\u00e7",
     follow: "Takip et",
     explore: "Ke\u015ffet",
@@ -1634,6 +1697,10 @@ function serializeJson(value) {
   return JSON.stringify(value).replaceAll("<", "\\u003c").replaceAll("&", "\\u0026");
 }
 
+function cleanGeneratedHtml(value) {
+  return value.replace(/[ \t]+$/gm, "");
+}
+
 function localizeStoryValue(value, localeKey) {
   if (typeof value === "string") {
     return value;
@@ -1645,7 +1712,7 @@ const hreflangLocaleKeys = ["uz", "en", "tr"];
 const languageSwitchLocaleKeys = ["en", "uz", "tr"];
 
 function renderLanguageSwitch(localeKey, currentFile, localeOutputPath) {
-  return `<div class="language-switch" role="group" aria-label="Language">
+  return `<div class="language-switch" role="group" aria-label="${text(locales[localeKey].ui.language)}">
           ${languageSwitchLocaleKeys
             .map((targetLocaleKey) => {
               const isCurrent = targetLocaleKey === localeKey;
@@ -3163,13 +3230,13 @@ async function buildSite() {
     for (const page of pages) {
       const outputFile = pageOutputPath(localeKey, page.key);
       await ensureDir(path.dirname(outputFile));
-      await writeFile(outputFile, renderDocument(localeKey, page.key), "utf8");
+      await writeFile(outputFile, cleanGeneratedHtml(renderDocument(localeKey, page.key)), "utf8");
 
       if (page.key === "home" || page.key === "about" || page.key === "lineup") {
         const fallbackFile = navigationPageOutputPath(localeKey, page.key);
         if (fallbackFile !== outputFile) {
           await ensureDir(path.dirname(fallbackFile));
-          await writeFile(fallbackFile, renderDocument(localeKey, page.key, fallbackFile), "utf8");
+          await writeFile(fallbackFile, cleanGeneratedHtml(renderDocument(localeKey, page.key, fallbackFile)), "utf8");
         }
       }
     }
@@ -3177,7 +3244,7 @@ async function buildSite() {
     for (const article of lineupArticleDetails) {
       const outputFile = lineupArticleOutputPath(localeKey, article);
       await ensureDir(path.dirname(outputFile));
-      await writeFile(outputFile, renderLineupArticleDocument(localeKey, article), "utf8");
+      await writeFile(outputFile, cleanGeneratedHtml(renderLineupArticleDocument(localeKey, article)), "utf8");
     }
   }
 

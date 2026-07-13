@@ -27,6 +27,60 @@ function readText(file) {
   return fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
 }
 
+function flatLocaleRoute(localeKey, pageKey) {
+  if (pageKey === "home") {
+    return localeKey === "uz" ? "index.html" : `${localeKey}.html`;
+  }
+  return localeKey === "uz" ? `${pageKey}.html` : `${localeKey}-${pageKey}.html`;
+}
+
+function describeLocaleRoute(relativePath) {
+  const normalizedPath = relativePath.split(path.sep).join("/");
+  const flatMatch = /^(?:(en|tr)-)?(about|lineup)\.html$/.exec(normalizedPath);
+  if (flatMatch) {
+    return { localeKey: flatMatch[1] ?? "uz", pageKey: flatMatch[2], nestedPath: null, normalizedPath };
+  }
+  const flatHomeMatch = /^(?:(en|tr)\.)?html$/.exec(normalizedPath);
+  if (normalizedPath === "index.html" || flatHomeMatch) {
+    return { localeKey: flatHomeMatch?.[1] ?? "uz", pageKey: "home", nestedPath: null, normalizedPath };
+  }
+
+  const segments = normalizedPath.split("/");
+  const localeKey = ["en", "tr"].includes(segments[0]) ? segments.shift() : "uz";
+  const nestedPath = segments.join("/");
+  const pageKey =
+    nestedPath === "index.html"
+      ? "home"
+      : nestedPath === "about/index.html"
+        ? "about"
+        : nestedPath === "lineup/index.html"
+          ? "lineup"
+          : null;
+  return { localeKey, pageKey, nestedPath, normalizedPath };
+}
+
+function equivalentLocaleHrefs(relativePath) {
+  const route = describeLocaleRoute(relativePath);
+  const hrefs = Object.fromEntries(
+    ["en", "uz", "tr"].map((localeKey) => {
+      let target;
+      if (localeKey === route.localeKey) {
+        target = route.normalizedPath;
+      } else if (route.pageKey) {
+        target = flatLocaleRoute(localeKey, route.pageKey);
+      } else {
+        target = localeKey === "uz" ? route.nestedPath : `${localeKey}/${route.nestedPath}`;
+      }
+      return [localeKey, path.posix.relative(path.posix.dirname(route.normalizedPath), target)];
+    }),
+  );
+  return { ...route, hrefs };
+}
+
+function attributeValue(attributes, name) {
+  return new RegExp(`(?:^|\\s)${name}="([^"]*)"`).exec(attributes)?.[1];
+}
+
 if (!fs.existsSync(distRoot)) {
   fail("dist directory is missing. Run the build before checking the site.");
 } else {
@@ -90,29 +144,75 @@ if (!fs.existsSync(distRoot)) {
       .replace(/<script\b[\s\S]*?<\/script>/gi, "");
     const localRefs = htmlWithoutInlineAssets.matchAll(/(?:href|src)="([^"]+)"/g);
     const relativeName = path.relative(distRoot, file);
+    const expectedRoute = equivalentLocaleHrefs(relativeName);
+    const documentLocaleMatch = /<html lang="([^"]+)" data-locale="([^"]+)"/.exec(htmlWithoutInlineAssets);
     const languageSwitch = /<div class="language-switch"[\s\S]*?<\/div>/.exec(htmlWithoutInlineAssets)?.[0] ?? "";
+    const languageSwitchAttributes = /<div class="language-switch"([^>]*)>/.exec(languageSwitch)?.[1] ?? "";
     const localeLinks = Array.from(languageSwitch.matchAll(/<a\b([^>]*)>(EN|UZ|TR)<\/a>/g));
     const alternateLocales = Array.from(
       htmlWithoutInlineAssets.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)" \/>/g),
-    ).map((match) => match[1]);
+    );
 
-    if (localeLinks.map((match) => match[2]).join("/") !== "EN/UZ/TR") {
+    if (!documentLocaleMatch) {
+      fail(`${relativeName} must declare matching html lang and data-locale values`);
+    } else {
+      const [, htmlLang, documentLocale] = documentLocaleMatch;
+      if (htmlLang !== documentLocale) {
+        fail(`${relativeName} html lang ${htmlLang} must match data-locale ${documentLocale}`);
+      }
+      if (documentLocale !== expectedRoute.localeKey) {
+        fail(`${relativeName} document locale ${documentLocale} must match route locale ${expectedRoute.localeKey}`);
+      }
+      const expectedLabel = { en: "Language", uz: "Til", tr: "Dil" }[documentLocale];
+      if (attributeValue(languageSwitchAttributes, "aria-label") !== expectedLabel) {
+        fail(`${relativeName} language switch must use the ${documentLocale} label ${expectedLabel}`);
+      }
+    }
+
+    if ((languageSwitch.match(/<a\b/g) ?? []).length !== 3 || localeLinks.map((match) => match[2]).join("/") !== "EN/UZ/TR") {
       fail(`${relativeName} must render exactly three locale anchors in EN / UZ / TR order`);
     }
-    if (localeLinks.filter((match) => match[1].includes("is-active")).length !== 1) {
-      fail(`${relativeName} must mark exactly one locale anchor active`);
-    }
-    if (localeLinks.filter((match) => match[1].includes('aria-current="page"')).length !== 1) {
-      fail(`${relativeName} must expose exactly one current locale`);
-    }
-    if (localeLinks.filter((match) => match[1].includes("is-inactive")).length !== 2) {
-      fail(`${relativeName} must mark exactly two locale anchors inactive`);
+
+    for (const [index, localeKey] of ["en", "uz", "tr"].entries()) {
+      const attributes = localeLinks[index]?.[1] ?? "";
+      const href = attributeValue(attributes, "href");
+      const classes = new Set((attributeValue(attributes, "class") ?? "").split(/\s+/));
+      const isDocumentLocale = localeKey === expectedRoute.localeKey;
+      if (href !== expectedRoute.hrefs[localeKey]) {
+        fail(`${relativeName} ${localeKey.toUpperCase()} locale href must be ${expectedRoute.hrefs[localeKey]}, found ${href ?? "none"}`);
+      }
+      if (isDocumentLocale) {
+        if (!classes.has("is-active") || classes.has("is-inactive")) {
+          fail(`${relativeName} ${localeKey.toUpperCase()} locale anchor alone must be active`);
+        }
+        if (attributeValue(attributes, "aria-current") !== "page") {
+          fail(`${relativeName} ${localeKey.toUpperCase()} locale anchor alone must expose aria-current=page`);
+        }
+      } else {
+        if (classes.has("is-active") || !classes.has("is-inactive")) {
+          fail(`${relativeName} ${localeKey.toUpperCase()} locale anchor must be inactive`);
+        }
+        if (attributeValue(attributes, "aria-current") !== undefined) {
+          fail(`${relativeName} ${localeKey.toUpperCase()} inactive locale anchor must not expose aria-current`);
+        }
+      }
     }
     if (/disabled|aria-disabled/.test(languageSwitch)) {
       fail(`${relativeName} locale anchors must not use disabled semantics`);
     }
-    if (alternateLocales.join("/") !== "uz/en/tr") {
-      fail(`${relativeName} must emit uz, en, and tr hreflang alternates`);
+
+    const expectedAlternates = [
+      ["uz", expectedRoute.hrefs.uz],
+      ["en", expectedRoute.hrefs.en],
+      ["tr", expectedRoute.hrefs.tr],
+    ];
+    if (
+      alternateLocales.length !== expectedAlternates.length
+      || alternateLocales.some(
+        (match, index) => match[1] !== expectedAlternates[index][0] || match[2] !== expectedAlternates[index][1],
+      )
+    ) {
+      fail(`${relativeName} must emit exact equivalent uz, en, and tr hreflang hrefs`);
     }
 
     if (!html.includes("<style data-alomat-styles>")) {

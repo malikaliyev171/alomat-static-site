@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const distRoot = path.join(projectRoot, "dist");
@@ -14,7 +15,78 @@ function readBuiltPage(relativePath) {
     .replace(/<script\b[\s\S]*?<\/script>/gi, "");
 }
 
-test("build generates Turkish routes with equivalent EN UZ TR navigation and hreflang links", () => {
+function listBuiltHtml(relativeDirectory = "") {
+  return readdirSync(path.join(distRoot, relativeDirectory), { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(relativeDirectory, entry.name);
+    return entry.isDirectory() ? listBuiltHtml(relativePath) : relativePath.endsWith(".html") ? [relativePath] : [];
+  });
+}
+
+function flatLocaleRoute(localeKey, pageKey) {
+  if (pageKey === "home") {
+    return localeKey === "uz" ? "index.html" : `${localeKey}.html`;
+  }
+  return localeKey === "uz" ? `${pageKey}.html` : `${localeKey}-${pageKey}.html`;
+}
+
+function describeLocaleRoute(relativePath) {
+  const flatMatch = /^(?:(en|tr)-)?(about|lineup)\.html$/.exec(relativePath);
+  if (flatMatch) {
+    return { localeKey: flatMatch[1] ?? "uz", pageKey: flatMatch[2], nestedPath: null };
+  }
+  const flatHomeMatch = /^(?:(en|tr)\.)?html$/.exec(relativePath);
+  if (relativePath === "index.html" || flatHomeMatch) {
+    return { localeKey: flatHomeMatch?.[1] ?? "uz", pageKey: "home", nestedPath: null };
+  }
+
+  const segments = relativePath.split("/");
+  const localeKey = ["en", "tr"].includes(segments[0]) ? segments.shift() : "uz";
+  const nestedPath = segments.join("/");
+  const pageKey =
+    nestedPath === "index.html"
+      ? "home"
+      : nestedPath === "about/index.html"
+        ? "about"
+        : nestedPath === "lineup/index.html"
+          ? "lineup"
+          : null;
+  return { localeKey, pageKey, nestedPath };
+}
+
+function equivalentLocaleRoutes(relativePath) {
+  const route = describeLocaleRoute(relativePath);
+  const routes = Object.fromEntries(
+    ["en", "uz", "tr"].map((localeKey) => {
+      let target;
+      if (localeKey === route.localeKey) {
+        target = relativePath;
+      } else if (route.pageKey) {
+        target = flatLocaleRoute(localeKey, route.pageKey);
+      } else {
+        target = localeKey === "uz" ? route.nestedPath : `${localeKey}/${route.nestedPath}`;
+      }
+      return [localeKey, path.posix.relative(path.posix.dirname(relativePath), target)];
+    }),
+  );
+  return { ...route, routes };
+}
+
+function attributeValue(attributes, name) {
+  return new RegExp(`(?:^|\\s)${name}="([^"]*)"`).exec(attributes)?.[1];
+}
+
+function readFallbackStories(arrayName) {
+  const source = readFileSync(path.join(projectRoot, "build.mjs"), "utf8");
+  const declaration = `const ${arrayName} = [`;
+  const start = source.indexOf(declaration);
+  assert.notEqual(start, -1, `${arrayName} declaration`);
+  const end = source.indexOf("\n];", start);
+  assert.notEqual(end, -1, `${arrayName} closing bracket`);
+  const literal = source.slice(start + declaration.length - 1, end + 2);
+  return vm.runInNewContext(`(${literal})`, { fallbackLogoImage: "fallback" });
+}
+
+test("build generates exact equivalent locale navigation and hreflang links on every document", () => {
   execFileSync(process.execPath, ["build.mjs"], { cwd: projectRoot, stdio: "pipe" });
 
   const turkishRoutes = [
@@ -37,37 +109,112 @@ test("build generates Turkish routes with equivalent EN UZ TR navigation and hre
     assert.equal(existsSync(path.join(distRoot, route)), true, `${route} should be generated`);
   }
 
-  const equivalents = [
-    ["index.html", ["en.html", "index.html", "tr.html"]],
-    ["en-about.html", ["en-about.html", "about.html", "tr-about.html"]],
-    ["tr-lineup.html", ["en-lineup.html", "lineup.html", "tr-lineup.html"]],
-    ["tr/library/index.html", ["../../en/library/index.html", "../../library/index.html", "index.html"]],
-  ];
+  const htmlRoutes = listBuiltHtml().sort();
+  assert.equal(htmlRoutes.length, 38, "generated document count");
 
-  for (const [route, expectedHrefs] of equivalents) {
+  for (const route of htmlRoutes) {
     const html = readBuiltPage(route);
+    const expected = equivalentLocaleRoutes(route);
+    const documentLocale = /<html lang="([^"]+)" data-locale="([^"]+)"/.exec(html);
+    assert.ok(documentLocale, `${route} document locale`);
+    assert.equal(documentLocale[1], expected.localeKey, `${route} html lang`);
+    assert.equal(documentLocale[2], expected.localeKey, `${route} data locale`);
+
     const switchMarkup = /<div class="language-switch"[\s\S]*?<\/div>/.exec(html)?.[0] ?? "";
     const links = Array.from(switchMarkup.matchAll(/<a\b([^>]*)>(EN|UZ|TR)<\/a>/g));
 
     assert.deepEqual(links.map((match) => match[2]), ["EN", "UZ", "TR"], `${route} locale order`);
     assert.deepEqual(
       links.map((match) => /href="([^"]+)"/.exec(match[1])?.[1]),
-      expectedHrefs,
+      [expected.routes.en, expected.routes.uz, expected.routes.tr],
       `${route} equivalent locale routes`,
     );
-    assert.equal(links.filter((match) => match[1].includes("is-active")).length, 1, `${route} active locale`);
-    assert.equal(links.filter((match) => match[1].includes('aria-current="page"')).length, 1, `${route} current locale`);
-    assert.equal(links.filter((match) => match[1].includes("is-inactive")).length, 2, `${route} inactive locales`);
+
+    for (const [index, localeKey] of ["en", "uz", "tr"].entries()) {
+      const attributes = links[index][1];
+      const classes = new Set(attributeValue(attributes, "class")?.split(/\s+/));
+      if (localeKey === expected.localeKey) {
+        assert.equal(classes.has("is-active"), true, `${route} ${localeKey} active state`);
+        assert.equal(classes.has("is-inactive"), false, `${route} ${localeKey} inactive state`);
+        assert.equal(attributeValue(attributes, "aria-current"), "page", `${route} ${localeKey} current state`);
+      } else {
+        assert.equal(classes.has("is-active"), false, `${route} ${localeKey} active state`);
+        assert.equal(classes.has("is-inactive"), true, `${route} ${localeKey} inactive state`);
+        assert.equal(attributeValue(attributes, "aria-current"), undefined, `${route} ${localeKey} current state`);
+      }
+    }
+
+    const expectedSwitchLabel = { en: "Language", uz: "Til", tr: "Dil" }[expected.localeKey];
+    assert.equal(attributeValue(/<div class="language-switch"([^>]*)>/.exec(switchMarkup)?.[1] ?? "", "aria-label"), expectedSwitchLabel, `${route} language switch label`);
     assert.doesNotMatch(switchMarkup, /disabled|aria-disabled/, `${route} enabled locale links`);
 
     const hreflangs = Array.from(html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)" \/>/g));
-    assert.deepEqual(hreflangs.map((match) => match[1]), ["uz", "en", "tr"], `${route} hreflang set`);
+    assert.deepEqual(
+      hreflangs.map((match) => [match[1], match[2]]),
+      [
+        ["uz", expected.routes.uz],
+        ["en", expected.routes.en],
+        ["tr", expected.routes.tr],
+      ],
+      `${route} hreflang routes`,
+    );
   }
 
   const turkishHome = readBuiltPage("tr.html");
   assert.match(turkishHome, /<html lang="tr" data-locale="tr"/);
   assert.match(turkishHome, />KÜTÜPHANE<\/span>/);
   assert.match(turkishHome, /Bugünün çizgisi/);
+});
+
+test("every fallback story has natural Turkish title summary and time copy", () => {
+  const stories = [...readFallbackStories("homeSignalStories"), ...readFallbackStories("homeSignalOlderStories")];
+  const expected = new Map([
+    [91805, ["Illinois, OpenAI ve Anthropic'in desteklediği AI güvenliği yasasını imzaladı", "19:01", "hesap verebilirlik"]],
+    [91804, ["Nintendo, batarya kuralları nedeniyle Avrupa'da Switch satışını 2027'de bitirecek", "10:35", "değiştirilebilir batarya"]],
+    [91803, ["MicroStrategy, 11,4 milyar dolarlık gerçekleşmemiş zarara rağmen 216 milyon dolarlık Bitcoin sattı", "10:25", "3.588 BTC"]],
+    [91802, ["Xbox, büyük yeniden yapılanmada 3.200 kişiyi işten çıkarıp Ninja Theory'yi elden çıkarıyor", "09:41", "daha yalın bir oyun stratejisi"]],
+    [91801, ["Agility Robotics CEO'su Peggy Johnson, SPAC'ler ve donanım avantajını anlattı", "06:55", "fabrika uygulamalarından"]],
+    [91800, ["AI'ın emekten sermayeye kayışı, İrlanda'nın teknoloji ağırlıklı vergi tabanını tehdit ediyor", "06:40", "vergi tabanını zayıflatabilir"]],
+    [91799, ["ABD Hazinesi, AI piyasasındaki risklerin dot-com çöküşünü andırdığı konusunda uyardı", "05:30", "dot-com balonuna"]],
+    [91798, ["Claude Opus 4.8 ve Sonnet 5'in araç çağırma performansı geriledi", "04:35", "doğrulama sorunları"]],
+    [91797, ["Nvidia, Kyber NVL144'ü 2028'e erteledi ve NVL72x2'yi iptal etti", "01:35", "raf ölçekli yol haritasını"]],
+    [91796, ["Dünyanın ilk kendini uyarlayan ajan tabanlı fidye yazılımı JadePuffer ile tanışın", "00:15", "gerçek zamanlı uyum sağlayarak"]],
+    [91795, ["OpenAI, yapılandırılmış çağrılar önem kazandıkça ajan araçlarının iş akışını sıkılaştırıyor", "Bugün erken saatlerde", "şemaya uygun iş akışlarına"]],
+    [91794, ["Meta ve Apple, uygulamalarda daha derin AI özet katmanlarını test etmeyi sürdürüyor", "Bugün erken saatlerde", "uzun okuma akışlarının"]],
+  ]);
+
+  assert.equal(stories.length, expected.size, "fallback story count");
+  for (const story of stories) {
+    const [title, time, summaryFragment] = expected.get(story.id) ?? [];
+    assert.equal(story.title?.tr, title, `${story.id} Turkish title`);
+    assert.equal(story.time?.tr, time, `${story.id} Turkish time`);
+    assert.equal(story.summary?.tr?.length, 2, `${story.id} Turkish summary paragraphs`);
+    assert.equal(story.summary.tr.some((paragraph) => paragraph.includes(summaryFragment)), true, `${story.id} natural Turkish summary`);
+    assert.notDeepEqual(story.summary.tr, story.summary.en, `${story.id} translated Turkish summary`);
+  }
+
+  for (const route of ["tr.html", "tr/index.html"]) {
+    const turkishHome = readFileSync(path.join(distRoot, route), "utf8");
+    const storyPayload = JSON.parse(/<script type="application\/json" data-signal-stories>([^<]+)<\/script>/.exec(turkishHome)?.[1] ?? "[]");
+    assert.equal(storyPayload.length, 7, `${route} visible fallback story payload`);
+    assert.deepEqual(
+      storyPayload.map(({ title, summary, time }) => ({ title, summary, time })),
+      stories.slice(0, 7).map((story) => ({
+        title: story.title.tr,
+        summary: Array.from(story.summary.tr),
+        time: story.time.tr,
+      })),
+      `${route} Turkish fallback copy`,
+    );
+    assert.doesNotMatch(turkishHome, /Earlier today/, `${route} English fallback time`);
+  }
+});
+
+test("generated HTML contains no trailing whitespace", () => {
+  for (const route of listBuiltHtml()) {
+    const html = readFileSync(path.join(distRoot, route), "utf8");
+    assert.doesNotMatch(html, /[ \t]+$/m, `${route} trailing whitespace`);
+  }
 });
 
 function createClassList(initial = []) {
