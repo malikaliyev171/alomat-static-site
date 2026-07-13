@@ -581,7 +581,7 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 }
 
 .nav__item.is-active {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: transparent;
   color: var(--text-strong);
 }
 
@@ -2334,6 +2334,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent;
   color: rgba(5, 7, 13, 0.96);
   font-size: 1.02rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -4830,7 +4831,13 @@ html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [da
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
-html:root[data-page="home"] .language-switch {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .language-switch {
   margin-left: clamp(24px, 2.2vw, 40px);
 }
 
@@ -4979,11 +4986,13 @@ html:root[data-page="home"][data-palette="7"] .palette-menu {
     0 10px 22px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
-html:root[data-page="home"] .nav--home,
-html:root[data-page="home"][data-theme] .nav--home,
-html:root[data-page="home"][data-palette="0"] .nav--home,
-html:root[data-page="home"][data-palette="4"] .nav--home,
-html:root[data-page="home"][data-palette="7"] .nav--home {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .nav--home {
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;

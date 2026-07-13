@@ -575,6 +575,20 @@ test("client helpers keep valid http and https urls unchanged", async () => {
   }
 });
 
+test("source labels use uppercase site names without domain suffixes", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    assert.equal(helpers.getSiteLabelFromUrl("https://marktechpost.com/article"), "MARKTECHPOST");
+    assert.equal(helpers.getSiteLabelFromUrl("https://info.arxiv.org/about"), "ARXIV");
+    assert.equal(helpers.getSiteLabelFromUrl("https://terrytao.wordpress.com/post"), "TERRYTAO");
+    assert.equal(helpers.getSiteLabelFromUrl("https://example.substack.com/p/post"), "EXAMPLE");
+    assert.equal(helpers.getSiteLabelFromUrl("https://alomat.ai"), "ALOMAT");
+    assert.equal(helpers.getSiteLabelFromUrl("javascript:alert(1)"), "");
+  } finally {
+    cleanup();
+  }
+});
+
 test("client helpers reject unsafe href and image values", async () => {
   const { helpers, cleanup } = await loadAppModule();
   try {
@@ -722,6 +736,36 @@ test("detail markup renders safe rich-summary links on their original words", as
     assert.match(markup, /Anthropic/);
     assert.doesNotMatch(markup, /javascript:alert/);
     assert.match(markup, /class="timeline-panel__source"/);
+    assert.match(markup, /<span>SOURCE<\/span>\s*<strong>ALOMAT<\/strong>/);
+  } finally {
+    cleanup();
+  }
+});
+
+test("normal news ignores rich-summary links and renders its plain summary", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const markup = helpers.renderStoryMarkup({
+      id: "news-1",
+      title: "OpenAI yangi modelini taqdim etdi",
+      summary: ["OpenAI yangi modelini taqdim etdi."],
+      richSummary: [
+        {
+          segments: [
+            { text: "OpenAI", url: "https://openai.com/news" },
+            { text: " yangi modelini taqdim etdi." },
+          ],
+        },
+      ],
+      source: "Telegram bot",
+      time: "14:00",
+      url: "https://www.reuters.com/world/news",
+    });
+
+    assert.doesNotMatch(markup, /timeline-panel__inline-link/);
+    assert.match(markup, /<p>OpenAI yangi modelini taqdim etdi\.<\/p>/);
+    assert.match(markup, /<span>SOURCE<\/span>\s*<strong>REUTERS<\/strong>/);
+    assert.doesNotMatch(markup, /<strong>Telegram bot<\/strong>/);
   } finally {
     cleanup();
   }
@@ -951,7 +995,8 @@ test("valid live records replace demo cards and hydrate the detail panel", async
     assert.deepEqual(environment.timeline.getTitles(), ["Live signal"]);
     assert.match(environment.detailContent.innerHTML, /Live signal/);
     assert.match(environment.detailContent.innerHTML, /Live summary paragraph\./);
-    assert.match(environment.detailContent.innerHTML, /Live Source/);
+    assert.match(environment.detailContent.innerHTML, /<strong>EXAMPLE<\/strong>/);
+    assert.doesNotMatch(environment.detailContent.innerHTML, /<strong>Live Source<\/strong>/);
     assert.equal(environment.detailPanel.classList.contains("has-story"), true);
     assert.equal(environment.pageMain.classList.contains("has-detail-open"), true);
     assert.equal(environment.timeline.getFirstItem()?.__button.getAttribute("aria-current"), "true");
@@ -960,7 +1005,60 @@ test("valid live records replace demo cards and hydrate the detail panel", async
   }
 });
 
-test("live summary text hides visible links in the detail panel", async () => {
+test("AI Digest uses a compact dated timeline title and keeps linked detail text", async () => {
+  const fallbackStories = [
+    {
+      id: "fallback-1",
+      title: { en: "Fallback story" },
+      summary: { en: ["Static summary"] },
+      source: "Fallback Source",
+      time: "09:00",
+      url: "https://example.com/fallback",
+    },
+  ];
+  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories, lang: "uz" });
+  try {
+    globalThis.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        signals: [
+          {
+            id: 203,
+            title: "📑 AI Digest — 2026-07-13 Terry Tao zamonaviy kodlash agentlari haqida yozdi.",
+            summary: ["Terry Tao zamonaviy kodlash agentlari haqida yozdi."],
+            rich_summary: [
+              {
+                segments: [
+                  { text: "Terry Tao", url: "https://terrytao.wordpress.com/post" },
+                  { text: " zamonaviy kodlash agentlari haqida yozdi." },
+                ],
+              },
+            ],
+            source: "Telegram bot",
+            created_at: "2026-07-13T09:00:39.325Z",
+            url: "https://terrytao.wordpress.com/post",
+          },
+        ],
+      }),
+    });
+
+    await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
+
+    assert.deepEqual(environment.timeline.getTitles(), ["AI Digest - 2026-07-13"]);
+    assert.match(environment.detailContent.innerHTML, /<h2>AI Digest - 2026-07-13<\/h2>/);
+    assert.doesNotMatch(environment.detailContent.innerHTML, /<h2>[^<]*Terry Tao/);
+    assert.match(environment.detailContent.innerHTML, /Terry Tao zamonaviy kodlash agentlari haqida yozdi/);
+    assert.match(
+      environment.detailContent.innerHTML,
+      /<a class="timeline-panel__inline-link" href="https:\/\/terrytao\.wordpress\.com\/post"[^>]*>Terry Tao<\/a>/,
+    );
+    assert.match(environment.detailContent.innerHTML, /<strong>ALOMAT<\/strong>/);
+  } finally {
+    cleanup();
+  }
+});
+
+test("live summary text hides visible links without replacing the bot source URL", async () => {
   const { helpers, cleanup } = await loadAppModule();
   try {
     const signal = helpers.normalizeLiveSignal(
@@ -984,6 +1082,24 @@ test("live summary text hides visible links in the detail panel", async () => {
       "Tadqiqot e'lon qilindi.",
       "Markdown manba matni qoladi.",
     ]);
+    assert.equal(signal.url, "https://wrong.example/about");
+  } finally {
+    cleanup();
+  }
+});
+
+test("live signal falls back to a visible summary link when the bot source URL is missing", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const signal = helpers.normalizeLiveSignal(
+      {
+        id: 305,
+        title: "Linked signal",
+        summary: ["Haber tafsilotlari: https://example.com/news?utm=telegram"],
+      },
+      0,
+    );
+
     assert.equal(signal.url, "https://example.com/news?utm=telegram");
   } finally {
     cleanup();
@@ -1018,6 +1134,32 @@ test("live signal normalization keeps structured rich-summary links", async () =
         ],
       },
     ]);
+  } finally {
+    cleanup();
+  }
+});
+
+test("live signal normalization drops rich-summary links from normal news", async () => {
+  const { helpers, cleanup } = await loadAppModule();
+  try {
+    const signal = helpers.normalizeLiveSignal(
+      {
+        id: 304,
+        title: "OpenAI yangi modelini taqdim etdi",
+        summary: ["OpenAI yangi modelini taqdim etdi."],
+        rich_summary: [
+          {
+            segments: [
+              { text: "OpenAI", url: "https://openai.com/news" },
+              { text: " yangi modelini taqdim etdi." },
+            ],
+          },
+        ],
+      },
+      0,
+    );
+
+    assert.deepEqual(signal.richSummary, []);
   } finally {
     cleanup();
   }

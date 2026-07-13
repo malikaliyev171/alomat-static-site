@@ -591,7 +591,7 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 }
 
 .nav__item.is-active {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: transparent;
   color: var(--text-strong);
 }
 
@@ -2344,6 +2344,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent;
   color: rgba(5, 7, 13, 0.96);
   font-size: 1.02rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -4840,7 +4841,13 @@ html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [da
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
-html:root[data-page="home"] .language-switch {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .language-switch {
   margin-left: clamp(24px, 2.2vw, 40px);
 }
 
@@ -4989,11 +4996,13 @@ html:root[data-page="home"][data-palette="7"] .palette-menu {
     0 10px 22px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
-html:root[data-page="home"] .nav--home,
-html:root[data-page="home"][data-theme] .nav--home,
-html:root[data-page="home"][data-palette="0"] .nav--home,
-html:root[data-page="home"][data-palette="4"] .nav--home,
-html:root[data-page="home"][data-palette="7"] .nav--home {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .nav--home {
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
@@ -5592,7 +5601,7 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       <main id="content" class="page page-detail">
     <section class="page-hero">
       <p class="eyebrow">Maxfiylik</p>
-      <h1>Veringiz va biz</h1>
+      <h1>Ma’lumotlaringiz va biz</h1>
       <p class="lede">Nimani yig‘ishimiz, nima uchun yig‘ishimiz va sizning qo‘lingizda nimalar borligi.</p>
     </section>
     <section class="policy-grid">
@@ -5604,12 +5613,12 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
         </article>
         <article class="policy-card">
           <h2>Cookie&#39;lar va kuzatuvchilar</h2>
-          <p>Biz reklama cookie&#39;si, uchinchi tomon kuzatuvchisi yoki saytlararo identifikatorlardan foydalanmaymiz. O‘z infratuzilmamizda joylashgan Umami analitikasi cookie qo‘ymaydi; u tashriflarni sizning IP manzilingiz va brauzer tanituvchisidan hosil qilingan, 24 soatda yangilanadigan anonim xesh orqali guruhlaydi.</p><p>Analitika skripti faqat alomat.uz domenlarida ishlashga cheklangan; ko&#39;chirilgan yoki uchinchi tomon saytlarida yuklanmaydi.</p><p>Foydalanuvchi paneliga kirganda faqat zarur sessiya cookie&#39;si yaratiladi. U HttpOnly bo‘lib, oturimingizni yopganda o‘chadi. Qurilmangizdagi local storage faqat rang palitrasi, yopilgan bildirishnomalar va boshqa interfeys holatlari uchun ishlatiladi.</p>
-          <ul class="stack-list"><li>Reklama cookie&#39;lari yo‘q</li><li>Uchinchi tomon tracker&#39;lari yo‘q</li><li>Faqat zarur sessiya cookie&#39;si</li><li>Mahalliy saqlash faqat interfeys uchun</li></ul>
+          <p>Biz reklama cookie&#39;si, uchinchi tomon kuzatuvchisi yoki saytlararo identifikatorlardan foydalanmaymiz. O‘z infratuzilmamizda joylashgan Umami analitikasi cookie qo‘ymaydi; u tashriflarni sizning IP manzilingiz va brauzer tanituvchisidan hosil qilingan, 24 soatda yangilanadigan anonim xesh orqali guruhlaydi.</p><p>Analitika skripti faqat alomat.uz domenlarida ishlashga cheklangan; ko&#39;chirilgan yoki uchinchi tomon saytlarida yuklanmaydi.</p><p>Foydalanuvchi paneliga kirganda faqat zarur sessiya kukisi yaratiladi. U HttpOnly bo‘lib, sessiyangizni yopganingizda o‘chadi. Qurilmangizdagi mahalliy xotira faqat rang palitrasi, yopilgan bildirishnomalar va boshqa interfeys holatlari uchun ishlatiladi.</p>
+          <ul class="stack-list"><li>Reklama cookie&#39;lari yo‘q</li><li>Uchinchi tomon kuzatuvchilari yo‘q</li><li>Faqat zarur sessiya cookie&#39;si</li><li>Mahalliy saqlash faqat interfeys uchun</li></ul>
         </article>
         <article class="policy-card">
           <h2>Biz yig‘adigan ma&#39;lumotlar</h2>
-          <p>Veb-saytimiz self-hosted Umami analitikasidan foydalanadi. Analitika sahifa ochilganda yuklanadi va faqat alomat.uz domenlari bilan cheklanadi.</p><p>Umami orqali ko‘riladigan tizim ma&#39;lumotlari: sahifa ko‘rishlar, brauzer turi, operatsion tizim, qurilma turi, mamlakat/mintaqa, ekran o‘lchami, yo‘naltiruvchi manzil va tashrif vaqti.</p>
+          <p>Veb-saytimiz o‘z serverimizda joylashtirilgan Umami analitikasidan foydalanadi. Analitika sahifa ochilganda yuklanadi va faqat alomat.uz domenlari bilan cheklanadi.</p><p>Umami orqali ko‘riladigan tizim ma&#39;lumotlari: sahifa ko‘rishlar, brauzer turi, operatsion tizim, qurilma turi, mamlakat/mintaqa, ekran o‘lchami, yo‘naltiruvchi manzil va tashrif vaqti.</p>
           
         </article>
         <article class="policy-card">
@@ -6069,6 +6078,72 @@ function sanitizeStoryUrl(value) {
   return sanitizeHttpUrl(value, "#");
 }
 
+const HOSTED_PUBLISHING_DOMAINS = new Set([
+  "wordpress.com",
+  "substack.com",
+  "medium.com",
+  "blogspot.com",
+  "github.io",
+]);
+
+const MULTIPART_PUBLIC_SUFFIXES = new Set([
+  "co.uk",
+  "com.au",
+  "com.tr",
+  "com.uz",
+  "co.jp",
+]);
+
+function getSiteLabelFromUrl(value) {
+  const href = sanitizeStoryUrl(value);
+  if (href === "#") {
+    return "";
+  }
+
+  try {
+    const labels = new URL(href).hostname
+      .toLowerCase()
+      .replace(/^www\./, "")
+      .split(".")
+      .filter(Boolean);
+    if (!labels.length) {
+      return "";
+    }
+    if (labels.length === 1) {
+      return labels[0].toUpperCase();
+    }
+
+    const hostname = labels.join(".");
+    const hostedDomain = [...HOSTED_PUBLISHING_DOMAINS].find(
+      (domain) => hostname.endsWith(`.${domain}`),
+    );
+    if (hostedDomain) {
+      const tenantIndex = labels.length - hostedDomain.split(".").length - 1;
+      return (labels[tenantIndex] || labels[0]).toUpperCase();
+    }
+
+    const suffix = labels.slice(-2).join(".");
+    const siteIndex = MULTIPART_PUBLIC_SUFFIXES.has(suffix) ? labels.length - 3 : labels.length - 2;
+    return (labels[siteIndex] || labels[0]).toUpperCase();
+  } catch {
+    return "";
+  }
+}
+
+function getStorySourceLabel(story) {
+  const title = localizeStoryValue(story?.title);
+  if (isAiDigestTitle(title)) {
+    return "ALOMAT";
+  }
+
+  const siteLabel = getSiteLabelFromUrl(story?.url);
+  if (siteLabel) {
+    return siteLabel;
+  }
+
+  return String(story?.source ?? "").trim().toUpperCase();
+}
+
 function sanitizeStoryImage(value) {
   return sanitizeHttpUrl(value, "");
 }
@@ -6168,16 +6243,24 @@ function normalizeLiveRichSummary(value) {
   }).filter(Boolean);
 }
 
+function isAiDigestTitle(value) {
+  const title = String(value ?? "")
+    .normalize("NFKD")
+    .replace(/\u0307/g, "");
+  return /\bAI[\s-]+Digest\b/i.test(title);
+}
+
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
+  const title = String(signal.title || "").trim();
   const summary = normalizeLiveSignalSummary(signal.summary);
-  const richSummary = normalizeLiveRichSummary(signal.rich_summary);
-  const sourceUrl = firstVisibleLinkFromSummary(signal.summary) || signal.url;
+  const richSummary = isAiDigestTitle(title) ? normalizeLiveRichSummary(signal.rich_summary) : [];
+  const sourceUrl = signal.url || firstVisibleLinkFromSummary(signal.summary);
 
   return {
     id: `live-${id}`,
-    title: String(signal.title || "").trim(),
+    title,
     source: String(signal.source || "").trim(),
     createdAt,
     dayKey: getLocalDayKey(createdAt),
@@ -6337,7 +6420,7 @@ function localizeStoryValue(value) {
 
 function buildExpandedSummary(story) {
   const title = localizeStoryValue(story.title);
-  const source = story.source ?? (locale === "en" ? "the original source" : "asl manba");
+  const source = getStorySourceLabel(story) || (locale === "en" ? "the original source" : "asl manba");
   const time = story.time ?? (locale === "en" ? "today" : "bugun");
   const category = story.category ?? "signal";
   const summary = Array.isArray(story.summary) ? [...story.summary] : [];
@@ -6454,12 +6537,15 @@ function resetDetailScroll() {
 
 function renderStoryMarkup(story) {
   const labels = detailLabels[locale];
-  const title = escapeHtml(localizeStoryValue(story.title));
-  const source = escapeHtml(story.source ?? "");
+  const storyTitle = localizeStoryValue(story.title);
+  const isDigest = isAiDigestTitle(storyTitle);
+  const panelTitle = isDigest ? getTimelineStoryTitle({ ...story, title: storyTitle }) : storyTitle;
+  const title = escapeHtml(panelTitle);
+  const source = escapeHtml(getStorySourceLabel(story));
   const time = escapeHtml(story.time ?? "");
   const weight = `${escapeHtml(String(story.score ?? 94))}/100`;
   const summary = buildExpandedSummary(story);
-  const richSummary = normalizeLiveRichSummary(story.richSummary);
+  const richSummary = isDigest ? normalizeLiveRichSummary(story.richSummary) : [];
   const paragraphCount = Math.max(summary.length, richSummary.length);
   const summaryHtml = Array.from({ length: paragraphCount }, (_, index) =>
     richSummary[index]
@@ -6572,15 +6658,27 @@ function updateTimelineActiveState(activeItem) {
   });
 }
 
+function getTimelineStoryTitle(story) {
+  const title = String(story?.title ?? "").trim();
+  if (!isAiDigestTitle(title)) {
+    return title;
+  }
+
+  const titleDate = title.match(/\b\d{4}-\d{2}-\d{2}\b/)?.[0];
+  const date = titleDate || story?.dayKey || getLocalDayKey(story?.createdAt);
+  return date ? `AI Digest - ${date}` : "AI Digest";
+}
+
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
   const storyImage = getStoryImageUrl(story);
   const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
+  const timelineTitle = getTimelineStoryTitle(story);
   return `
     <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
-        <span class="signal-timeline__headline-text">${escapeHtml(story.title)}</span>
+        <span class="signal-timeline__headline-text">${escapeHtml(timelineTitle)}</span>
       </button>
     </article>`;
 }
@@ -7339,6 +7437,7 @@ loadLiveSignals();
 globalThis.__ALOMAT_APP_TEST__ = {
   sanitizeStoryUrl,
   sanitizeStoryImage,
+  getSiteLabelFromUrl,
   getLocalDayKey,
   partitionStoriesByToday,
   createBackgroundImageValue,

@@ -56,9 +56,11 @@ export function normalizeSignalInput(input, nowIso) {
       external_id: normalizeOptionalText(input.external_id),
       title,
       summary_json: JSON.stringify(summary),
-      rich_summary_json: JSON.stringify(normalizeRichSummary(input.rich_summary)),
+      rich_summary_json: JSON.stringify(
+        isAiDigestTitle(title) ? normalizeDigestRichSummary(input.rich_summary, input.summary) : [],
+      ),
       source: normalizeOptionalText(input.source),
-      url: firstVisibleLinkFromSummary(input.summary) || normalizeOptionalUrl(input.url),
+      url: normalizeOptionalUrl(input.url) || firstVisibleLinkFromSummary(input.summary),
       category: normalizeOptionalText(input.category) || "general",
       image: normalizeOptionalUrl(input.image),
       language: normalizeOptionalText(input.language) || "uz",
@@ -113,6 +115,13 @@ function normalizeSummary(value) {
     .slice(0, MAX_SUMMARY_ITEMS);
 }
 
+function isAiDigestTitle(value) {
+  const title = String(value ?? "")
+    .normalize("NFKD")
+    .replace(/\u0307/g, "");
+  return /\bAI[\s-]+Digest\b/i.test(title);
+}
+
 function normalizeRichSummary(value) {
   if (!Array.isArray(value)) {
     return [];
@@ -143,6 +152,108 @@ function normalizeRichSummary(value) {
         : null;
     })
     .filter(Boolean);
+}
+
+function normalizeDigestRichSummary(richValue, summaryValue) {
+  const normalized = normalizeRichSummary(richValue);
+  if (hasRichSummaryLinks(normalized)) {
+    return normalized;
+  }
+
+  const summaryDerived = deriveRichSummaryFromLinkedText(summaryValue);
+  if (summaryDerived.length) {
+    return summaryDerived;
+  }
+
+  const richTextItems = Array.isArray(richValue)
+    ? richValue.map((paragraph) =>
+        (Array.isArray(paragraph?.segments) ? paragraph.segments : [])
+          .map((segment) => (typeof segment?.text === "string" ? segment.text : ""))
+          .join(""),
+      )
+    : [];
+  const richTextDerived = deriveRichSummaryFromLinkedText(richTextItems);
+  return richTextDerived.length ? richTextDerived : normalized;
+}
+
+function hasRichSummaryLinks(paragraphs) {
+  return paragraphs.some((paragraph) => paragraph.segments.some((segment) => Boolean(segment.url)));
+}
+
+function deriveRichSummaryFromLinkedText(value) {
+  const items = (Array.isArray(value) ? value : typeof value === "string" ? [value] : [])
+    .filter((item) => typeof item === "string")
+    .slice(0, MAX_SUMMARY_ITEMS);
+  const parsed = items.map(parseLinkedSummaryParagraph).filter((entry) => entry.paragraph);
+  if (!parsed.some((entry) => entry.hasLink)) {
+    return [];
+  }
+  return parsed.map((entry) => entry.paragraph);
+}
+
+function parseLinkedSummaryParagraph(value) {
+  const raw = normalizeText(value);
+  const linkPattern =
+    /<a\b[^>]*\bhref\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))[^>]*>([\s\S]*?)<\/a>|\[([^\]]+)\]\(((?:https?:\/\/|www\.|t\.me\/|telegram\.me\/)[^)]+)\)/gi;
+  const segments = [];
+  let cursor = 0;
+  let remaining = MAX_TEXT_LENGTH;
+  let hasLink = false;
+
+  const pushSegment = (textValue, urlValue = "") => {
+    if (remaining <= 0 || segments.length >= MAX_RICH_SEGMENTS) {
+      return;
+    }
+    const text = stripHtmlMarkup(textValue).slice(0, remaining);
+    if (!text) {
+      return;
+    }
+    remaining -= text.length;
+    const url = normalizeInlineLinkUrl(urlValue);
+    if (url) {
+      hasLink = true;
+      segments.push({ text, url });
+    } else {
+      segments.push({ text });
+    }
+  };
+
+  for (const match of raw.matchAll(linkPattern)) {
+    pushSegment(raw.slice(cursor, match.index));
+    const htmlUrl = match[1] || match[2] || match[3] || "";
+    const label = match[4] ?? match[5] ?? "";
+    const markdownUrl = match[6] || "";
+    pushSegment(label, htmlUrl || markdownUrl);
+    cursor = match.index + match[0].length;
+  }
+  pushSegment(raw.slice(cursor));
+
+  if (!segments.length) {
+    const text = stripVisibleLinks(raw);
+    return {
+      paragraph: text ? { segments: [{ text }] } : null,
+      hasLink: false,
+    };
+  }
+
+  return {
+    paragraph: segments.map((segment) => segment.text).join("").trim() ? { segments } : null,
+    hasLink,
+  };
+}
+
+function stripHtmlMarkup(value) {
+  return String(value ?? "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]*>/g, "");
+}
+
+function normalizeInlineLinkUrl(value) {
+  let normalized = String(value ?? "").trim().replace(/&amp;/gi, "&");
+  if (/^(?:www\.|t\.me\/|telegram\.me\/)/i.test(normalized)) {
+    normalized = `https://${normalized}`;
+  }
+  return normalizeOptionalUrl(normalized);
 }
 
 function firstVisibleLinkFromText(value) {

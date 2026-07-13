@@ -591,7 +591,7 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 }
 
 .nav__item.is-active {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: transparent;
   color: var(--text-strong);
 }
 
@@ -2344,6 +2344,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent;
   color: rgba(5, 7, 13, 0.96);
   font-size: 1.02rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -4840,7 +4841,13 @@ html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [da
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
-html:root[data-page="home"] .language-switch {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .language-switch {
   margin-left: clamp(24px, 2.2vw, 40px);
 }
 
@@ -4989,11 +4996,13 @@ html:root[data-page="home"][data-palette="7"] .palette-menu {
     0 10px 22px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
-html:root[data-page="home"] .nav--home,
-html:root[data-page="home"][data-theme] .nav--home,
-html:root[data-page="home"][data-palette="0"] .nav--home,
-html:root[data-page="home"][data-palette="4"] .nav--home,
-html:root[data-page="home"][data-palette="7"] .nav--home {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .nav--home {
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
@@ -5618,63 +5627,63 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       <main id="content" class="static-page manifesto-page">
     <article class="manifesto">
       <header class="manifesto__masthead">
-        <p class="manifesto__kicker">Bu haqimizda sahifa emas.</p>
-        <p class="manifesto__kicker manifesto__kicker--strong">Bu manifest.</p>
+        <p class="manifesto__kicker">Bu biz haqimizdagi sahifa emas.</p>
+        <p class="manifesto__kicker manifesto__kicker--strong">Bu — manifest.</p>
       </header>
       <section class="manifesto__opener">
-        <h1 class="manifesto__title">Yaqindan kuzat.<br><span class="signal">Aniq bil.</span></h1>
-        <p class="manifesto__title-en">Watch closely. Know clearly.</p>
+        <h1 class="manifesto__title">Diqqat bilan kuzat.<br><span class="signal">Mohiyatni aniq bil.</span></h1>
+        <p class="manifesto__title-en">Shovqinga emas, mohiyatga qarang.</p>
       </section>
       <section class="manifesto__lede">
-        <p>.alomat yangilik sayti emas. Shunchaki ilova ham emas. Aniqrog'i — .alomat avvalo <strong>pozitsiya.</strong> Internetning cheksizligiga qarshi chegara. Shovqin iqtisodiga javob.</p>
+        <p>.alomat yangiliklar sayti emas. Shunchaki ilova ham emas. Aniqrog‘i, .alomat — avvalo <strong>pozitsiya.</strong> Internetning cheksizligiga qarshi qo‘yilgan chegara. Shovqin iqtisodiga javob.</p>
       </section>
       
       <section class="manifesto__tenet">
         <p class="manifesto__num">01</p>
         <h2 class="manifesto__statement">Internet cheksiz.<br><span class="signal">Diqqat emas.</span></h2>
-        <p class="manifesto__body">Biz ellikta sahifa ochamiz, hech birini tugatmaymiz. Bir sarlavhaga sakkiz soniya beramiz. Kontekst yo'q, tartib yo'q, esda qoladigan narsa yo'q. Biz buni <strong>shovqin iqtisodi</strong> deymiz va uning bir qismi bo'lishni rad etamiz.</p>
+        <p class="manifesto__body">Biz ellikta sahifa ochamiz-u, birortasini oxirigacha o‘qimaymiz. Bir sarlavhaga sakkiz soniya ajratamiz. Kontekst yo‘q, tartib yo‘q, esda qoladigan narsa yo‘q. Biz buni <strong>shovqin iqtisodi</strong> deymiz va uning bir qismi bo‘lishni rad etamiz.</p>
       </section>
       <section class="manifesto__tenet">
         <p class="manifesto__num">02</p>
-        <h2 class="manifesto__statement">Nima emasligimizni aytmasdan, nima ekanimizni tushuntira olmaymiz.</h2>
+        <h2 class="manifesto__statement">Nima ekanimizni tushuntirish uchun avval nima emasligimizni aytishimiz kerak.</h2>
         <div class="manifesto__credo">
-          <p>Biz yangilik ilovasi emasmiz.</p><p>Biz AI vositasi emasmiz.</p><p>Biz cheksiz feed emasmiz.</p><p>Biz hamma narsa emasmiz.</p>
+          <p>Biz yangilik ilovasi emasmiz.</p><p>Biz sun’iy intellekt vositasi emasmiz.</p><p>Biz cheksiz yangiliklar lentasi emasmiz.</p><p>Biz hamma narsa emasmiz.</p>
         </div>
         <div class="manifesto__credo manifesto__credo--is">
-          <p>Biz tahririy <span class="signal">signal qatlamimiz.</span></p><p>Biz <span class="signal">aniqlik</span> mahsulotimiz.</p><p>Biz <span class="signal">sizning deck</span>ingizmiz.</p><p>Biz <span class="signal">texnologiya va uning atrofimiz.</span></p>
+          <p>Biz tahririy <span class="signal">signal qatlamimiz.</span></p><p>Biz <span class="signal">aniqlik</span> mahsulotimiz.</p><p>Biz <span class="signal">sizning kunlik brifingingizmiz.</span></p><p>Biz <span class="signal">texnologiya va uning atrofidagi madaniyatni kuzatamiz.</span></p>
         </div>
       </section>
       <section class="manifesto__tenet">
         <p class="manifesto__num">03</p>
-        <h2 class="manifesto__statement">Ko'proq kontent ishlab chiqarish <span class="signal">bizning ishimiz emas.</span></h2>
-        <p class="manifesto__body">Bizning ishimiz kun shovqinini filtrlab, uning eng aniq belgilarini oldinga chiqarish. Bitta karta, bitta signal. Yuqorida bitta fikr. Qisqa xulosa, manba, harakat. Hammasi shu. Bundan kami yetishmaydi, bundan ortig'i shovqin.</p>
+        <h2 class="manifesto__statement">Bizning vazifamiz <span class="signal">ko‘proq kontent ishlab chiqarish emas.</span></h2>
+        <p class="manifesto__body">Bizning vazifamiz kun shovqinini saralab, eng muhim signallarni oldinga chiqarish. Bitta karta, bitta signal. Bitta asosiy fikr, qisqa xulosa, bitta manba va bitta amal. Hammasi shu. Bundan kami yetarli emas, ortig‘i esa shovqin.</p>
       </section>
       <section class="manifesto__tenet manifesto__tenet--declare">
         <p class="manifesto__num">04</p>
         <h2 class="manifesto__statement">Qoidalarimiz <span class="signal">aniq.</span></h2>
         <ul class="manifesto__rules">
-          <li>Reklama yo&#39;q.</li><li>Ma&#39;lumot sotish yo&#39;q.</li><li>O&#39;quvchidan bir tiyin ham yo&#39;q — abadiy.</li>
+          <li>Reklama yo‘q.</li><li>Ma’lumot sotilmaydi.</li><li>O‘quvchidan bir tiyin ham olinmaydi — abadiy.</li>
         </ul>
-        <p class="manifesto__body">O'quvchi <em>mahsulot</em> emas. O'quvchi mahsulotning <strong class="signal">murojaat qiladigan odami.</strong></p>
+        <p class="manifesto__body">O‘quvchi <em>mahsulot</em> emas. <strong class="signal">Mahsulot o‘quvchi uchun yaratiladi.</strong></p>
       </section>
       <section class="manifesto__tenet">
         <p class="manifesto__num">05</p>
-        <h2 class="manifesto__statement">Bu feed emas. <span class="signal">Bu marosim.</span></h2>
-        <p class="manifesto__body">Ertalab oching, kunni ko'ring. Kun ichida bitta karta, keyin hayotga qayting. Kechqurun nima o'zgarganini tekshiring. .alomat ochib qo'yiladigan ilova emas — qaytib kelinadigan joy. Sizning joyingiz.</p>
+        <h2 class="manifesto__statement">Bu yangiliklar lentasi emas. <span class="signal">Bu kundalik odat.</span></h2>
+        <p class="manifesto__body">Ertalab oching va kunning manzarasini ko‘ring. Kun o‘rtasida bitta signalni o‘qing, so‘ng hayotingizga qayting. Kechqurun nima o‘zgarganini tekshiring. .alomat shunchaki ochib qo‘yiladigan ilova emas — qaytib kelinadigan makon. Sizning makoningiz.</p>
       </section>
       <section class="manifesto__tenet">
         <p class="manifesto__num">06</p>
-        <h2 class="manifesto__statement">Biz <span class="signal">bitta odammiz.</span></h2>
-        <p class="manifesto__body">Oktay tizimning texnik tarafidagi har bir satrni yozadi; ayni paytda qaysi signal o'tishini ham tanlaydi. Reklama agentligi yo'q, growth team yo'q, mahsulot strategisti yo'q. <strong>Biz, bizmiz.</strong> Qaror bizdan chiqadi, xato bizdan chiqadi, ohang bizdan chiqadi.</p>
+        <h2 class="manifesto__statement">Biz <span class="signal">bir kishilik studiyamiz.</span></h2>
+        <p class="manifesto__body">Oktay tizimning har bir texnik satrini yozadi va qaysi signal e’lon qilinishini ham o‘zi tanlaydi. Reklama agentligi ham, o‘sish jamoasi ham, mahsulot strategisti ham yo‘q. <strong>Qaror ham, xato ham, ohang ham o‘zimizniki.</strong></p>
       </section>
       <section class="manifesto__closing">
-        <p class="manifesto__closing-kicker">So&#39;nggi satr.</p>
-        <h2 class="manifesto__closing-quote">.alomat ko&#39;proq o&#39;qiydigan joy emas.<br><span class="signal">Tezroq tushunadigan joy.</span></h2>
-        <p class="manifesto__closing-en">.alomat is not where you read more. It is where you understand faster.</p>
+        <p class="manifesto__closing-kicker">So‘nggi satr.</p>
+        <h2 class="manifesto__closing-quote">.alomat ko‘proq o‘qiydigan joy emas.<br><span class="signal">Tezroq tushunadigan joy.</span></h2>
+        <p class="manifesto__closing-en">Kamroq o‘qing. Tezroq anglang.</p>
       </section>
       <footer class="manifesto__sign">
         <p class="manifesto__sign-names">— Oktay</p>
-        <p class="manifesto__sign-studio">.alomat · yolg&#39;iz studiya</p>
+        <p class="manifesto__sign-studio">.alomat · bir kishilik studiya</p>
       </footer>
     </article>
   </main>
@@ -6093,6 +6102,72 @@ function sanitizeStoryUrl(value) {
   return sanitizeHttpUrl(value, "#");
 }
 
+const HOSTED_PUBLISHING_DOMAINS = new Set([
+  "wordpress.com",
+  "substack.com",
+  "medium.com",
+  "blogspot.com",
+  "github.io",
+]);
+
+const MULTIPART_PUBLIC_SUFFIXES = new Set([
+  "co.uk",
+  "com.au",
+  "com.tr",
+  "com.uz",
+  "co.jp",
+]);
+
+function getSiteLabelFromUrl(value) {
+  const href = sanitizeStoryUrl(value);
+  if (href === "#") {
+    return "";
+  }
+
+  try {
+    const labels = new URL(href).hostname
+      .toLowerCase()
+      .replace(/^www\./, "")
+      .split(".")
+      .filter(Boolean);
+    if (!labels.length) {
+      return "";
+    }
+    if (labels.length === 1) {
+      return labels[0].toUpperCase();
+    }
+
+    const hostname = labels.join(".");
+    const hostedDomain = [...HOSTED_PUBLISHING_DOMAINS].find(
+      (domain) => hostname.endsWith(`.${domain}`),
+    );
+    if (hostedDomain) {
+      const tenantIndex = labels.length - hostedDomain.split(".").length - 1;
+      return (labels[tenantIndex] || labels[0]).toUpperCase();
+    }
+
+    const suffix = labels.slice(-2).join(".");
+    const siteIndex = MULTIPART_PUBLIC_SUFFIXES.has(suffix) ? labels.length - 3 : labels.length - 2;
+    return (labels[siteIndex] || labels[0]).toUpperCase();
+  } catch {
+    return "";
+  }
+}
+
+function getStorySourceLabel(story) {
+  const title = localizeStoryValue(story?.title);
+  if (isAiDigestTitle(title)) {
+    return "ALOMAT";
+  }
+
+  const siteLabel = getSiteLabelFromUrl(story?.url);
+  if (siteLabel) {
+    return siteLabel;
+  }
+
+  return String(story?.source ?? "").trim().toUpperCase();
+}
+
 function sanitizeStoryImage(value) {
   return sanitizeHttpUrl(value, "");
 }
@@ -6192,16 +6267,24 @@ function normalizeLiveRichSummary(value) {
   }).filter(Boolean);
 }
 
+function isAiDigestTitle(value) {
+  const title = String(value ?? "")
+    .normalize("NFKD")
+    .replace(/\u0307/g, "");
+  return /\bAI[\s-]+Digest\b/i.test(title);
+}
+
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
+  const title = String(signal.title || "").trim();
   const summary = normalizeLiveSignalSummary(signal.summary);
-  const richSummary = normalizeLiveRichSummary(signal.rich_summary);
-  const sourceUrl = firstVisibleLinkFromSummary(signal.summary) || signal.url;
+  const richSummary = isAiDigestTitle(title) ? normalizeLiveRichSummary(signal.rich_summary) : [];
+  const sourceUrl = signal.url || firstVisibleLinkFromSummary(signal.summary);
 
   return {
     id: `live-${id}`,
-    title: String(signal.title || "").trim(),
+    title,
     source: String(signal.source || "").trim(),
     createdAt,
     dayKey: getLocalDayKey(createdAt),
@@ -6361,7 +6444,7 @@ function localizeStoryValue(value) {
 
 function buildExpandedSummary(story) {
   const title = localizeStoryValue(story.title);
-  const source = story.source ?? (locale === "en" ? "the original source" : "asl manba");
+  const source = getStorySourceLabel(story) || (locale === "en" ? "the original source" : "asl manba");
   const time = story.time ?? (locale === "en" ? "today" : "bugun");
   const category = story.category ?? "signal";
   const summary = Array.isArray(story.summary) ? [...story.summary] : [];
@@ -6478,12 +6561,15 @@ function resetDetailScroll() {
 
 function renderStoryMarkup(story) {
   const labels = detailLabels[locale];
-  const title = escapeHtml(localizeStoryValue(story.title));
-  const source = escapeHtml(story.source ?? "");
+  const storyTitle = localizeStoryValue(story.title);
+  const isDigest = isAiDigestTitle(storyTitle);
+  const panelTitle = isDigest ? getTimelineStoryTitle({ ...story, title: storyTitle }) : storyTitle;
+  const title = escapeHtml(panelTitle);
+  const source = escapeHtml(getStorySourceLabel(story));
   const time = escapeHtml(story.time ?? "");
   const weight = `${escapeHtml(String(story.score ?? 94))}/100`;
   const summary = buildExpandedSummary(story);
-  const richSummary = normalizeLiveRichSummary(story.richSummary);
+  const richSummary = isDigest ? normalizeLiveRichSummary(story.richSummary) : [];
   const paragraphCount = Math.max(summary.length, richSummary.length);
   const summaryHtml = Array.from({ length: paragraphCount }, (_, index) =>
     richSummary[index]
@@ -6596,15 +6682,27 @@ function updateTimelineActiveState(activeItem) {
   });
 }
 
+function getTimelineStoryTitle(story) {
+  const title = String(story?.title ?? "").trim();
+  if (!isAiDigestTitle(title)) {
+    return title;
+  }
+
+  const titleDate = title.match(/\b\d{4}-\d{2}-\d{2}\b/)?.[0];
+  const date = titleDate || story?.dayKey || getLocalDayKey(story?.createdAt);
+  return date ? `AI Digest - ${date}` : "AI Digest";
+}
+
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
   const storyImage = getStoryImageUrl(story);
   const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
+  const timelineTitle = getTimelineStoryTitle(story);
   return `
     <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
-        <span class="signal-timeline__headline-text">${escapeHtml(story.title)}</span>
+        <span class="signal-timeline__headline-text">${escapeHtml(timelineTitle)}</span>
       </button>
     </article>`;
 }
@@ -7363,6 +7461,7 @@ loadLiveSignals();
 globalThis.__ALOMAT_APP_TEST__ = {
   sanitizeStoryUrl,
   sanitizeStoryImage,
+  getSiteLabelFromUrl,
   getLocalDayKey,
   partitionStoriesByToday,
   createBackgroundImageValue,

@@ -180,7 +180,17 @@ async function insertSignal(env, signal) {
   try {
     await env.DB.prepare(
       `INSERT INTO signals (external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(external_id) DO UPDATE SET
+         title = excluded.title,
+         summary_json = excluded.summary_json,
+         rich_summary_json = excluded.rich_summary_json,
+         source = excluded.source,
+         url = excluded.url,
+         category = excluded.category,
+         image = excluded.image,
+         language = excluded.language,
+         created_at = excluded.created_at`,
     )
       .bind(
         signal.external_id || null,
@@ -195,10 +205,7 @@ async function insertSignal(env, signal) {
         signal.created_at,
       )
       .run();
-  } catch (error) {
-    if (String(error?.message ?? "").includes("UNIQUE constraint failed")) {
-      return { ok: false, status: 409, error: "duplicate external_id" };
-    }
+  } catch {
     return { ok: false, status: 500, error: "storage error" };
   }
 

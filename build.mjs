@@ -619,58 +619,58 @@ const locales = {
       older: homeSignalOlderStories,
     },
     about: {
-      preface: "Bu bir haqda emas.",
-      title: "Bu manifestodir.",
-      kicker: "Yaqindan kuzat. Aniq bil.",
+      preface: "Bu biz haqimizdagi sahifa emas.",
+      title: "Bu — manifest.",
+      kicker: "Diqqat bilan kuzat. Mohiyatni aniq bil.",
       intro:
-        ".alomat bir yangilik sayti emas. Bir ilova ham emas. To‘g‘risi — .alomat avvalo pozitsiya. Internetning cheksizligiga qarshi chekka. Shovqin iqtisodiga javob.",
+        ".alomat yangiliklar sayti emas. Shunchaki ilova ham emas. Aniqrog‘i, .alomat — avvalo pozitsiya. Internetning cheksizligiga qarshi qo‘yilgan chegara. Shovqin iqtisodiga javob.",
       sections: [
         {
           num: "01",
           title: "Internet cheksiz. Diqqat emas.",
           paragraphs: [
-            "50 ta tab ochamiz, hech birini tugatmaymiz. Bir sarlavhaga sakkiz soniya beramiz. Kontekst yo‘q, tartib yo‘q, xotira yo‘q. Biz buni shovqin iqtisodi deymiz — va uning bir qismi bo‘lishni rad etamiz.",
+            "Ellikta sahifa ochamiz-u, birortasini oxirigacha o‘qimaymiz. Bir sarlavhaga sakkiz soniya ajratamiz. Kontekst yo‘q, tartib yo‘q, esda qoladigan narsa yo‘q. Biz buni shovqin iqtisodi deymiz va uning bir qismi bo‘lishni rad etamiz.",
           ],
         },
         {
           num: "02",
-          title: "Nima emasligimizni aytmasdan, nima ekanimizni tushuntirib bo‘lmaydi.",
+          title: "Nima ekanimizni tushuntirish uchun avval nima emasligimizni aytishimiz kerak.",
           paragraphs: [
             "Biz yangilik ilovasi emasmiz.",
             "Biz AI vositasi emasmiz.",
-            "Biz cheksiz feed emasmiz.",
+            "Biz cheksiz yangiliklar lentasi emasmiz.",
             "Biz hamma narsa emasmiz.",
-            "Biz editorial signal qatlamimiz.",
+            "Biz tahririy signal qatlamimiz.",
             "Biz aniqlik mahsulotimiz.",
-            "Biz sizning deck'ingizmiz.",
-            "Biz texnologiya va atrof-muhitmiz.",
+            "Biz sizning kunlik brifingingizmiz.",
+            "Biz texnologiya va uning atrofidagi madaniyatni kuzatamiz.",
           ],
         },
         {
           num: "03",
-          title: "Ko‘proq kontent ishlab chiqarish bizning vazifamiz emas.",
+          title: "Bizning vazifamiz ko‘proq kontent ishlab chiqarish emas.",
           paragraphs: [
-            "Bizning vazifamiz, kun shovqinini filtrlab, uchta signalni oldinga chiqarish. Bir karta, bir signal. Ustida bitta fikr. Ikki satr xulosa, bitta manba, bitta amal. Shu bilan tamom. Kamroq bo‘lsa yetishmaydi, ko‘proq bo‘lsa shovqin.",
+            "Bizning vazifamiz kun shovqinini saralab, eng muhim signallarni oldinga chiqarish. Bitta karta, bitta signal. Bitta asosiy fikr, qisqa xulosa, bitta manba va bitta amal. Hammasi shu. Bundan kami yetarli emas, ortig‘i esa shovqin.",
           ],
         },
         {
           num: "04",
           title: "Qoidalarimiz aniq.",
           bullets: ["Reklama yo‘q.", "Ma'lumot sotilmaydi.", "O‘quvchidan bir tiyin ham olinmaydi — abadiy."],
-          paragraphs: ["O‘quvchi mahsulot emas. O‘quvchi — mahsulotning muhatobi."],
+          paragraphs: ["O‘quvchi mahsulot emas. Mahsulot o‘quvchi uchun yaratiladi."],
         },
         {
           num: "05",
-          title: "Bu feed emas. Bu marosim.",
+          title: "Bu yangiliklar lentasi emas. Bu kundalik odat.",
           paragraphs: [
-            "Ertalab oching, kunni ko‘ring. Kunning o‘rtasida bitta karta, hayotga qayting. Kechqurun o‘zgarganini tekshiring. .alomat ochadigan ilova emas — qaytib keladigan makon. Sizning makoningiz.",
+            "Ertalab oching va kunning manzarasini ko‘ring. Kun o‘rtasida bitta signalni o‘qing, so‘ng hayotingizga qayting. Kechqurun nima o‘zgarganini tekshiring. .alomat shunchaki ochib qo‘yiladigan ilova emas — qaytib kelinadigan makon. Sizning makoningiz.",
           ],
         },
         {
           num: "06",
-          title: "Biz bitta odammiz.",
+          title: "Biz bir kishilik studiyamiz.",
           paragraphs: [
-            "Oktay sistemaning texnik tomonining har bir satrini yozadi; ayni paytda qaysi signal o‘tishini ham o‘zi hal qiladi. Reklama agentligi yo‘q, growth jamoasi yo‘q, product strategist yo‘q. Biz, bizmiz. Qaror bizdan chiqadi, xato ham bizdan chiqadi, ohang ham bizdan chiqadi.",
+            "Oktay tizimning har bir texnik satrini yozadi va qaysi signal e’lon qilinishini ham o‘zi tanlaydi. Reklama agentligi ham, o‘sish jamoasi ham, mahsulot strategisti ham yo‘q. Qaror ham, xato ham, ohang ham o‘zimizniki.",
           ],
         },
       ],
@@ -727,20 +727,20 @@ const locales = {
     relay: {
       title: "Relay",
       lead:
-        "Qisqa xabarnomalar va ritmik yangilanishlar uchun signal uzatish qatlamı.",
+        "Qisqa xabarnomalar va ritmik yangilanishlar uchun signal uzatish qatlami.",
       cards: [
         {
-          title: "Morning brief",
+          title: "Tonggi qisqa sharh",
           summary:
             "Tongdagi uchta signal. Qisqa, sokin va kunni boshlashga yetarli.",
         },
         {
-          title: "Midday pulse",
+          title: "Kunduzgi kuzatuv",
           summary:
             "Kunning o‘rtasida sodir bo‘lgan muhim burilishlarni qayta tartiblaydi.",
         },
         {
-          title: "Evening wrap",
+          title: "Kechki yakun",
           summary:
             "Kechki yakun. Nima o‘zgardi, nima ahamiyatli bo‘ldi, nima ertaga qaytadi.",
         },
@@ -758,10 +758,10 @@ const locales = {
       lead:
         "Hikoya taklif qiling, satr orasini so‘rang yoki ko‘zingizga tashlangan narsani ulashing. .alomat redaksiyasi kelgan har bir xabarni o‘qiydi.",
       primary: {
-        label: "Sinyal",
+        label: "Signal",
         value: "signal@alomat.uz",
         note:
-          "Haber takliflari, kichik izohlar, ip-u uchlar va o‘quvchi fikrlari uchun to‘g‘ridan-to‘g‘ri kanal.",
+          "Xabar takliflari, qisqa izohlar, mavzu uchlari va o‘quvchi fikrlari uchun to‘g‘ridan-to‘g‘ri kanal.",
       },
       editor: {
         label: "Muharrir",
@@ -779,39 +779,39 @@ const locales = {
     sponsor: {
       title: ".alomat'da joy oling.",
       lead:
-        "Sinyal oqimi, bülten va ilovada uch xil homiylik modeli bor. Hammasi kontent yonida turadi, o‘rnini egallamaydi — va ochiq belgilanadi.",
+        "Signal oqimi, byulleten va ilovada uch xil homiylik modeli bor. Hammasi kontent yonida turadi, o‘rnini egallamaydi va ochiq belgilanadi.",
       packages: [
         {
           name: "Sponsor nishoni",
-          title: "Sinyal oqimida marka nomingiz bilan ko‘rining.",
+          title: "Signal oqimida brendingiz nomi bilan ko‘rining.",
           description:
             "Habar kartalarida “Supported by [brand]” nishoni bilan ko‘rinadigan joy. Redaksiyaviy oqim buzilmaydi, o‘quvchi kim qo‘llab-quvvatlayotganini aniq ko‘radi.",
           rows: [
-            ["Joylashuv", "Kunlik lead story slot, signal oqimining tepasi"],
-            ["Mazmun", "Marka nomi, ixtiyoriy mikro tagline, ixtiyoriy CTA"],
-            ["Belgilar", "Açiq “Supported by” nishoni"],
+            ["Joylashuv", "Kunlik asosiy hikoya uchun joy, signal oqimining yuqori qismi"],
+            ["Mazmun", "Brend nomi, ixtiyoriy qisqa shior va harakatga chaqiriq"],
+            ["Belgilar", "Ochiq “Supported by” nishoni"],
           ],
         },
         {
-          name: "Bülten homiyligi",
-          title: "Bülten boshidagi ajratilgan slot.",
+          name: "Byulleten homiyligi",
+          title: "Byulleten boshidagi ajratilgan joy.",
           description:
-            "Signal bültenimizdagi alohida bo‘lim. Bitta homiy, yuqori ko‘rinish; bültenning boshida xulosalardan oldin turadigan aniq qo‘llab-quvvatlash qatlami.",
+            "Signal byulletenimizdagi alohida bo‘lim. Bitta homiy, yuqori ko‘rinish; byulletenning boshida xulosalardan oldin turadigan aniq qo‘llab-quvvatlash qatlami.",
           rows: [
-            ["Joylashuv", "Bülten boshida alohida slot"],
+            ["Joylashuv", "Byulleten boshida alohida joy"],
             ["Mazmun", "Marka nomi, 1–2 jumla, CTA, ixtiyoriy rasm"],
             ["Belgilar", "“Sponsorli qo‘llab-quvvatlash” yorlig‘i"],
           ],
         },
         {
           name: "Advertorial",
-          title: "Editorial formatdagi marka hikoyasi.",
+          title: "Tahririy formatdagi brend hikoyasi.",
           description:
-            ".alomat o‘quvchisining kutgan toza, qisqa formatida yozilgan homiylik materiali. Siz bergan brief asosida editorial sifatda tayyorlanadi; o‘quvchi uchun oddiy signal kabi o‘qiladi, lekin har doim “homiylik” yorlig‘i bilan.",
+            ".alomat o‘quvchisi kutadigan toza va qisqa formatda yozilgan homiylik materiali. Siz taqdim etgan ma’lumotlar asosida tahririy mezonlarda tayyorlanadi; oddiy signal kabi o‘qiladi, ammo doimo “homiylik” yorlig‘i bilan beriladi.",
           rows: [
             ["Joylashuv", "Signal oqimida, oddiy xabarlar bilan bir formatda"],
             ["Mazmun", "Sarlavha, qisqa xulosa, ixtiyoriy audio va rasm"],
-            ["Belgilar", "Açiq “homiylik” yorlig‘i"],
+            ["Belgilar", "Ochiq “homiylik” yorlig‘i"],
           ],
         },
       ],
@@ -819,22 +819,22 @@ const locales = {
         "Paketlar va narxlar uchun sponsorship@alomat.uz ga yozing. Auditoriyangiz, maqsadingiz va qaysi model kerakligini qisqacha yuborsangiz, maxsus taklif bilan qaytamiz.",
     },
     lineup: {
-      title: "Yozuvlar",
-      lead: "Yaxshi matn shoshilmaydi.",
+      title: "Tanlangan yozuvlar",
+      lead: "Yaxshi matn shoshmaydi.",
       featured: {
         title:
-          "AI'da yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?",
+          "Sun’iy intellektdagi yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?",
         summary:
-          "AQSHning Anthropic modellari uchun joriy etgan kirish cheklovi, milliy xavfsizlik va global kuchlar kurashi orasidagi nozik chiziqni muhokamaga olib chiqmoqda.",
-        author: "Şenol Dak",
+          "AQShning Anthropic modellaridan foydalanishga qo‘ygan cheklovi milliy xavfsizlik bilan global kuchlar kurashi o‘rtasidagi nozik chegarani muhokamaga olib chiqmoqda.",
+        author: "Shenol Dak",
         readTime: "5 daqiqa",
-        date: "1 kun oldin",
+        date: "Bir kun oldin",
       },
       articles: [
         {
-          title: "Internet endi ma'lumot bermaydi. Diqqatni yutadi.",
+          title: "Internet endi ma’lumot bermaydi. U diqqatni yutadi.",
           author: "Oktay Dak",
-          date: "13 May 2026",
+          date: "2026-yil 13-may",
         },
       ],
       authors: [
@@ -842,20 +842,20 @@ const locales = {
           initials: "OD",
           name: "Oktay Dak",
           role:
-            "Internetning shovqinidan ko‘ra signallariga ko‘proq qiziqaman. Texnologiya, AI va internet madaniyatining sinish nuqtalarini kuzataman.",
+            "Internet shovqinidan ko‘ra undagi signallarga ko‘proq qiziqadi. Texnologiya, sun’iy intellekt va internet madaniyatidagi burilish nuqtalarini kuzatadi.",
         },
         {
-          initials: "ŞD",
-          name: "Şenol Dak",
+          initials: "ShD",
+          name: "Shenol Dak",
           role:
-            "Teacher | AI Educator | Crowdfunding Data Analytics | Generative AI Systems | AI Research & Insights",
+            "O‘qituvchi · AI bo‘yicha pedagog · Kraudfanding ma’lumotlari tahlilchisi · Generativ AI tizimlari · AI tadqiqotlari va tahlili",
         },
       ],
       cta: "Ariza yuborish",
-      ctaNote: "Lineup'ga yozuvchi bo'lib qo'shilmoqchi bo'lsangiz, ariza qoldiring — so'nggi qaror muharrirniki.",
+      ctaNote: "Lineup safida muallif bo‘lishni istasangiz, ariza qoldiring — yakuniy qaror tahririyatniki.",
     },
     privacy: {
-      title: "Veringiz va biz",
+      title: "Ma’lumotlaringiz va biz",
       lead:
         "Nimani yig‘ishimiz, nima uchun yig‘ishimiz va sizning qo‘lingizda nimalar borligi.",
       closing:
@@ -872,11 +872,11 @@ const locales = {
           paragraphs: [
             "Biz reklama cookie'si, uchinchi tomon kuzatuvchisi yoki saytlararo identifikatorlardan foydalanmaymiz. O‘z infratuzilmamizda joylashgan Umami analitikasi cookie qo‘ymaydi; u tashriflarni sizning IP manzilingiz va brauzer tanituvchisidan hosil qilingan, 24 soatda yangilanadigan anonim xesh orqali guruhlaydi.",
             "Analitika skripti faqat alomat.uz domenlarida ishlashga cheklangan; ko'chirilgan yoki uchinchi tomon saytlarida yuklanmaydi.",
-            "Foydalanuvchi paneliga kirganda faqat zarur sessiya cookie'si yaratiladi. U HttpOnly bo‘lib, oturimingizni yopganda o‘chadi. Qurilmangizdagi local storage faqat rang palitrasi, yopilgan bildirishnomalar va boshqa interfeys holatlari uchun ishlatiladi.",
+            "Foydalanuvchi paneliga kirganda faqat zarur sessiya kukisi yaratiladi. U HttpOnly bo‘lib, sessiyangizni yopganingizda o‘chadi. Qurilmangizdagi mahalliy xotira faqat rang palitrasi, yopilgan bildirishnomalar va boshqa interfeys holatlari uchun ishlatiladi.",
           ],
           bullets: [
             "Reklama cookie'lari yo‘q",
-            "Uchinchi tomon tracker'lari yo‘q",
+            "Uchinchi tomon kuzatuvchilari yo‘q",
             "Faqat zarur sessiya cookie'si",
             "Mahalliy saqlash faqat interfeys uchun",
           ],
@@ -884,7 +884,7 @@ const locales = {
         {
           title: "Biz yig‘adigan ma'lumotlar",
           paragraphs: [
-            "Veb-saytimiz self-hosted Umami analitikasidan foydalanadi. Analitika sahifa ochilganda yuklanadi va faqat alomat.uz domenlari bilan cheklanadi.",
+            "Veb-saytimiz o‘z serverimizda joylashtirilgan Umami analitikasidan foydalanadi. Analitika sahifa ochilganda yuklanadi va faqat alomat.uz domenlari bilan cheklanadi.",
             "Umami orqali ko‘riladigan tizim ma'lumotlari: sahifa ko‘rishlar, brauzer turi, operatsion tizim, qurilma turi, mamlakat/mintaqa, ekran o‘lchami, yo‘naltiruvchi manzil va tashrif vaqti.",
           ],
         },
@@ -1173,7 +1173,7 @@ const locales = {
           "A new iron curtain in AI: who does the Fable 5 ban protect?",
         summary:
           "The US restriction on Anthropic models has reopened the argument between national security and global power competition.",
-        author: "Şenol Dak",
+        author: "Shenol Dak",
         readTime: "5 min",
         date: "1 day ago",
       },
@@ -1192,8 +1192,8 @@ const locales = {
             "I care more about the signals inside the noise than the noise itself. I look at the fracture points of technology, AI, and internet culture.",
         },
         {
-          initials: "ŞD",
-          name: "Şenol Dak",
+          initials: "ShD",
+          name: "Shenol Dak",
           role:
             "Teacher | AI Educator | Crowdfunding Data Analytics | Generative AI Systems | AI Research & Insights",
         },
@@ -1771,62 +1771,67 @@ function getManifesto(localeKey) {
 
   return {
     back: "ana sahifa",
-    kicker: "Bu haqimizda sahifa emas.",
-    kickerStrong: "Bu manifest.",
-    titleA: "Yaqindan kuzat.",
-    titleB: "Aniq bil.",
-    titleSub: "Watch closely. Know clearly.",
+    kicker: "Bu biz haqimizdagi sahifa emas.",
+    kickerStrong: "Bu — manifest.",
+    titleA: "Diqqat bilan kuzat.",
+    titleB: "Mohiyatni aniq bil.",
+    titleSub: "Shovqinga emas, mohiyatga qarang.",
     lede:
-      ".alomat yangilik sayti emas. Shunchaki ilova ham emas. Aniqrog'i — .alomat avvalo <strong>pozitsiya.</strong> Internetning cheksizligiga qarshi chegara. Shovqin iqtisodiga javob.",
+      ".alomat yangiliklar sayti emas. Shunchaki ilova ham emas. Aniqrog‘i, .alomat — avvalo <strong>pozitsiya.</strong> Internetning cheksizligiga qarshi qo‘yilgan chegara. Shovqin iqtisodiga javob.",
     tenets: [
       {
         num: "01",
         title: `Internet cheksiz.<br><span class="signal">Diqqat emas.</span>`,
         body:
-          "Biz ellikta sahifa ochamiz, hech birini tugatmaymiz. Bir sarlavhaga sakkiz soniya beramiz. Kontekst yo'q, tartib yo'q, esda qoladigan narsa yo'q. Biz buni <strong>shovqin iqtisodi</strong> deymiz va uning bir qismi bo'lishni rad etamiz.",
+          "Biz ellikta sahifa ochamiz-u, birortasini oxirigacha o‘qimaymiz. Bir sarlavhaga sakkiz soniya ajratamiz. Kontekst yo‘q, tartib yo‘q, esda qoladigan narsa yo‘q. Biz buni <strong>shovqin iqtisodi</strong> deymiz va uning bir qismi bo‘lishni rad etamiz.",
       },
       {
         num: "02",
-        title: "Nima emasligimizni aytmasdan, nima ekanimizni tushuntira olmaymiz.",
-        not: ["Biz yangilik ilovasi emasmiz.", "Biz AI vositasi emasmiz.", "Biz cheksiz feed emasmiz.", "Biz hamma narsa emasmiz."],
+        title: "Nima ekanimizni tushuntirish uchun avval nima emasligimizni aytishimiz kerak.",
+        not: [
+          "Biz yangilik ilovasi emasmiz.",
+          "Biz sun’iy intellekt vositasi emasmiz.",
+          "Biz cheksiz yangiliklar lentasi emasmiz.",
+          "Biz hamma narsa emasmiz.",
+        ],
         is: [
           `Biz tahririy <span class="signal">signal qatlamimiz.</span>`,
           `Biz <span class="signal">aniqlik</span> mahsulotimiz.`,
-          `Biz <span class="signal">sizning deck</span>ingizmiz.`,
-          `Biz <span class="signal">texnologiya va uning atrofimiz.</span>`,
+          `Biz <span class="signal">sizning kunlik brifingingizmiz.</span>`,
+          `Biz <span class="signal">texnologiya va uning atrofidagi madaniyatni kuzatamiz.</span>`,
         ],
       },
       {
         num: "03",
-        title: `Ko'proq kontent ishlab chiqarish <span class="signal">bizning ishimiz emas.</span>`,
+        title: `Bizning vazifamiz <span class="signal">ko‘proq kontent ishlab chiqarish emas.</span>`,
         body:
-          "Bizning ishimiz kun shovqinini filtrlab, uning eng aniq belgilarini oldinga chiqarish. Bitta karta, bitta signal. Yuqorida bitta fikr. Qisqa xulosa, manba, harakat. Hammasi shu. Bundan kami yetishmaydi, bundan ortig'i shovqin.",
+          "Bizning vazifamiz kun shovqinini saralab, eng muhim signallarni oldinga chiqarish. Bitta karta, bitta signal. Bitta asosiy fikr, qisqa xulosa, bitta manba va bitta amal. Hammasi shu. Bundan kami yetarli emas, ortig‘i esa shovqin.",
       },
       {
         num: "04",
         title: `Qoidalarimiz <span class="signal">aniq.</span>`,
-        rules: ["Reklama yo'q.", "Ma'lumot sotish yo'q.", "O'quvchidan bir tiyin ham yo'q — abadiy."],
-        body: "O'quvchi <em>mahsulot</em> emas. O'quvchi mahsulotning <strong class=\"signal\">murojaat qiladigan odami.</strong>",
+        rules: ["Reklama yo‘q.", "Ma’lumot sotilmaydi.", "O‘quvchidan bir tiyin ham olinmaydi — abadiy."],
+        body: "O‘quvchi <em>mahsulot</em> emas. <strong class=\"signal\">Mahsulot o‘quvchi uchun yaratiladi.</strong>",
       },
       {
         num: "05",
-        title: `Bu feed emas. <span class="signal">Bu marosim.</span>`,
+        title: `Bu yangiliklar lentasi emas. <span class="signal">Bu kundalik odat.</span>`,
         body:
-          "Ertalab oching, kunni ko'ring. Kun ichida bitta karta, keyin hayotga qayting. Kechqurun nima o'zgarganini tekshiring. .alomat ochib qo'yiladigan ilova emas — qaytib kelinadigan joy. Sizning joyingiz.",
+          "Ertalab oching va kunning manzarasini ko‘ring. Kun o‘rtasida bitta signalni o‘qing, so‘ng hayotingizga qayting. Kechqurun nima o‘zgarganini tekshiring. .alomat shunchaki ochib qo‘yiladigan ilova emas — qaytib kelinadigan makon. Sizning makoningiz.",
       },
       {
         num: "06",
-        title: `Biz <span class="signal">bitta odammiz.</span>`,
+        title: `Biz <span class="signal">bir kishilik studiyamiz.</span>`,
         body:
-          "Oktay tizimning texnik tarafidagi har bir satrni yozadi; ayni paytda qaysi signal o'tishini ham tanlaydi. Reklama agentligi yo'q, growth team yo'q, mahsulot strategisti yo'q. <strong>Biz, bizmiz.</strong> Qaror bizdan chiqadi, xato bizdan chiqadi, ohang bizdan chiqadi.",
+          "Oktay tizimning har bir texnik satrini yozadi va qaysi signal e’lon qilinishini ham o‘zi tanlaydi. Reklama agentligi ham, o‘sish jamoasi ham, mahsulot strategisti ham yo‘q. <strong>Qaror ham, xato ham, ohang ham o‘zimizniki.</strong>",
       },
     ],
-    closingKicker: "So'nggi satr.",
-    closingQuoteA: ".alomat ko'proq o'qiydigan joy emas.",
+    closingKicker: "So‘nggi satr.",
+    closingQuoteA: ".alomat ko‘proq o‘qiydigan joy emas.",
     closingQuoteB: "Tezroq tushunadigan joy.",
-    closingSub: ".alomat is not where you read more. It is where you understand faster.",
+    closingSub: "Kamroq o‘qing. Tezroq anglang.",
     sign: "— Oktay",
-    studio: ".alomat · yolg'iz studiya",
+    studio: ".alomat · bir kishilik studiya",
   };
 }
 
@@ -1838,13 +1843,13 @@ const lineupArticleDetails = [
     image:
       "https://cdn1.wiro.ai/94ba0b39-504e320f-0b1a182a-a37a2a0c-e28daf4a-1ff0d4d9-a30cfff8-0bff6445-26581401-464e6371-181d8a7c-effaf4d5/2212310_Image.png",
     category: { uz: "Siyosat", en: "Politics" },
-    date: { uz: "13 Iyun 2026", en: "13 June 2026" },
+    date: { uz: "2026-yil 13-iyun", en: "13 June 2026" },
     title: {
-      uz: "AI'da yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?",
+      uz: "Sun’iy intellektdagi yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?",
       en: "A new iron curtain in AI: who does the Fable 5 ban protect?",
     },
-    author: { initials: "ŞD", name: "Şenol Dak" },
-    readTime: { uz: "5 daqiqa o'qish", en: "5 min read" },
+    author: { initials: "ShD", name: "Shenol Dak" },
+    readTime: { uz: "5 daqiqalik mutolaa", en: "5 min read" },
     audioTime: "0:00 / 6:11",
     body: {
       uz: [
@@ -1872,13 +1877,13 @@ const lineupArticleDetails = [
     image:
       "https://cdn1.wiro.ai/f7c0c2a1-d7a0bdcf-a060f16f-23986f17-d3617ce3-0ce7a132-2cc2a246-28880a97-03a40838-a420fa9d-850c160f-71a17c6d/1867404_Image.png",
     category: { uz: "AI", en: "AI" },
-    date: { uz: "13 May 2026", en: "13 May 2026" },
+    date: { uz: "2026-yil 13-may", en: "13 May 2026" },
     title: {
-      uz: "Internet endi ma'lumot bermaydi. Diqqatni yutadi.",
+      uz: "Internet endi ma’lumot bermaydi. U diqqatni yutadi.",
       en: "AI internet is no longer informing. It is consuming attention.",
     },
     author: { initials: "OD", name: "Oktay Dak" },
-    readTime: { uz: "3 daqiqa o'qish", en: "3 min read" },
+    readTime: { uz: "3 daqiqalik mutolaa", en: "3 min read" },
     audioTime: "0:00 / 4:38",
     body: {
       uz: [
@@ -2164,12 +2169,12 @@ function renderLineup(localeKey, currentFile) {
           read: "Read →",
         }
       : {
-          writings: "Yozilar",
-          sectionAll: "Hammasini ko'r →",
-          staff: "Kadro",
-          staffMeta: "Har biri muharrir taklifi bilan",
+          writings: "Yozuvlar",
+          sectionAll: "Barchasini ko‘rish →",
+          staff: "Mualliflar",
+          staffMeta: "Har bir muallif tahririyat taklifi bilan",
           category: "Siyosat",
-          read: "O'qish →",
+          read: "O‘qish →",
         };
   const featureImage =
     "https://cdn1.wiro.ai/94ba0b39-504e320f-0b1a182a-a37a2a0c-e28daf4a-1ff0d4d9-a30cfff8-0bff6445-26581401-464e6371-181d8a7c-effaf4d5/2212310_Image.png";
@@ -2222,7 +2227,7 @@ function renderLineup(localeKey, currentFile) {
           <span class="lineup-section__meta">${text(labels.staffMeta)}</span>
         </div>
         <div class="lineup-masthead lineup-masthead--empty">
-          <p>${text(localeKey === "en" ? "The masthead will open here soon." : "Kadro ro'yxati tez orada shu yerda ochiladi.")}</p>
+          <p>${text(localeKey === "en" ? "The masthead will open here soon." : "Mualliflar ro‘yxati tez orada shu yerda e’lon qilinadi.")}</p>
         </div>
       </section>
       <section class="lineup-cta-row">
@@ -2248,8 +2253,8 @@ function renderLineupArticle(localeKey, currentFile, article) {
           share: "Share",
         }
       : {
-          writtenBy: "Yozgan",
-          allPosts: "Barcha yozilar",
+          writtenBy: "Muallif",
+          allPosts: "Barcha yozuvlar",
           back: "← Lineup",
           smaller: "Matnni kichraytirish",
           larger: "Matnni kattalashtirish",

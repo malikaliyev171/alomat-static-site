@@ -591,7 +591,7 @@ html[data-palette="7"] .nav__item--dot .nav__bullet {
 }
 
 .nav__item.is-active {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: transparent;
   color: var(--text-strong);
 }
 
@@ -2344,6 +2344,7 @@ html[data-page="home"][data-palette="7"] .name-auth-modal {
   scrollbar-color: color-mix(in srgb, var(--text) 28%, transparent) transparent;
   color: rgba(5, 7, 13, 0.96);
   font-size: 1.02rem;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -4840,7 +4841,13 @@ html:root:is([data-page="home"], [data-page="library"], [data-page="about"], [da
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
-html:root[data-page="home"] .language-switch {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .language-switch {
   margin-left: clamp(24px, 2.2vw, 40px);
 }
 
@@ -4989,11 +4996,13 @@ html:root[data-page="home"][data-palette="7"] .palette-menu {
     0 10px 22px color-mix(in srgb, var(--text) 6%, transparent);
 }
 
-html:root[data-page="home"] .nav--home,
-html:root[data-page="home"][data-theme] .nav--home,
-html:root[data-page="home"][data-palette="0"] .nav--home,
-html:root[data-page="home"][data-palette="4"] .nav--home,
-html:root[data-page="home"][data-palette="7"] .nav--home {
+html:root:is(
+  [data-page="home"],
+  [data-page="library"],
+  [data-page="about"],
+  [data-page="lineup"],
+  [data-page="lineup-article"]
+) .nav--home {
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
@@ -5618,50 +5627,50 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       <div id="content" class="lineup-page">
     <main class="lineup-shell">
       <section class="lineup-cover">
-        <p class="lineup-epigraph">Yaxshi matn shoshilmaydi.</p>
+        <p class="lineup-epigraph">Yaxshi matn shoshmaydi.</p>
         <a class="lineup-feature lineup-feature--cover" href="lineup/senol-dak/aida-yangi-temir-parda-fable-5-taqiqi-kimni-himoya-qiladi/index.html">
           <div class="lineup-feature__cover lineup-cover-duo">
-            <img alt="AI&#39;da yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?" src="https://cdn1.wiro.ai/94ba0b39-504e320f-0b1a182a-a37a2a0c-e28daf4a-1ff0d4d9-a30cfff8-0bff6445-26581401-464e6371-181d8a7c-effaf4d5/2212310_Image.png" loading="lazy" />
+            <img alt="Sun’iy intellektdagi yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?" src="https://cdn1.wiro.ai/94ba0b39-504e320f-0b1a182a-a37a2a0c-e28daf4a-1ff0d4d9-a30cfff8-0bff6445-26581401-464e6371-181d8a7c-effaf4d5/2212310_Image.png" loading="lazy" />
           </div>
           <div class="lineup-feature__body">
             <span class="lineup-card__kicker">Siyosat</span>
-            <h1 class="lineup-feature__title">AI&#39;da yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?</h1>
-            <p class="lineup-feature__excerpt">AQSHning Anthropic modellari uchun joriy etgan kirish cheklovi, milliy xavfsizlik va global kuchlar kurashi orasidagi nozik chiziqni muhokamaga olib chiqmoqda.</p>
-            <span class="lineup-card__meta">Şenol Dak · 1 kun oldin · 5 daqiqa</span>
-            <span class="lineup-feature__cta">O&#39;qish →</span>
+            <h1 class="lineup-feature__title">Sun’iy intellektdagi yangi temir parda: Fable 5 taqiqi kimni himoya qiladi?</h1>
+            <p class="lineup-feature__excerpt">AQShning Anthropic modellaridan foydalanishga qo‘ygan cheklovi milliy xavfsizlik bilan global kuchlar kurashi o‘rtasidagi nozik chegarani muhokamaga olib chiqmoqda.</p>
+            <span class="lineup-card__meta">Shenol Dak · Bir kun oldin · 5 daqiqa</span>
+            <span class="lineup-feature__cta">O‘qish →</span>
           </div>
         </a>
       </section>
       <section id="lineup-articles" class="lineup-section">
         <div class="lineup-section__head">
-          <span class="lineup-kicker lineup-kicker--signal">Yozilar</span>
-          <a class="lineup-section__meta" href="#lineup-articles">Hammasini ko&#39;r →</a>
+          <span class="lineup-kicker lineup-kicker--signal">Yozuvlar</span>
+          <a class="lineup-section__meta" href="#lineup-articles">Barchasini ko‘rish →</a>
         </div>
         <div class="lineup-cards">
           
           <a class="lineup-card" href="lineup/oktay-dak/internet-endi-malumot-bermaydi-diqqatni-yutadi/index.html">
             <div class="lineup-card__cover lineup-cover-duo">
-              <img alt="Internet endi ma&#39;lumot bermaydi. Diqqatni yutadi." src="https://cdn1.wiro.ai/f7c0c2a1-d7a0bdcf-a060f16f-23986f17-d3617ce3-0ce7a132-2cc2a246-28880a97-03a40838-a420fa9d-850c160f-71a17c6d/1867404_Image.png" loading="lazy" />
+              <img alt="Internet endi ma’lumot bermaydi. U diqqatni yutadi." src="https://cdn1.wiro.ai/f7c0c2a1-d7a0bdcf-a060f16f-23986f17-d3617ce3-0ce7a132-2cc2a246-28880a97-03a40838-a420fa9d-850c160f-71a17c6d/1867404_Image.png" loading="lazy" />
             </div>
             <div class="lineup-card__body">
               <span class="lineup-card__kicker">AI</span>
-              <h3 class="lineup-card__title">Internet endi ma&#39;lumot bermaydi. Diqqatni yutadi.</h3>
-              <span class="lineup-card__meta">Oktay Dak · 13 May 2026</span>
+              <h3 class="lineup-card__title">Internet endi ma’lumot bermaydi. U diqqatni yutadi.</h3>
+              <span class="lineup-card__meta">Oktay Dak · 2026-yil 13-may</span>
             </div>
           </a>
         </div>
       </section>
       <section class="lineup-section">
         <div class="lineup-section__head">
-          <span class="lineup-kicker">Kadro</span>
-          <span class="lineup-section__meta">Har biri muharrir taklifi bilan</span>
+          <span class="lineup-kicker">Mualliflar</span>
+          <span class="lineup-section__meta">Har bir muallif tahririyat taklifi bilan</span>
         </div>
         <div class="lineup-masthead lineup-masthead--empty">
-          <p>Kadro ro&#39;yxati tez orada shu yerda ochiladi.</p>
+          <p>Mualliflar ro‘yxati tez orada shu yerda e’lon qilinadi.</p>
         </div>
       </section>
       <section class="lineup-cta-row">
-        <p class="lineup-cta-row__copy">Lineup&#39;ga yozuvchi bo&#39;lib qo&#39;shilmoqchi bo&#39;lsangiz, ariza qoldiring — so&#39;nggi qaror muharrirniki.</p>
+        <p class="lineup-cta-row__copy">Lineup safida muallif bo‘lishni istasangiz, ariza qoldiring — yakuniy qaror tahririyatniki.</p>
         <a class="lineup-cta-pill" href="mailto:editor@alomat.uz">Ariza yuborish →</a>
       </section>
     </main>
@@ -6113,6 +6122,72 @@ function sanitizeStoryUrl(value) {
   return sanitizeHttpUrl(value, "#");
 }
 
+const HOSTED_PUBLISHING_DOMAINS = new Set([
+  "wordpress.com",
+  "substack.com",
+  "medium.com",
+  "blogspot.com",
+  "github.io",
+]);
+
+const MULTIPART_PUBLIC_SUFFIXES = new Set([
+  "co.uk",
+  "com.au",
+  "com.tr",
+  "com.uz",
+  "co.jp",
+]);
+
+function getSiteLabelFromUrl(value) {
+  const href = sanitizeStoryUrl(value);
+  if (href === "#") {
+    return "";
+  }
+
+  try {
+    const labels = new URL(href).hostname
+      .toLowerCase()
+      .replace(/^www\./, "")
+      .split(".")
+      .filter(Boolean);
+    if (!labels.length) {
+      return "";
+    }
+    if (labels.length === 1) {
+      return labels[0].toUpperCase();
+    }
+
+    const hostname = labels.join(".");
+    const hostedDomain = [...HOSTED_PUBLISHING_DOMAINS].find(
+      (domain) => hostname.endsWith(`.${domain}`),
+    );
+    if (hostedDomain) {
+      const tenantIndex = labels.length - hostedDomain.split(".").length - 1;
+      return (labels[tenantIndex] || labels[0]).toUpperCase();
+    }
+
+    const suffix = labels.slice(-2).join(".");
+    const siteIndex = MULTIPART_PUBLIC_SUFFIXES.has(suffix) ? labels.length - 3 : labels.length - 2;
+    return (labels[siteIndex] || labels[0]).toUpperCase();
+  } catch {
+    return "";
+  }
+}
+
+function getStorySourceLabel(story) {
+  const title = localizeStoryValue(story?.title);
+  if (isAiDigestTitle(title)) {
+    return "ALOMAT";
+  }
+
+  const siteLabel = getSiteLabelFromUrl(story?.url);
+  if (siteLabel) {
+    return siteLabel;
+  }
+
+  return String(story?.source ?? "").trim().toUpperCase();
+}
+
 function sanitizeStoryImage(value) {
   return sanitizeHttpUrl(value, "");
 }
@@ -6212,16 +6287,24 @@ function normalizeLiveRichSummary(value) {
   }).filter(Boolean);
 }
 
+function isAiDigestTitle(value) {
+  const title = String(value ?? "")
+    .normalize("NFKD")
+    .replace(/\u0307/g, "");
+  return /\bAI[\s-]+Digest\b/i.test(title);
+}
+
 function normalizeLiveSignal(signal, index) {
   const id = signal.id ?? signal.external_id ?? `live-${index}`;
   const createdAt = typeof signal.created_at === "string" ? signal.created_at : "";
+  const title = String(signal.title || "").trim();
   const summary = normalizeLiveSignalSummary(signal.summary);
-  const richSummary = normalizeLiveRichSummary(signal.rich_summary);
-  const sourceUrl = firstVisibleLinkFromSummary(signal.summary) || signal.url;
+  const richSummary = isAiDigestTitle(title) ? normalizeLiveRichSummary(signal.rich_summary) : [];
+  const sourceUrl = signal.url || firstVisibleLinkFromSummary(signal.summary);
 
   return {
     id: `live-${id}`,
-    title: String(signal.title || "").trim(),
+    title,
     source: String(signal.source || "").trim(),
     createdAt,
     dayKey: getLocalDayKey(createdAt),
@@ -6381,7 +6464,7 @@ function localizeStoryValue(value) {
 
 function buildExpandedSummary(story) {
   const title = localizeStoryValue(story.title);
-  const source = story.source ?? (locale === "en" ? "the original source" : "asl manba");
+  const source = getStorySourceLabel(story) || (locale === "en" ? "the original source" : "asl manba");
   const time = story.time ?? (locale === "en" ? "today" : "bugun");
   const category = story.category ?? "signal";
   const summary = Array.isArray(story.summary) ? [...story.summary] : [];
@@ -6498,12 +6581,15 @@ function resetDetailScroll() {
 
 function renderStoryMarkup(story) {
   const labels = detailLabels[locale];
-  const title = escapeHtml(localizeStoryValue(story.title));
-  const source = escapeHtml(story.source ?? "");
+  const storyTitle = localizeStoryValue(story.title);
+  const isDigest = isAiDigestTitle(storyTitle);
+  const panelTitle = isDigest ? getTimelineStoryTitle({ ...story, title: storyTitle }) : storyTitle;
+  const title = escapeHtml(panelTitle);
+  const source = escapeHtml(getStorySourceLabel(story));
   const time = escapeHtml(story.time ?? "");
   const weight = `${escapeHtml(String(story.score ?? 94))}/100`;
   const summary = buildExpandedSummary(story);
-  const richSummary = normalizeLiveRichSummary(story.richSummary);
+  const richSummary = isDigest ? normalizeLiveRichSummary(story.richSummary) : [];
   const paragraphCount = Math.max(summary.length, richSummary.length);
   const summaryHtml = Array.from({ length: paragraphCount }, (_, index) =>
     richSummary[index]
@@ -6616,15 +6702,27 @@ function updateTimelineActiveState(activeItem) {
   });
 }
 
+function getTimelineStoryTitle(story) {
+  const title = String(story?.title ?? "").trim();
+  if (!isAiDigestTitle(title)) {
+    return title;
+  }
+
+  const titleDate = title.match(/\b\d{4}-\d{2}-\d{2}\b/)?.[0];
+  const date = titleDate || story?.dayKey || getLocalDayKey(story?.createdAt);
+  return date ? `AI Digest - ${date}` : "AI Digest";
+}
+
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
   const storyImage = getStoryImageUrl(story);
   const storyImageStyle = storyImage ? ` --signal-story-image: url(&quot;${escapeAttribute(storyImage)}&quot;);` : "";
+  const timelineTitle = getTimelineStoryTitle(story);
   return `
     <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94;${storyImageStyle} --timeline-widget-image-opacity: 0.055; --timeline-widget-active-image-opacity: 0.32; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
       <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
-        <span class="signal-timeline__headline-text">${escapeHtml(story.title)}</span>
+        <span class="signal-timeline__headline-text">${escapeHtml(timelineTitle)}</span>
       </button>
     </article>`;
 }
@@ -7383,6 +7481,7 @@ loadLiveSignals();
 globalThis.__ALOMAT_APP_TEST__ = {
   sanitizeStoryUrl,
   sanitizeStoryImage,
+  getSiteLabelFromUrl,
   getLocalDayKey,
   partitionStoriesByToday,
   createBackgroundImageValue,

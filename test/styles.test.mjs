@@ -109,6 +109,51 @@ test("manifesto and lineup reuse the home signal topbar without page-local heade
   assert.doesNotMatch(lineup, /class="lineup-topbar__brand"/);
 });
 
+test("signal navigation keeps the same horizontal position across pages", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(
+    styles,
+    /html:root:is\([\s\S]*?\[data-page="home"\][\s\S]*?\[data-page="library"\][\s\S]*?\[data-page="about"\][\s\S]*?\[data-page="lineup"\][\s\S]*?\[data-page="lineup-article"\][\s\S]*?\) \.language-switch\s*\{[\s\S]*?margin-left:\s*clamp\(24px, 2\.2vw, 40px\);/,
+  );
+  assert.doesNotMatch(styles, /html:root\[data-page="home"\] \.language-switch\s*\{/);
+});
+
+test("active signal navigation item keeps the shared background", () => {
+  const styles = readProjectFile("styles.css");
+  const activeItem = cssBlock(styles, ".nav__item.is-active");
+
+  assert.match(activeItem, /background:\s*transparent;/);
+  assert.doesNotMatch(activeItem, /background:\s*color-mix/);
+});
+
+test("signal navigation palette stays transparent across shared pages", () => {
+  const styles = readProjectFile("styles.css");
+
+  assert.match(
+    styles,
+    /html:root:is\([\s\S]*?\[data-page="home"\][\s\S]*?\[data-page="library"\][\s\S]*?\[data-page="about"\][\s\S]*?\[data-page="lineup"\][\s\S]*?\[data-page="lineup-article"\][\s\S]*?\)(?:\[data-palette(?:="[047]")?\])?(?:\[data-theme\])? \.nav--home[\s\S]*?background:\s*transparent;[\s\S]*?box-shadow:\s*none;/,
+  );
+});
+
+test("Uzbek manifesto and lineup copy is fully localized", () => {
+  const build = readProjectFile("build.mjs");
+
+  assert.match(build, /Diqqat bilan kuzat\./);
+  assert.match(build, /Biz bir kishilik studiyamiz\./);
+  assert.match(build, /Sun’iy intellektdagi yangi temir parda/);
+  assert.match(build, /Shenol Dak/);
+  assert.match(build, /O‘qituvchi · AI bo‘yicha pedagog/);
+  assert.match(build, /writings: "Yozuvlar"/);
+  assert.match(build, /staff: "Mualliflar"/);
+
+  const uzManifesto = build.slice(build.indexOf('back: "ana sahifa"'), build.indexOf("const lineupArticleDetails"));
+  const uzLineup = build.slice(build.indexOf('    lineup: {'), build.indexOf('    privacy: {'));
+  assert.doesNotMatch(uzManifesto, /Watch closely|feed|deck|growth team|product strategist/);
+  assert.doesNotMatch(uzLineup, /Teacher|Educator|Crowdfunding|Analytics|Research|Insights/);
+  assert.doesNotMatch(build, /[ŞşÇçĞğİıÖöÜü]/);
+});
+
 test("lineup article pages keep the same signal topbar as the lineup index", () => {
   const article = readProjectFile(
     "dist/lineup/oktay-dak/internet-endi-malumot-bermaydi-diqqatni-yutadi/index.html",
@@ -188,8 +233,10 @@ test("story detail collapses an empty action status to enlarge the body", () => 
 
 test("rich summary links inherit text color and underline on interaction", () => {
   const styles = readProjectFile("styles.css");
+  const body = cssBlock(styles, ".timeline-panel__body");
   const link = cssBlock(styles, ".timeline-panel__inline-link");
 
+  assert.match(body, /font-weight:\s*400;/);
   assert.match(link, /color:\s*inherit;/);
   assert.match(link, /font-weight:\s*650;/);
   assert.match(link, /text-decoration:\s*none;/);

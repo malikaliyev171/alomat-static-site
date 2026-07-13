@@ -40,7 +40,22 @@ class FakeStatement {
     if (this.sql.includes("INSERT INTO signals")) {
       const [external_id, title, summary_json, rich_summary_json, source, url, category, image, language, created_at] =
         this.values;
-      if (external_id && this.db.rows.some((row) => row.external_id === external_id)) {
+      const existing = external_id ? this.db.rows.find((row) => row.external_id === external_id) : null;
+      if (existing && this.sql.includes("ON CONFLICT(external_id)")) {
+        Object.assign(existing, {
+          title,
+          summary_json,
+          rich_summary_json,
+          source,
+          url,
+          category,
+          image,
+          language,
+          created_at,
+        });
+        return { success: true };
+      }
+      if (existing) {
         const error = new Error("D1_ERROR: UNIQUE constraint failed: signals.external_id");
         error.cause = { message: "UNIQUE constraint failed: signals.external_id" };
         throw error;
@@ -184,7 +199,7 @@ test("normalizeTelegramUpdate converts a text message to signal input", () => {
   });
 });
 
-test("normalizeSignalInput strips visible links from summary text", () => {
+test("normalizeSignalInput keeps the bot source URL while stripping visible summary links", () => {
   const result = normalizeSignalInput(
     {
       title: "Signal card title",
@@ -206,6 +221,19 @@ test("normalizeSignalInput strips visible links from summary text", () => {
     "Tadqiqot e'lon qilindi.",
     "Markdown manba matni qoladi.",
   ]);
+  assert.equal(result.value.url, "https://wrong.example/about");
+});
+
+test("normalizeSignalInput falls back to a visible summary link when the bot source URL is missing", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "Signal card title",
+      summary: ["Haber tafsilotlari: https://example.com/news?utm=telegram"],
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
   assert.equal(result.value.url, "https://example.com/news?utm=telegram");
 });
 
@@ -332,6 +360,74 @@ test("normalizeSignalInput preserves rich summary links and removes unsafe hrefs
       ],
     },
   ]);
+});
+
+test("normalizeSignalInput derives multi-word Digest links from Markdown and HTML summaries", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "AI Digest — 2026-07-13",
+      summary: [
+        "Terry Tao [zamonaviy kodlash agentlari yordamida eski va yangi ilovalar yaratish](https://terrytao.wordpress.com/old-and-new-apps/) haqida yozdi.",
+        "Elliot Smith <a href=\"https://example.com/autoresearch\">Autoresearch va Claude bilan cheklangan optimallashtirish</a> masalasini tahlil qildi.",
+      ],
+      rich_summary: [
+        {
+          segments: [{ text: "Terry Tao zamonaviy kodlash agentlari haqida yozdi." }],
+        },
+      ],
+    },
+    "2026-07-13T12:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.url, "https://terrytao.wordpress.com/old-and-new-apps/");
+  assert.deepEqual(JSON.parse(result.value.summary_json), [
+    "Terry Tao zamonaviy kodlash agentlari yordamida eski va yangi ilovalar yaratish haqida yozdi.",
+    "Elliot Smith Autoresearch va Claude bilan cheklangan optimallashtirish masalasini tahlil qildi.",
+  ]);
+  assert.deepEqual(JSON.parse(result.value.rich_summary_json), [
+    {
+      segments: [
+        { text: "Terry Tao " },
+        {
+          text: "zamonaviy kodlash agentlari yordamida eski va yangi ilovalar yaratish",
+          url: "https://terrytao.wordpress.com/old-and-new-apps/",
+        },
+        { text: " haqida yozdi." },
+      ],
+    },
+    {
+      segments: [
+        { text: "Elliot Smith " },
+        {
+          text: "Autoresearch va Claude bilan cheklangan optimallashtirish",
+          url: "https://example.com/autoresearch",
+        },
+        { text: " masalasini tahlil qildi." },
+      ],
+    },
+  ]);
+});
+
+test("normalizeSignalInput drops rich summary links from normal news", () => {
+  const result = normalizeSignalInput(
+    {
+      title: "OpenAI yangi modelini taqdim etdi",
+      summary: ["OpenAI yangi modelini taqdim etdi."],
+      rich_summary: [
+        {
+          segments: [
+            { text: "OpenAI", url: "https://openai.com/news" },
+            { text: " yangi modelini taqdim etdi." },
+          ],
+        },
+      ],
+    },
+    "2026-07-10T14:00:00.000Z",
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value.rich_summary_json, "[]");
 });
 
 test("normalizeSignalInput blanks unsafe url and image fields", () => {
@@ -541,7 +637,7 @@ test("POST /api/telegram-webhook inserts a Telegram message", async () => {
   assert.equal(env.DB.rows[0].title, "Telegramdan kelgan habar");
 });
 
-test("POST /api/telegram-webhook treats duplicate Telegram retries as ok", async () => {
+test("POST /api/telegram-webhook keeps duplicate Telegram retries idempotent", async () => {
   const env = testEnv();
   const request = () =>
     new Request("https://xabar.alomat.workers.dev/api/telegram-webhook", {
@@ -561,24 +657,31 @@ test("POST /api/telegram-webhook treats duplicate Telegram retries as ok", async
   await handleRequest(request(), env, new Date("2026-07-10T14:00:00.000Z"));
   const duplicate = await handleRequest(request(), env, new Date("2026-07-10T14:00:01.000Z"));
 
-  assert.equal(duplicate.status, 200);
-  assert.deepEqual(await duplicate.json(), { ok: true, duplicate: true });
+  assert.equal(duplicate.status, 201);
+  assert.deepEqual(await duplicate.json(), { ok: true });
   assert.equal(env.DB.rows.length, 1);
 });
 
-test("POST /api/signals rejects duplicate external_id", async () => {
+test("POST /api/signals updates an existing external_id with corrected source data", async () => {
   const env = testEnv();
-  const requestBody = {
+  const originalBody = {
     external_id: "telegram-123",
     title: "Live card",
     summary: ["Live summary"],
+    url: "https://info.arxiv.org/about",
+  };
+  const correctedBody = {
+    external_id: "telegram-123",
+    title: "Corrected live card",
+    summary: ["Corrected live summary"],
+    url: "https://arxiv.org/abs/2607.09153",
   };
 
   await handleRequest(
     new Request("https://xabar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: { authorization: "Bearer secret-for-tests" },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(originalBody),
     }),
     env,
     new Date("2026-07-10T14:00:00.000Z"),
@@ -587,14 +690,18 @@ test("POST /api/signals rejects duplicate external_id", async () => {
     new Request("https://xabar.alomat.workers.dev/api/signals", {
       method: "POST",
       headers: { authorization: "Bearer secret-for-tests" },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(correctedBody),
     }),
     env,
     new Date("2026-07-10T14:01:00.000Z"),
   );
 
-  assert.equal(duplicate.status, 409);
-  assert.deepEqual(await duplicate.json(), { error: "duplicate external_id" });
+  assert.equal(duplicate.status, 201);
+  assert.deepEqual(await duplicate.json(), { ok: true });
+  assert.equal(env.DB.rows.length, 1);
+  assert.equal(env.DB.rows[0].title, "Corrected live card");
+  assert.equal(env.DB.rows[0].summary_json, JSON.stringify(["Corrected live summary"]));
+  assert.equal(env.DB.rows[0].url, "https://arxiv.org/abs/2607.09153");
 });
 
 test("GET /api/signals returns newest-first rows", async () => {
