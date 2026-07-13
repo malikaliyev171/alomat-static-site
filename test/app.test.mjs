@@ -133,6 +133,8 @@ test("build generates exact equivalent locale navigation and hreflang links on e
     for (const [index, localeKey] of ["en", "uz", "tr"].entries()) {
       const attributes = links[index][1];
       const classes = new Set(attributeValue(attributes, "class")?.split(/\s+/));
+      const accessibleLanguageName = { en: "English", uz: "O‘zbekcha", tr: "Türkçe" }[localeKey];
+      assert.equal(attributeValue(attributes, "aria-label"), accessibleLanguageName, `${route} ${localeKey} accessible name`);
       if (localeKey === expected.localeKey) {
         assert.equal(classes.has("is-active"), true, `${route} ${localeKey} active state`);
         assert.equal(classes.has("is-inactive"), false, `${route} ${localeKey} inactive state`);

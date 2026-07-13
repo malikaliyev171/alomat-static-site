@@ -55,6 +55,12 @@ class FakeStatement {
         image,
         language,
         created_at,
+        has_title_en,
+        has_summary_en,
+        has_rich_summary_en,
+        has_title_tr,
+        has_summary_tr,
+        has_rich_summary_tr,
       ] = this.values;
       const existing = external_id ? this.db.rows.find((row) => row.external_id === external_id) : null;
       if (existing && this.sql.includes("ON CONFLICT(external_id)")) {
@@ -62,12 +68,6 @@ class FakeStatement {
           title,
           summary_json,
           rich_summary_json,
-          title_en,
-          summary_en_json,
-          rich_summary_en_json,
-          title_tr,
-          summary_tr_json,
-          rich_summary_tr_json,
           source,
           url,
           category,
@@ -75,6 +75,12 @@ class FakeStatement {
           language,
           created_at,
         });
+        if (has_title_en) existing.title_en = title_en;
+        if (has_summary_en) existing.summary_en_json = summary_en_json;
+        if (has_rich_summary_en) existing.rich_summary_en_json = rich_summary_en_json;
+        if (has_title_tr) existing.title_tr = title_tr;
+        if (has_summary_tr) existing.summary_tr_json = summary_tr_json;
+        if (has_rich_summary_tr) existing.rich_summary_tr_json = rich_summary_tr_json;
         return { success: true };
       }
       if (existing) {
@@ -312,6 +318,12 @@ test("normalizeSignalInput accepts the bot payload and fills defaults", () => {
     title_tr: "",
     summary_tr_json: "[]",
     rich_summary_tr_json: "[]",
+    has_title_en: false,
+    has_summary_en: false,
+    has_rich_summary_en: false,
+    has_title_tr: false,
+    has_summary_tr: false,
+    has_rich_summary_tr: false,
     source: "Source name",
     url: "https://example.com/source",
     category: "ai",
@@ -764,6 +776,93 @@ test("POST upsert and GET /api/signals preserve translated fields", async () => 
     language: "uz",
     created_at: "2026-07-13T12:01:00.000Z",
   });
+});
+
+test("legacy upserts preserve existing translated fields", async () => {
+  const env = testEnv();
+  const postSignal = (body, now) =>
+    handleRequest(
+      new Request("https://xabar.alomat.workers.dev/api/signals", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer secret-for-tests",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }),
+      env,
+      new Date(now),
+    );
+
+  assert.equal((await postSignal(translatedSignal, "2026-07-13T12:00:00.000Z")).status, 201);
+  assert.equal(
+    (
+      await postSignal(
+        {
+          external_id: translatedSignal.external_id,
+          title: "Yangilangan o'zbekcha sarlavha",
+          summary: ["Yangilangan o'zbekcha paragraf"],
+        },
+        "2026-07-13T12:05:00.000Z",
+      )
+    ).status,
+    201,
+  );
+
+  const listed = await handleRequest(new Request("https://xabar.alomat.workers.dev/api/signals"), env);
+  const signal = (await listed.json()).signals[0];
+  assert.equal(signal.title, "Yangilangan o'zbekcha sarlavha");
+  assert.equal(signal.title_en, translatedSignal.title_en);
+  assert.deepEqual(signal.summary_en, translatedSignal.summary_en);
+  assert.equal(signal.title_tr, translatedSignal.title_tr);
+  assert.deepEqual(signal.summary_tr, translatedSignal.summary_tr);
+});
+
+test("partial translation upserts preserve the other translated fields", async () => {
+  const env = testEnv();
+  const postSignal = (body, now) =>
+    handleRequest(
+      new Request("https://xabar.alomat.workers.dev/api/signals", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer secret-for-tests",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }),
+      env,
+      new Date(now),
+    );
+
+  assert.equal((await postSignal(translatedSignal, "2026-07-13T12:00:00.000Z")).status, 201);
+  assert.equal(
+    (
+      await postSignal(
+        {
+          external_id: translatedSignal.external_id,
+          title: translatedSignal.title,
+          summary: translatedSignal.summary,
+          title_en: "Only the English title changed",
+        },
+        "2026-07-13T12:06:00.000Z",
+      )
+    ).status,
+    201,
+  );
+
+  const listed = await handleRequest(new Request("https://xabar.alomat.workers.dev/api/signals"), env);
+  const signal = (await listed.json()).signals[0];
+  assert.equal(signal.title_en, "Only the English title changed");
+  assert.deepEqual(signal.summary_en, translatedSignal.summary_en);
+  assert.deepEqual(signal.rich_summary_en, translatedSignal.rich_summary_en);
+  assert.equal(signal.title_tr, translatedSignal.title_tr);
+  assert.deepEqual(signal.summary_tr, translatedSignal.summary_tr);
+});
+
+test("deploy script applies remote migrations before publishing the Worker", async () => {
+  const packageJson = JSON.parse(await import("node:fs/promises").then(({ readFile }) => readFile(new URL("../package.json", import.meta.url), "utf8")));
+
+  assert.equal(packageJson.scripts.deploy, "npm run d1:migrate:remote && wrangler deploy");
 });
 
 test("POST /api/telegram-webhook rejects missing Telegram secret", async () => {

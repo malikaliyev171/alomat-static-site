@@ -132,6 +132,10 @@ test("desktop language control keeps the same position across locales", () => {
     styles,
     /@media \(max-width: 780px\)[\s\S]*?\.topbar--home \.palette-rail\s*\{[\s\S]*?flex:\s*0 0 38px;[\s\S]*?width:\s*38px;/,
   );
+  assert.match(
+    styles,
+    /@media \(min-width: 781px\) and \(max-width: 1150px\)[\s\S]*?\.topbar--home\s*\{[\s\S]*?grid-template-columns:\s*1fr;[\s\S]*?\.topbar--home \.controls--home\s*\{[\s\S]*?width:\s*100%;/,
+  );
 });
 
 test("active signal navigation item keeps the shared background", () => {

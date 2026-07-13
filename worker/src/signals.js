@@ -69,6 +69,12 @@ export function normalizeSignalInput(input, nowIso) {
       rich_summary_tr_json: JSON.stringify(
         isAiDigestTitle(title) ? normalizeDigestRichSummary(input.rich_summary_tr, input.summary_tr) : [],
       ),
+      has_title_en: hasOwnProperty(input, "title_en"),
+      has_summary_en: hasOwnProperty(input, "summary_en"),
+      has_rich_summary_en: hasOwnProperty(input, "rich_summary_en"),
+      has_title_tr: hasOwnProperty(input, "title_tr"),
+      has_summary_tr: hasOwnProperty(input, "summary_tr"),
+      has_rich_summary_tr: hasOwnProperty(input, "rich_summary_tr"),
       source: normalizeOptionalText(input.source),
       url: normalizeOptionalUrl(input.url) || firstVisibleLinkFromSummary(input.summary),
       category: normalizeOptionalText(input.category) || "general",
@@ -77,6 +83,10 @@ export function normalizeSignalInput(input, nowIso) {
       created_at: createdAt,
     },
   };
+}
+
+function hasOwnProperty(value, key) {
+  return Object.prototype.hasOwnProperty.call(value, key);
 }
 
 export function rowToSignal(row) {

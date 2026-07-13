@@ -5231,6 +5231,19 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
   margin-top: 0;
 }
 
+@media (min-width: 781px) and (max-width: 1150px) {
+  .topbar--home {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .topbar--home .controls--home {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}
+
 @media (max-width: 780px) {
   html[data-page="home"] .signal-detail {
     background: var(--bg);
@@ -5618,9 +5631,9 @@ html:is([data-page="home"], [data-page="library"]) .site-footer__bottom {
       </nav>
 
         <div class="language-switch" role="group" aria-label="Dil">
-          <a class="language-switch__button is-inactive" href="en-lineup.html">EN</a>
-          <a class="language-switch__button is-inactive" href="lineup.html">UZ</a>
-          <a class="language-switch__button is-active" aria-current="page" href="tr-lineup.html">TR</a>
+          <a class="language-switch__button is-inactive" aria-label="English" href="en-lineup.html">EN</a>
+          <a class="language-switch__button is-inactive" aria-label="O‘zbekcha" href="lineup.html">UZ</a>
+          <a class="language-switch__button is-active" aria-label="Türkçe" aria-current="page" href="tr-lineup.html">TR</a>
         </div>
 
         <div class="palette-rail" data-palette-picker role="group" aria-label="Palet">

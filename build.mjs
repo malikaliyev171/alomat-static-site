@@ -1717,7 +1717,7 @@ function renderLanguageSwitch(localeKey, currentFile, localeOutputPath) {
             .map((targetLocaleKey) => {
               const isCurrent = targetLocaleKey === localeKey;
               const targetFile = isCurrent ? currentFile : localeOutputPath(targetLocaleKey);
-              return `<a class="language-switch__button ${isCurrent ? "is-active" : "is-inactive"}"${isCurrent ? ' aria-current="page"' : ""} href="${text(relativeHref(currentFile, targetFile))}">${text(targetLocaleKey.toUpperCase())}</a>`;
+              return `<a class="language-switch__button ${isCurrent ? "is-active" : "is-inactive"}" aria-label="${text(locales[targetLocaleKey].localeName)}"${isCurrent ? ' aria-current="page"' : ""} href="${text(relativeHref(currentFile, targetFile))}">${text(targetLocaleKey.toUpperCase())}</a>`;
             })
             .join("\n          ")}
         </div>`;
