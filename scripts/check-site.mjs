@@ -339,7 +339,7 @@ if (fs.existsSync(stylesPath)) {
   if (!timelineHeadlineButtonBlock.includes("border: 0.8px solid color-mix(in srgb, var(--text) 6%, transparent);")) {
     fail("timeline headline cards must use palette-aware borders");
   }
-  if (!timelineHeadlineButtonBlock.includes("background: color-mix(in srgb, var(--bg) 62%, transparent);")) {
+  if (!timelineHeadlineButtonBlock.includes("background: color-mix(in srgb, var(--bg) 97%, var(--text) 3%);")) {
     fail("timeline headline cards must use palette-aware backgrounds");
   }
   if (!timelineHeadlineButtonBlock.includes("box-shadow: 0 10px 30px color-mix(in srgb, var(--text) 5%, transparent);")) {
@@ -361,7 +361,7 @@ if (fs.existsSync(stylesPath)) {
     fail("timeline headline text must use the current palette text color");
   }
 
-  const timelineNodeBlock = /^\.signal-timeline__node\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
+  const timelineCursorBlock = /^\.signal-timeline__cursor\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const loadEarlierBlock = /^\.signal-timeline__load-earlier\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const siteFooterTopBlock = /^\.site-footer__top\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
   const socialChipBlock = /^\.social-chip\s*\{[\s\S]*?\n\}/m.exec(styles)?.[0] ?? "";
@@ -525,17 +525,17 @@ if (fs.existsSync(stylesPath)) {
       fail(`palette 4 selector group must also include palette 7: ${selectorGroup.split("\n")[0]}`);
     }
   }
-  if (!timelineNodeBlock.includes("background: color-mix(in srgb, var(--text) 90%, transparent);")) {
-    fail("timeline nodes must use the active palette text color");
+  if (!timelineCursorBlock.includes("background: #05070d;")) {
+    fail("timeline cursor must remain black across palettes");
   }
-  if (!timelineNodeBlock.includes("border: 0.8px solid color-mix(in srgb, var(--bg) 80%, transparent);")) {
-    fail("timeline nodes must use palette-aware borders");
+  if (!timelineCursorBlock.includes("border: 2px solid color-mix(in srgb, var(--bg) 88%, transparent);")) {
+    fail("timeline cursor must use a palette-aware border");
   }
-  if (!timelineNodeBlock.includes("0 0 0 8px color-mix(in srgb, var(--bg) 80%, transparent)")) {
-    fail("timeline nodes must use palette-aware outer rings");
+  if (!timelineCursorBlock.includes("0 0 0 5px color-mix(in srgb, var(--bg) 86%, transparent)")) {
+    fail("timeline cursor must use a palette-aware inner ring");
   }
-  if (!timelineNodeBlock.includes("0 0 34px color-mix(in srgb, var(--text) 22%, transparent)")) {
-    fail("timeline nodes must use palette-aware glow");
+  if (!timelineCursorBlock.includes("0 0 0 6px color-mix(in srgb, var(--text) 28%, transparent)")) {
+    fail("timeline cursor must use a palette-aware outer ring");
   }
   if (!loadEarlierBlock.includes("background: color-mix(in srgb, var(--bg) 62%, transparent);")) {
     fail("timeline load-earlier button must use a palette-aware background");
@@ -794,8 +794,11 @@ if (fs.existsSync(buildPath)) {
   if (!build.includes("height: var(--home-detail-height, min(946px, calc(100vh - 128px)));")) {
     fail("home signal detail inline height must use the responsive viewport fit token");
   }
-  if (!build.includes("width: min(100%, var(--timeline-widget-width, 500px));")) {
-    fail("home timeline inline card width must use the responsive card width token");
+  if (!build.includes("data-timeline-route-svg") || !build.includes("data-timeline-cursor")) {
+    fail("home timeline must render one SVG route and one scroll cursor");
+  }
+  if (build.includes('class="signal-timeline__node"')) {
+    fail("home timeline must not render one node per card");
   }
   if (
     !build.includes(
@@ -898,12 +901,8 @@ if (fs.existsSync(appPath)) {
   if (!app.includes('detailPanel?.classList.remove("has-story");')) {
     fail("resetting the detail panel must restore the intro layout");
   }
-  if (
-    !/function openNameModal\(\)\s*\{[\s\S]*?resetDetailPanel\(\);\s*\n\s*timelineClosed = false;\s*\n\s*nameModal\.hidden = false;/.test(
-      app,
-    )
-  ) {
-    fail("opening the name modal must re-arm timeline scroll effects after resetting the detail panel");
+  if (!/function openNameModal\(\)\s*\{[\s\S]*?resetDetailPanel\(\);\s*\n\s*nameModal\.hidden = false;/.test(app)) {
+    fail("opening the name modal must reset the detail panel before showing the modal");
   }
 }
 

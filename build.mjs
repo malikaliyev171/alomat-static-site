@@ -649,6 +649,7 @@ const locales = {
       preparing: "Birinchi signallar tayyorlanmoqda.",
       brandQuestion: ".alomat, siz qayerda edingiz?",
       timeline: ".alomat signal vaqt jadvali",
+      timelineBrand: "SIGNAL VAQT JADVALI",
       activeSignal: "Faol signal",
       sourceLabel: "Manba",
       timeLabel: "Vaqt",
@@ -999,6 +1000,7 @@ const locales = {
       preparing: "Preparing the first signals.",
       brandQuestion: ".alomat where have you been?",
       timeline: ".alomat Signal Timeline",
+      timelineBrand: "SIGNAL TIMELINE",
       activeSignal: "Active signal",
       sourceLabel: "Source",
       timeLabel: "Time",
@@ -1350,6 +1352,7 @@ locales.tr = {
     preparing: "\u0130lk sinyaller haz\u0131rlan\u0131yor.",
     brandQuestion: ".alomat, neredeydin?",
     timeline: ".alomat Sinyal Zaman \u00c7izgisi",
+    timelineBrand: "S\u0130NYAL ZAMAN \u00c7\u0130ZG\u0130S\u0130",
     activeSignal: "Aktif sinyal",
     sourceLabel: "Kaynak",
     timeLabel: "Saat",
@@ -1712,7 +1715,7 @@ const hreflangLocaleKeys = ["uz", "en", "tr"];
 const languageSwitchLocaleKeys = ["en", "uz", "tr"];
 
 function renderLanguageSwitch(localeKey, currentFile, localeOutputPath) {
-  return `<div class="language-switch" role="group" aria-label="${text(locales[localeKey].ui.language)}">
+  return `<div class="language-switch" data-language-switch role="group" aria-label="${text(locales[localeKey].ui.language)}">
           ${languageSwitchLocaleKeys
             .map((targetLocaleKey) => {
               const isCurrent = targetLocaleKey === localeKey;
@@ -1720,6 +1723,51 @@ function renderLanguageSwitch(localeKey, currentFile, localeOutputPath) {
               return `<a class="language-switch__button ${isCurrent ? "is-active" : "is-inactive"}" aria-label="${text(locales[targetLocaleKey].localeName)}"${isCurrent ? ' aria-current="page"' : ""} href="${text(relativeHref(currentFile, targetFile))}">${text(targetLocaleKey.toUpperCase())}</a>`;
             })
             .join("\n          ")}
+        </div>`;
+}
+
+function renderSignalSort(localeKey) {
+  const labels = {
+    uz: {
+      aria: "Xabarlarni saralash",
+      newest: "YANGIDAN ESKIGA",
+      popular: "ENG MASHHUR XABARLAR",
+      oldest: "ESKIDAN YANGIGA",
+    },
+    en: {
+      aria: "Sort news",
+      newest: "NEWEST TO OLDEST",
+      popular: "MOST POPULAR NEWS",
+      oldest: "OLDEST TO NEWEST",
+    },
+    tr: {
+      aria: "Haberleri s\u0131rala",
+      newest: "YEN\u0130DEN ESK\u0130YE",
+      popular: "EN POP\u00dcLER HABERLER",
+      oldest: "ESK\u0130DEN YEN\u0130YE",
+    },
+  }[localeKey];
+  const options = [
+    ["newest", labels.newest],
+    ["popular", labels.popular],
+    ["oldest", labels.oldest],
+  ];
+  const menuId = `signal-sort-${localeKey}`;
+
+  return `<div class="signal-sort" data-signal-sort>
+          <button class="signal-sort__trigger" type="button" data-signal-sort-trigger data-signal-sort-value="newest" aria-label="${text(labels.aria)}" aria-haspopup="listbox" aria-controls="${text(menuId)}" aria-expanded="false">
+            <span data-signal-sort-label>${text(labels.newest)}</span>
+            <svg class="signal-sort__chevron" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
+              <path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <div class="signal-sort__menu" id="${text(menuId)}" data-signal-sort-menu role="listbox" aria-label="${text(labels.aria)}" hidden>
+            ${options
+              .map(
+                ([value, label], index) => `<button class="signal-sort__option${index === 0 ? " is-selected" : ""}" type="button" role="option" data-signal-sort-option="${text(value)}" data-signal-sort-label="${text(label)}" aria-selected="${index === 0 ? "true" : "false"}">${text(label)}</button>`,
+              )
+              .join("\n            ")}
+          </div>
         </div>`;
 }
 
@@ -1810,7 +1858,7 @@ function renderHeader(
         <span class="brand__stack">
           <span class="brand__topline">
             <span class="brand__name">.alomat</span>
-            <span class="brand__sub">SIGNAL TIMELINE</span>
+            <span class="brand__sub">${text(locale.ui.timelineBrand)}</span>
           </span>
           <span class="brand__status">
             <span>${text(locale.ui.topbarToday)}</span>
@@ -1841,6 +1889,8 @@ function renderHeader(
           <span>${text(libraryLabel)}</span>
         </a>
       </nav>
+
+        ${renderSignalSort(localeKey)}
 
         ${renderLanguageSwitch(localeKey, currentFile, localeOutputPath)}
 
@@ -1946,7 +1996,11 @@ function renderHome(localeKey, currentFile) {
     <section class="hero hero--home">
       <div class="hero__copy hero__copy--home">
         <section class="signal-timeline signal-timeline--home" aria-label="${text(locale.ui.timeline)}">
-          <div class="signal-timeline__line" aria-hidden="true"></div>
+          <div class="signal-timeline__stage" data-timeline-stage>
+          <svg class="signal-timeline__route" data-timeline-route-svg aria-hidden="true" focusable="false">
+            <path class="signal-timeline__route-path" data-timeline-route-path></path>
+          </svg>
+          <div class="signal-timeline__cursor" data-timeline-cursor aria-hidden="true"></div>
           <header class="signal-reader-gate is-guest">
             <span class="signal-reader-gate__axis" aria-hidden="true">
               <span class="signal-reader-gate__sigil">
@@ -2064,6 +2118,7 @@ function renderHome(localeKey, currentFile) {
               </button>
             </div>
           </div>
+          </div>
         </section>
       </div>
 
@@ -2097,9 +2152,9 @@ function renderTimelineItem(card, index, localeKey) {
   const titleValue = localizeStoryValue(card.title, localeKey);
   const olderAttr = card.older ? ` data-older="true" hidden` : "";
   const shift = Number.isFinite(card.shift) ? card.shift : 0;
+  const side = index % 2 === 0 ? "left" : "right";
   return `
-    <article class="signal-timeline__item${card.older ? " signal-timeline__item--older" : ""}" data-side="left" data-story-id="${text(card.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: ${card.importance ?? 0.94}; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;"${olderAttr}>
-      <div class="signal-timeline__node" aria-hidden="true"></div>
+    <article class="signal-timeline__item${card.older ? " signal-timeline__item--older" : ""}" data-side="${side}" data-story-id="${text(card.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-importance: ${card.importance ?? 0.94}; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;"${olderAttr}>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${text(titleValue)}</span>
       </button>
@@ -2928,33 +2983,12 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
         min-height: var(--home-row-min-height, 243px);
       }
 
-      html[data-page="home"] .signal-timeline__line {
-        left: var(--home-rail-left, 160.69px);
-      }
-
       html[data-page="home"] .signal-timeline__day-marker {
         min-height: 72px;
       }
 
       html[data-page="home"] .signal-timeline__day-marker::before {
         width: var(--home-rail-left, 160.69px);
-      }
-
-      html[data-page="home"] .signal-timeline__node {
-        left: var(--home-node-left, 161.19px);
-        top: var(--home-row-center, 121.5px);
-        width: var(--home-node-size, 20.3px);
-        height: var(--home-node-size, 20.3px);
-        transform: translate(var(--home-node-shift, -10.1484px), var(--home-node-shift, -10.1484px));
-      }
-
-      html[data-page="home"] .signal-timeline__headline-button {
-        left: var(--home-card-left, 198.39px);
-        top: var(--home-row-center, 121.5px);
-        width: min(100%, var(--timeline-widget-width, 500px));
-        min-height: var(--home-card-min-height, 73.0944px);
-        padding: var(--home-card-pad-y, 13.6px) var(--home-card-pad-x, 19.4px);
-        transform: translateY(var(--home-card-y, -36.8438px));
       }
 
       html[data-page="home"] .signal-timeline__headline-text {
@@ -3062,10 +3096,6 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
           padding-bottom: 24px;
         }
 
-        html[data-page="home"] .signal-timeline__line {
-          left: 20px;
-        }
-
         html[data-page="home"] .signal-timeline__day-marker {
           margin-left: 0;
           min-height: 0;
@@ -3078,28 +3108,6 @@ function renderDocument(localeKey, pageKey, outputFile = pageOutputPath(localeKe
 
         html[data-page="home"] .signal-timeline__item {
           min-height: 164px;
-        }
-
-        html[data-page="home"] .signal-timeline__node {
-          left: 14px;
-          top: 104px;
-          width: 18px;
-          height: 18px;
-          transform: translate(-9px, -9px);
-        }
-
-        html[data-page="home"] .signal-timeline__headline-button {
-          left: 42px;
-          top: 96px;
-          width: calc(100% - 42px);
-          min-height: 0;
-          padding: 12px 14px;
-          transform: translateY(-28px);
-        }
-
-        html[data-page="home"] .signal-timeline__item.is-active .signal-timeline__headline-button,
-        html[data-page="home"] .page-home.has-active-story .signal-timeline__item.is-visible:not(.is-active) .signal-timeline__headline-button {
-          transform: translateY(-28px);
         }
 
         html[data-page="home"] .signal-timeline__headline-text {
