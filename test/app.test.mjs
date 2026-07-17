@@ -164,8 +164,6 @@ test("build generates exact equivalent locale navigation and hreflang links on e
 
   const turkishHome = readBuiltPage("tr.html");
   assert.match(turkishHome, /<html lang="tr" data-locale="tr"/);
-  assert.match(turkishHome, />SİNYAL ZAMAN ÇİZGİSİ<\/span>/);
-  assert.doesNotMatch(turkishHome, />SIGNAL TIMELINE<\/span>/);
   assert.match(turkishHome, />KÜTÜPHANE<\/span>/);
   assert.match(turkishHome, /Bugünün çizgisi/);
 });
@@ -211,22 +209,6 @@ test("every fallback story has natural Turkish title summary and time copy", () 
       `${route} Turkish fallback copy`,
     );
     assert.doesNotMatch(turkishHome, /Earlier today/, `${route} English fallback time`);
-  }
-});
-
-test("home timeline renders one responsive route and one moving cursor", () => {
-  execFileSync(process.execPath, ["build.mjs"], { cwd: projectRoot, stdio: "pipe" });
-
-  for (const route of ["index.html", "en.html", "tr.html"]) {
-    const html = readBuiltPage(route);
-    assert.equal((html.match(/data-timeline-route-svg/g) ?? []).length, 1, `${route} route svg`);
-    assert.equal((html.match(/data-timeline-route-path/g) ?? []).length, 1, `${route} route path`);
-    assert.equal((html.match(/data-timeline-cursor/g) ?? []).length, 1, `${route} moving cursor`);
-    assert.equal((html.match(/data-timeline-stage/g) ?? []).length, 1, `${route} sticky timeline stage`);
-    assert.doesNotMatch(html, /signal-timeline__node/, `${route} per-card nodes`);
-
-    const sides = Array.from(html.matchAll(/class="signal-timeline__item" data-side="(left|right)"/g), (match) => match[1]);
-    assert.deepEqual(sides.slice(0, 7), ["left", "right", "left", "right", "left", "right", "left"]);
   }
 });
 
@@ -390,13 +372,10 @@ function parseDayLabelsFromHtml(html) {
   );
 }
 
-function createTimelineEnvironment(stories, lang = "en") {
+function createTimelineEnvironment(stories) {
   const state = {
     dayLabels: [],
-    items: stories.map((story) => createTimelineItem({
-      storyId: story.id,
-      title: typeof story.title === "string" ? story.title : story.title?.[lang] ?? story.title?.uz ?? story.title?.en,
-    })),
+    items: stories.map((story) => createTimelineItem({ storyId: story.id, title: story.title.en })),
   };
 
   function detach(item) {
@@ -462,7 +441,7 @@ function createTimelineEnvironment(stories, lang = "en") {
 }
 
 function createAppEnvironment({ stories, fetchImpl, lang = "en" }) {
-  const timeline = createTimelineEnvironment(stories, lang);
+  const timeline = createTimelineEnvironment(stories);
   const storyDataElement = { textContent: JSON.stringify(stories) };
   const storage = new Map();
   const scrollCalls = [];
@@ -823,68 +802,6 @@ async function loadAppModule(options = {}) {
     },
   };
 }
-
-test("sort menu opens, selects an option, and closes without sorting signals", async () => {
-  const { helpers, cleanup } = await loadAppModule();
-  const createElement = (textContent = "") => ({
-    textContent,
-    hidden: false,
-    dataset: {},
-    attributes: {},
-    listeners: {},
-    classList: createClassList(),
-    addEventListener(type, listener) {
-      this.listeners[type] = listener;
-    },
-    setAttribute(name, value) {
-      this.attributes[name] = String(value);
-    },
-    getAttribute(name) {
-      return this.attributes[name] ?? null;
-    },
-    emit(type, event = {}) {
-      this.listeners[type]?.({ preventDefault() {}, stopPropagation() {}, target: this, ...event });
-    },
-  });
-
-  try {
-    const button = createElement();
-    button.dataset.signalSortValue = "newest";
-    const label = createElement("Newest to oldest");
-    const menu = createElement();
-    menu.hidden = true;
-    const options = [
-      Object.assign(createElement("Newest to oldest"), { dataset: { signalSortOption: "newest" } }),
-      Object.assign(createElement("Most popular news"), { dataset: { signalSortOption: "popular" } }),
-      Object.assign(createElement("Oldest to newest"), { dataset: { signalSortOption: "oldest" } }),
-    ];
-    const eventTarget = createElement();
-    const root = createElement();
-    root.contains = (node) => [root, button, label, menu, ...options].includes(node);
-
-    helpers.createSortMenuController({ root, button, label, menu, options, eventTarget });
-
-    button.emit("click");
-    assert.equal(menu.hidden, false);
-    assert.equal(button.getAttribute("aria-expanded"), "true");
-
-    options[1].emit("click");
-    assert.equal(label.textContent, "Most popular news");
-    assert.equal(button.dataset.signalSortValue, "popular");
-    assert.equal(options[1].getAttribute("aria-selected"), "true");
-    assert.equal(menu.hidden, true);
-
-    button.emit("click");
-    eventTarget.emit("keydown", { key: "Escape" });
-    assert.equal(menu.hidden, true);
-
-    button.emit("click");
-    eventTarget.emit("click", { target: {} });
-    assert.equal(menu.hidden, true);
-  } finally {
-    cleanup();
-  }
-});
 
 function createTrilingualLiveSignal(overrides = {}) {
   return {
@@ -1415,7 +1332,7 @@ test("the same live API record renders its Turkish translation and labels", asyn
   try {
     globalThis.fetch = async () => ({
       ok: true,
-      json: async () => ({ signals: [createTrilingualLiveSignal({ category: "companies" })] }),
+      json: async () => ({ signals: [createTrilingualLiveSignal()] }),
     });
 
     await helpers.loadLiveSignals(new Date("2026-07-13T12:00:00Z"));
@@ -1426,13 +1343,12 @@ test("the same live API record renders its Turkish translation and labels", asyn
     assert.match(environment.detailContent.innerHTML, /AKTIF SINYAL|AKTİF SİNYAL/);
     assert.match(environment.detailContent.innerHTML, /ORIJINAL KAYNAK|ORİJİNAL KAYNAK/);
     assert.doesNotMatch(environment.detailContent.innerHTML, /English detail|O&#39;zbekcha tafsilot/);
-    assert.doesNotMatch(environment.detailContent.innerHTML, /companies|general/);
   } finally {
     cleanup();
   }
 });
 
-test("missing Turkish live fields do not render Uzbek copy on the Turkish timeline", async () => {
+test("missing Turkish live fields fall back to canonical Uzbek text", async () => {
   const { environment, helpers, cleanup } = await loadAppModule({ lang: "tr" });
   try {
     const record = createTrilingualLiveSignal({
@@ -1452,8 +1368,9 @@ test("missing Turkish live fields do not render Uzbek copy on the Turkish timeli
     const normalized = helpers.normalizeLiveSignal(record, 0);
     assert.equal(normalized.title.tr, normalized.title.uz);
     assert.deepEqual(normalized.summary.tr, normalized.summary.uz);
-    assert.deepEqual(environment.timeline.getTitles(), []);
-    assert.doesNotMatch(environment.detailContent.innerHTML, /O&#39;zbekcha jonli signal|O&#39;zbekcha tafsilot/);
+    assert.deepEqual(environment.timeline.getTitles(), ["O'zbekcha jonli signal"]);
+    assert.match(environment.detailContent.innerHTML, /O&#39;zbekcha jonli signal/);
+    assert.match(environment.detailContent.innerHTML, /O&#39;zbekcha tafsilot\./);
   } finally {
     cleanup();
   }
@@ -1785,178 +1702,6 @@ test("live timeline markup ignores supplied story images", async () => {
     );
 
     assert.doesNotMatch(markup, /signal-story-image|story\.png|image-opacity/);
-    assert.match(markup, /data-side="left"/);
-    assert.doesNotMatch(markup, /signal-timeline__node/);
-
-    const secondMarkup = helpers.renderLiveTimelineItem(
-      {
-        id: "second-story",
-        title: "Second story",
-      },
-      1,
-    );
-    assert.match(secondMarkup, /data-side="right"/);
-  } finally {
-    cleanup();
-  }
-});
-
-test("timeline geometry follows a monotonic curved path and activates passed points", async () => {
-  const { helpers, cleanup } = await loadAppModule();
-  try {
-    assert.equal(
-      helpers.createTimelinePath([
-        { x: 10, y: 0 },
-        { x: 40, y: 100 },
-        { x: 10, y: 200 },
-      ]),
-      "M 10 0 C 10 42 40 58 40 100 C 40 142 10 158 10 200",
-    );
-    assert.deepEqual(
-      helpers.findTimelinePointForY([
-        { x: 10, y: 0, length: 0 },
-        { x: 40, y: 100, length: 120 },
-        { x: 10, y: 200, length: 240 },
-      ], 150),
-      { x: 25, y: 150, length: 180 },
-    );
-    assert.equal(helpers.findActiveTimelineIndex([100, 200, 300], 99), -1);
-    assert.equal(helpers.findActiveTimelineIndex([100, 200, 300], 100), 0);
-    assert.equal(helpers.findActiveTimelineIndex([100, 200, 300], 250), 1);
-    assert.equal(helpers.getTimelineSceneProgress(500, 100, 2000), 0.2);
-    assert.equal(helpers.getTimelineSceneProgress(50, 100, 2000), 0);
-    assert.equal(helpers.getTimelineSceneProgress(2200, 100, 2000), 1);
-
-    assert.deepEqual(
-      helpers.getTimelineCardRoutePoint(
-        { left: 120, right: 480, top: 250, bottom: 330 },
-        { left: 100, top: 50, width: 1000 },
-        false,
-        "left",
-      ),
-      { x: 408, y: 240 },
-    );
-    assert.deepEqual(
-      helpers.getTimelineCardRoutePoint(
-        { left: 720, right: 1080, top: 450, bottom: 530 },
-        { left: 100, top: 50, width: 1000 },
-        false,
-        "right",
-      ),
-      { x: 592, y: 440 },
-    );
-    assert.deepEqual(
-      helpers.getTimelineCardRoutePoint(
-        { left: 220, right: 620, top: 250, bottom: 330 },
-        { left: 100, top: 50, width: 1000 },
-        true,
-      ),
-      { x: 108, y: 240 },
-    );
-
-    assert.equal(helpers.getTimelineRouteYForScroll(300, 400, 100, 120, 900), 600);
-    assert.equal(helpers.getTimelineRouteYForScroll(0, 40, 100, 120, 900), 120);
-    assert.equal(helpers.getTimelineRouteYForScroll(1200, 400, 100, 120, 900), 900);
-
-    const before = helpers.getTimelineCardMorph({ entryY: 100, exitY: 180 }, 90);
-    const activationY = helpers.getTimelineCardActivationY?.({ entryY: 100, exitY: 180 });
-    const entering = helpers.getTimelineCardMorph({ entryY: 100, exitY: 180 }, 126);
-    const activated = helpers.getTimelineCardMorph({ entryY: 100, exitY: 180 }, activationY);
-    const attached = helpers.getTimelineCardMorph({ entryY: 100, exitY: 180 }, 160);
-    const leaving = helpers.getTimelineCardMorph({ entryY: 100, exitY: 180 }, 172.8);
-    const departed = helpers.getTimelineCardMorph({ entryY: 100, exitY: 180 }, 180);
-
-    assert.deepEqual(before, {
-      enter: 0,
-      exit: 0,
-      presence: 0,
-      headOpacity: 0,
-      tailOpacity: 0,
-      cursorMerge: 0,
-    });
-    assert.equal(activationY, 152);
-    assert.equal(entering.enter, 0.5);
-    assert.equal(entering.presence, 0.5);
-    assert.equal(entering.headOpacity, 0.5);
-    assert.equal(entering.cursorMerge, 1);
-    assert.equal(activated.presence, 1);
-    assert.equal(activated.headOpacity, 1);
-    assert.equal(activated.cursorMerge, 1);
-    assert.equal(attached.presence, 1);
-    assert.equal(attached.cursorMerge, 1);
-    assert.equal(leaving.exit, 0.5);
-    assert.equal(leaving.presence, 0.5);
-    assert.equal(leaving.headOpacity, 0);
-    assert.equal(leaving.tailOpacity, 0.5);
-    assert.ok(leaving.cursorMerge > 0.95);
-    assert.equal(departed.presence, 0);
-    assert.equal(departed.cursorMerge, 0);
-  } finally {
-    cleanup();
-  }
-});
-
-test("timeline scroll map dwells on cards and moves between them", async () => {
-  const { helpers, cleanup } = await loadAppModule();
-  try {
-    assert.equal(typeof helpers.createTimelineScrollMap, "function");
-    assert.equal(typeof helpers.getTimelineScrollState, "function");
-
-    const scrollMap = helpers.createTimelineScrollMap(0, [
-      { entryY: 100, exitY: 180 },
-      { entryY: 300, exitY: 380 },
-    ]);
-
-    assert.equal(scrollMap.total, 1168);
-    assert.deepEqual(scrollMap.activationOffsets, [448, 1056]);
-    assert.deepEqual(helpers.getTimelineScrollState(scrollMap, 400), {
-      routeY: 140,
-      cardIndex: 0,
-      cardProgress: 0.5,
-    });
-    assert.deepEqual(helpers.getTimelineScrollState(scrollMap, 704), {
-      routeY: 240,
-      cardIndex: -1,
-      cardProgress: 0,
-    });
-  } finally {
-    cleanup();
-  }
-});
-
-test("Turkish timeline keeps fallback cards when API records have no Turkish copy", async () => {
-  const fallbackStories = [
-    {
-      id: "fallback-tr",
-      title: { tr: "Türkçe örnek haber" },
-      summary: { tr: ["Türkçe örnek açıklama."] },
-      source: "Alomat",
-      time: "09:00",
-    },
-  ];
-  const { environment, helpers, cleanup } = await loadAppModule({ stories: fallbackStories, lang: "tr" });
-  try {
-    globalThis.fetch = async () => ({
-      ok: true,
-      json: async () => ({
-        signals: [
-          {
-            id: 701,
-            title: "Faqat o'zbekcha sarlavha",
-            summary: ["Faqat o'zbekcha izoh."],
-            title_en: "English title",
-            summary_en: ["English summary."],
-            title_tr: "",
-            summary_tr: [],
-            created_at: "2026-07-14T08:00:00Z",
-          },
-        ],
-      }),
-    });
-
-    await helpers.loadLiveSignals(new Date("2026-07-14T12:00:00Z"));
-
-    assert.deepEqual(environment.timeline.getTitles(), ["Türkçe örnek haber"]);
   } finally {
     cleanup();
   }

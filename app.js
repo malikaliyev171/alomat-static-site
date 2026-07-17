@@ -22,11 +22,6 @@ const locale = supportedLocales.includes(documentLocale) ? documentLocale : "uz"
 const themePickers = Array.from(document.querySelectorAll("[data-palette-picker]"));
 const themeButtons = Array.from(document.querySelectorAll("[data-palette-toggle]"));
 const themeOptions = Array.from(document.querySelectorAll("[data-palette-option]"));
-const signalSortRoot = document.querySelector("[data-signal-sort]");
-const signalSortButton = signalSortRoot?.querySelector("[data-signal-sort-trigger]");
-const signalSortLabel = signalSortRoot?.querySelector("[data-signal-sort-label]");
-const signalSortMenu = signalSortRoot?.querySelector("[data-signal-sort-menu]");
-const signalSortOptions = Array.from(signalSortRoot?.querySelectorAll("[data-signal-sort-option]") ?? []);
 const nameForm = document.querySelector("[data-name-form]");
 const nameInput = document.querySelector("[data-name-input]");
 const nameFirstInput = document.querySelector("[data-name-first-input]");
@@ -64,33 +59,14 @@ const pageMain = document.querySelector(".page-home");
 let storyData = parseStoryData();
 let storyMap = new Map(storyData.map((story) => [String(story.id), story]));
 const timelineItemsContainer = document.querySelector("[data-signal-timeline-items]");
-const timelineRoot = document.querySelector(".signal-timeline");
-const timelineStage = document.querySelector("[data-timeline-stage]");
-const timelineRouteSvg = document.querySelector("[data-timeline-route-svg]");
-const timelineRoutePath = document.querySelector("[data-timeline-route-path]");
-const timelineCursor = document.querySelector("[data-timeline-cursor]");
-const timelineStartAxis = document.querySelector(".signal-reader-gate__axis");
 const detailDefaults = captureDetailDefaults();
 let activeStoryId = null;
 let activeUpdateFrame = 0;
-let activeTimelineIndex = -1;
-let timelineLayoutFrame = 0;
-let timelineResizeObserver = null;
-let timelineMorphIndexes = new Set();
-let timelineLayout = {
-  rootDocumentTop: 0,
-  start: null,
-  samples: [],
-  activationYs: [],
-  activationScrollYs: [],
-  cardEntryYs: [],
-  cardRanges: [],
-  scrollMap: null,
-  items: [],
-  scrollRange: 1,
-  stageHeight: 1,
-  visualHeight: 1,
-};
+let timelineArmed = false;
+let timelineClosed = false;
+let lastScrollY = window.scrollY || 0;
+let scrollSyncLockedStoryId = null;
+let scrollSyncLockExpiresAt = 0;
 let timelineRevealObserver = null;
 let earlierLiveStoryGroups = [];
 let liveTimelineTodayKey = getLocalDayKey(new Date());
@@ -664,13 +640,6 @@ function normalizeLiveSignalSummary(summary) {
     .filter(Boolean);
 }
 
-function hasLocalizedSignalContent(signal, localeKey = locale) {
-  const suffix = localeKey === "tr" ? "_tr" : "";
-  const title = String(signal?.[`title${suffix}`] ?? "").trim();
-  const summary = normalizeLiveSignalSummary(signal?.[`summary${suffix}`]);
-  return Boolean(title && summary.length);
-}
-
 function normalizeLiveRichSummary(value) {
   if (!Array.isArray(value)) {
     return [];
@@ -918,14 +887,14 @@ function buildExpandedSummary(story) {
 
   if (locale === "tr") {
     summary.push(
-      `Bu sinyal önemli, çünkü "${title}" yalnızca tek bir başlık değil; bu alandaki kararların nasıl alındığı, finanse edildiği ve kamuya nasıl anlatıldığı konusunda daha geniş bir değişime işaret ediyor. ${time} zamanlaması hikayeyi güncel tutarken ${source}, neyin değiştiğini ve neyin belirsiz kaldığını değerlendirmek için ilk çerçeveyi sunuyor.`,
+      `Bu sinyal önemli, çünkü "${title}" yalnızca tek bir başlık değil; ${category} alanındaki kararların nasıl alındığı, finanse edildiği ve kamuya nasıl anlatıldığı konusunda daha geniş bir değişime işaret ediyor. ${time} zamanlaması hikayeyi güncel tutarken ${source}, neyin değiştiğini ve neyin belirsiz kaldığını değerlendirmek için ilk çerçeveyi sunuyor.`,
       "Okurlar için pratik sonuç, ikinci dereceden etkileri izlemektir: hangi ekiplerin, pazarların, kullanıcıların veya düzenleyicilerin sırada tepki vereceği. Yararlı bir sinyal sadece ne olduğunu değil, bundan sonra neyin izlenmesi gerektiğini de gösterir.",
     );
     return summary;
   }
 
   summary.push(
-    `Bu signal muhim, chunki "${title}" faqat bitta sarlavha emas; u shu yo'nalishda qarorlar qanday qabul qilinayotgani, qanday moliyalashtirilayotgani va ommaga qanday tushuntirilayotganini ko'rsatadi. ${time} vaqti voqeani bugungi kun ritmiga bog'laydi, ${source} esa nima o'zgargani va nimasi hali ochiq qolayotganini baholash uchun birinchi kontekstni beradi.`,
+    `Bu signal muhim, chunki "${title}" faqat bitta sarlavha emas; u ${category} yo'nalishida qarorlar qanday qabul qilinayotgani, qanday moliyalashtirilayotgani va ommaga qanday tushuntirilayotganini ko'rsatadi. ${time} vaqti voqeani bugungi kun ritmiga bog'laydi, ${source} esa nima o'zgargani va nimasi hali ochiq qolayotganini baholash uchun birinchi kontekstni beradi.`,
     `O'quvchi uchun asosiy nuqta keyingi ta'sirlarni kuzatish: qaysi jamoalar, bozorlar, foydalanuvchilar yoki regulyatorlar bunga javob beradi. Foydali signal faqat nima bo'lganini aytmaydi; u keyin nimaga qarash kerakligini ham aniqlaydi. Shu sababli karta mavzuni uzun feedga aylantirmasdan, tushunarli kontekst bilan ushlab turadi.`,
   );
   return summary;
@@ -996,434 +965,21 @@ function getTimelineAnchor() {
   return window.innerHeight * 0.52;
 }
 
-function formatTimelineNumber(value) {
-  return String(Math.round(Number(value) * 1000) / 1000);
-}
-
-function createTimelinePath(points, curve = 0.42) {
-  const routePoints = Array.isArray(points)
-    ? points.filter((point) => Number.isFinite(point?.x) && Number.isFinite(point?.y))
-    : [];
-  if (!routePoints.length) {
-    return "";
-  }
-
-  const commands = [`M ${formatTimelineNumber(routePoints[0].x)} ${formatTimelineNumber(routePoints[0].y)}`];
-  for (let index = 1; index < routePoints.length; index += 1) {
-    const previous = routePoints[index - 1];
-    const current = routePoints[index];
-    const distance = Math.max(0, current.y - previous.y);
-    commands.push(
-      `C ${formatTimelineNumber(previous.x)} ${formatTimelineNumber(previous.y + distance * curve)}`
-      + ` ${formatTimelineNumber(current.x)} ${formatTimelineNumber(current.y - distance * curve)}`
-      + ` ${formatTimelineNumber(current.x)} ${formatTimelineNumber(current.y)}`,
-    );
-  }
-  return commands.join(" ");
-}
-
-function findTimelinePointForY(samples, targetY) {
-  if (!Array.isArray(samples) || !samples.length) {
-    return null;
-  }
-  if (targetY <= samples[0].y) {
-    return { ...samples[0] };
-  }
-  const last = samples[samples.length - 1];
-  if (targetY >= last.y) {
-    return { ...last };
-  }
-
-  let low = 0;
-  let high = samples.length - 1;
-  while (low + 1 < high) {
-    const middle = Math.floor((low + high) / 2);
-    if (samples[middle].y <= targetY) {
-      low = middle;
-    } else {
-      high = middle;
-    }
-  }
-
-  const before = samples[low];
-  const after = samples[high];
-  const progress = (targetY - before.y) / Math.max(1, after.y - before.y);
-  return {
-    x: before.x + (after.x - before.x) * progress,
-    y: targetY,
-    length: before.length + (after.length - before.length) * progress,
-  };
-}
-
-function findActiveTimelineIndex(activationPoints, cursorY) {
-  let low = 0;
-  let high = Array.isArray(activationPoints) ? activationPoints.length : 0;
-  while (low < high) {
-    const middle = Math.floor((low + high) / 2);
-    if (activationPoints[middle] <= cursorY) {
-      low = middle + 1;
-    } else {
-      high = middle;
-    }
-  }
-  return low - 1;
-}
-
-function clampTimelineProgress(value) {
-  return Math.max(0, Math.min(1, Number(value) || 0));
-}
-
-function smoothTimelineProgress(value) {
-  const progress = clampTimelineProgress(value);
-  return progress * progress * (3 - 2 * progress);
-}
-
-function getTimelineSceneProgress(scrollY, sceneTop, scrollDuration) {
-  const duration = Math.max(1, Number(scrollDuration) || 1);
-  return clampTimelineProgress(((Number(scrollY) || 0) - (Number(sceneTop) || 0)) / duration);
-}
-
-function getTimelinePanY(routeY, stageHeight, visualHeight) {
-  const viewportHeight = Math.max(1, Number(stageHeight) || 1);
-  const contentHeight = Math.max(viewportHeight, Number(visualHeight) || viewportHeight);
-  const anchorY = viewportHeight * 0.42;
-  const minimumPan = Math.min(0, viewportHeight - contentHeight);
-  return Math.max(minimumPan, Math.min(0, anchorY - (Number(routeY) || 0)));
-}
-
-const TIMELINE_CARD_SPREAD_END = 0.65;
-const TIMELINE_CARD_EXIT_START = 0.82;
-const TIMELINE_TRAVEL_WEIGHT = 2.4;
-
-function createTimelineScrollMap(startY, cardRanges) {
-  let cursorY = Number.isFinite(Number(startY)) ? Number(startY) : 0;
-  let offset = 0;
-  const segments = [];
-  const activationOffsets = [];
-
-  (Array.isArray(cardRanges) ? cardRanges : []).forEach((range, cardIndex) => {
-    const entryY = Number(range?.entryY);
-    const exitY = Number(range?.exitY);
-    if (![entryY, exitY].every(Number.isFinite) || exitY <= entryY) {
-      return;
-    }
-
-    const travelSpan = Math.max(0, entryY - cursorY) * TIMELINE_TRAVEL_WEIGHT;
-    if (travelSpan > 0) {
-      segments.push({
-        type: "travel",
-        start: offset,
-        end: offset + travelSpan,
-        fromY: cursorY,
-        toY: entryY,
-      });
-      offset += travelSpan;
-    }
-
-    const cardHeight = exitY - entryY;
-    const cardSpan = Math.min(420, Math.max(320, cardHeight * 4));
-    const cardStart = offset;
-    const cardEnd = cardStart + cardSpan;
-    segments.push({
-      type: "card",
-      start: cardStart,
-      end: cardEnd,
-      fromY: entryY,
-      toY: exitY,
-      cardIndex,
-    });
-    activationOffsets.push(cardStart + cardSpan * TIMELINE_CARD_SPREAD_END);
-    offset = cardEnd;
-    cursorY = exitY;
-  });
-
-  return {
-    segments,
-    total: Math.max(1, offset),
-    activationOffsets,
-  };
-}
-
-function getTimelineScrollState(scrollMap, virtualOffset) {
-  const segments = Array.isArray(scrollMap?.segments) ? scrollMap.segments : [];
-  if (!segments.length) {
-    return { routeY: 0, cardIndex: -1, cardProgress: 0 };
-  }
-
-  const total = Math.max(1, Number(scrollMap?.total) || 1);
-  const offset = Math.max(0, Math.min(total, Number(virtualOffset) || 0));
-  const segment = segments.find((candidate, index) => (
-    offset < candidate.end || index === segments.length - 1
-  ));
-  const span = Math.max(1, segment.end - segment.start);
-  const progress = clampTimelineProgress((offset - segment.start) / span);
-  const routeY = segment.fromY + (segment.toY - segment.fromY) * progress;
-
-  return {
-    routeY,
-    cardIndex: segment.type === "card" ? segment.cardIndex : -1,
-    cardProgress: segment.type === "card" ? progress : 0,
-  };
-}
-
-function getTimelineCardRoutePoint(buttonRect, rootRect, compactRoute = false, side = "right") {
-  const values = [
-    buttonRect?.left,
-    buttonRect?.right,
-    buttonRect?.top,
-    buttonRect?.bottom,
-    rootRect?.left,
-    rootRect?.top,
-    rootRect?.width,
-  ];
-  if (!values.every(Number.isFinite)) {
-    return null;
-  }
-
-  const routeGap = 28;
-  const rawX = compactRoute
-    ? buttonRect.left - rootRect.left - 12
-    : side === "left"
-      ? buttonRect.right - rootRect.left + routeGap
-      : buttonRect.left - rootRect.left - routeGap;
-  const x = Math.max(12, Math.min(rootRect.width - 12, rawX));
-  return { x, y: (buttonRect.top + buttonRect.bottom) / 2 - rootRect.top };
-}
-
-function getTimelineRouteYForScroll(scrollY, anchorY, rootDocumentTop, startY, endY) {
-  const minimum = Math.min(Number(startY) || 0, Number(endY) || 0);
-  const maximum = Math.max(Number(startY) || 0, Number(endY) || 0);
-  const viewportY = (Number(scrollY) || 0) + (Number(anchorY) || 0) - (Number(rootDocumentTop) || 0);
-  return Math.max(minimum, Math.min(maximum, viewportY));
-}
-
-function getTimelineCardActivationY(range) {
-  const entryY = Number(range?.entryY);
-  const exitY = Number(range?.exitY);
-  if (![entryY, exitY].every(Number.isFinite) || exitY <= entryY) {
-    return null;
-  }
-
-  return entryY + (exitY - entryY) * TIMELINE_CARD_SPREAD_END;
-}
-
-function getTimelineCardMorph(range, routeY) {
-  const entryY = Number(range?.entryY);
-  const exitY = Number(range?.exitY);
-  const currentY = Number(routeY);
-  if (![entryY, exitY, currentY].every(Number.isFinite) || exitY <= entryY) {
-    return {
-      enter: 0,
-      exit: 0,
-      presence: 0,
-      headOpacity: 0,
-      tailOpacity: 0,
-      cursorMerge: 0,
-    };
-  }
-
-  const phase = clampTimelineProgress((currentY - entryY) / (exitY - entryY));
-  const enter = Number(clampTimelineProgress(phase / TIMELINE_CARD_SPREAD_END).toFixed(6));
-  const exit = Number(clampTimelineProgress(
-    (phase - TIMELINE_CARD_EXIT_START) / (1 - TIMELINE_CARD_EXIT_START),
-  ).toFixed(6));
-  const enterEase = smoothTimelineProgress(enter);
-  const exitEase = smoothTimelineProgress(exit);
-  const tailMix = smoothTimelineProgress((phase - 0.7) / 0.12);
-  const presence = enterEase * (1 - exitEase);
-  const mergeIn = smoothTimelineProgress(phase / 0.14);
-  const cursorExit = smoothTimelineProgress((phase - 0.93) / 0.07);
-
-  return {
-    enter,
-    exit,
-    presence,
-    headOpacity: enterEase * (1 - tailMix),
-    tailOpacity: tailMix * (1 - exitEase),
-    cursorMerge: mergeIn * (1 - cursorExit),
-  };
-}
-
-function getStoryActivationRect(item) {
-  const button = item?.querySelector(".signal-timeline__headline-button") ?? item;
-  return button?.getBoundingClientRect?.() ?? item?.getBoundingClientRect?.() ?? null;
+function getStoryNodeRect(item) {
+  const node = item?.querySelector(".signal-timeline__node") ?? item;
+  return node?.getBoundingClientRect?.() ?? null;
 }
 
 function scrollStoryIntoView(item, behavior = "smooth") {
-  const itemIndex = timelineLayout.items.indexOf(item);
-  const activationScrollY = timelineLayout.activationScrollYs[itemIndex];
-  const rect = getStoryActivationRect(item);
-  if (!Number.isFinite(activationScrollY) && !rect) {
+  const rect = getStoryNodeRect(item);
+  if (!rect) {
     return;
   }
 
-  const target = Number.isFinite(activationScrollY)
-    ? activationScrollY + 3
-    : window.scrollY + rect.top + rect.height / 2 - getTimelineAnchor();
-  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
-  window.scrollTo({ top: Math.max(0, target), behavior: reduceMotion ? "auto" : behavior });
-}
-
-function sampleTimelineRoute(routePoints) {
-  if (!routePoints.length) {
-    return [];
-  }
-  const samples = [{ ...routePoints[0], length: 0 }];
-  let length = 0;
-  for (let index = 1; index < routePoints.length; index += 1) {
-    const previous = routePoints[index - 1];
-    const current = routePoints[index];
-    const distanceY = Math.max(1, current.y - previous.y);
-    const controls = {
-      first: { x: previous.x, y: previous.y + distanceY * 0.42 },
-      second: { x: current.x, y: current.y - distanceY * 0.42 },
-    };
-    const stepCount = Math.max(2, Math.ceil(distanceY / 5));
-    for (let step = 1; step <= stepCount; step += 1) {
-      const progress = step / stepCount;
-      const inverse = 1 - progress;
-      const point = {
-        x: inverse ** 3 * previous.x
-          + 3 * inverse ** 2 * progress * controls.first.x
-          + 3 * inverse * progress ** 2 * controls.second.x
-          + progress ** 3 * current.x,
-        y: inverse ** 3 * previous.y
-          + 3 * inverse ** 2 * progress * controls.first.y
-          + 3 * inverse * progress ** 2 * controls.second.y
-          + progress ** 3 * current.y,
-      };
-      const last = samples[samples.length - 1];
-      length += Math.hypot(point.x - last.x, point.y - last.y);
-      samples.push({ ...point, length });
-    }
-  }
-  return samples;
-}
-
-function measureTimelineLayout() {
-  timelineLayoutFrame = 0;
-  if (!timelineRoot || !timelineRouteSvg || !timelineRoutePath || !timelineCursor) {
-    return;
-  }
-
-  timelineStage?.style?.setProperty?.("--timeline-pan-y", "0px");
-  const geometryRoot = timelineStage ?? timelineRoot;
-  const rootRect = geometryRoot.getBoundingClientRect();
-  const rootWidth = Math.max(1, rootRect.width);
-  const rootHeight = Math.max(1, timelineRoot.scrollHeight || rootRect.height);
-  const compactRoute = window.matchMedia?.("(max-width: 959px)")?.matches === true;
-  const startRect = timelineStartAxis?.getBoundingClientRect?.();
-  const start = {
-    x: compactRoute ? 20 : (startRect ? startRect.left + startRect.width / 2 - rootRect.left : rootWidth / 2),
-    y: startRect ? startRect.top + startRect.height / 2 - rootRect.top : 0,
-  };
-  const routePoints = [start];
-  const visibleItems = [];
-  const activationYs = [];
-
-  timelineItems.forEach((item) => {
-    if (item.hidden) {
-      return;
-    }
-    const visibleIndex = visibleItems.length;
-    item.dataset.side = visibleIndex % 2 === 0 ? "left" : "right";
-    const buttonRect = getStoryActivationRect(item);
-    const routePoint = buttonRect
-      ? getTimelineCardRoutePoint(buttonRect, rootRect, compactRoute, item.dataset.side)
-      : null;
-    if (!routePoint) {
-      return;
-    }
-    visibleItems.push(item);
-    const previousY = routePoints[routePoints.length - 1].y;
-    const y = Math.max(previousY + 40, routePoint.y);
-    routePoints.push({ x: routePoint.x, y });
-    activationYs.push(y);
-  });
-
-  const pathData = createTimelinePath(routePoints);
-  timelineRouteSvg.setAttribute("viewBox", `0 0 ${formatTimelineNumber(rootWidth)} ${formatTimelineNumber(rootHeight)}`);
-  timelineRouteSvg.setAttribute("preserveAspectRatio", "none");
-  timelineRoutePath.setAttribute("d", pathData);
-  timelineRoot.style?.removeProperty?.("--timeline-scene-height");
-  timelineStage?.style?.setProperty?.("--timeline-visual-height", `${formatTimelineNumber(rootHeight)}px`);
-  const sceneRect = timelineRoot.getBoundingClientRect();
-  const rootDocumentTop = sceneRect.top + (window.scrollY || 0);
-  const activationScrollYs = activationYs.map((activationY) => (
-    rootDocumentTop + activationY - getTimelineAnchor()
-  ));
-  timelineLayout = {
-    rootDocumentTop,
-    start,
-    samples: sampleTimelineRoute(routePoints),
-    activationYs,
-    activationScrollYs,
-    cardEntryYs: activationYs,
-    cardRanges: [],
-    scrollMap: null,
-    items: visibleItems,
-    scrollRange: Math.max(1, rootHeight - start.y),
-    stageHeight: Math.max(1, window.innerHeight || 1),
-    visualHeight: rootHeight,
-  };
-  syncActiveStory();
-}
-
-function scheduleTimelineLayout() {
-  if (timelineLayoutFrame || !timelineRoot) {
-    return;
-  }
-  timelineLayoutFrame = window.requestAnimationFrame(measureTimelineLayout);
-}
-
-function setTimelineCssVariable(item, name, value) {
-  item?.style?.setProperty?.(name, String(value));
-}
-
-function resetTimelineMorph(index) {
-  const item = timelineLayout.items[index];
-  if (!item) {
-    return;
-  }
-  setTimelineCssVariable(item, "--card-activation", 0);
-  setTimelineCssVariable(item, "--shadow-head-scale-x", 0.08);
-  setTimelineCssVariable(item, "--shadow-head-scale-y", 0.22);
-  setTimelineCssVariable(item, "--shadow-head-opacity", 0);
-  setTimelineCssVariable(item, "--shadow-tail-scale-x", 1);
-  setTimelineCssVariable(item, "--shadow-tail-scale-y", 1);
-  setTimelineCssVariable(item, "--shadow-tail-opacity", 0);
-  setTimelineCssVariable(item, "--shadow-tail-offset", "0px");
-}
-
-function updateTimelineMorphState(scrollState) {
-  const currentIndex = Number.isInteger(scrollState?.cardIndex) ? scrollState.cardIndex : -1;
-  const nextIndexes = new Set(currentIndex >= 0 ? [currentIndex] : []);
-
-  timelineMorphIndexes.forEach((index) => {
-    if (!nextIndexes.has(index)) {
-      resetTimelineMorph(index);
-    }
-  });
-
-  let cursorMerge = 0;
-  nextIndexes.forEach((index) => {
-    const item = timelineLayout.items[index];
-    const range = timelineLayout.cardRanges[index];
-    const routeY = range.entryY + (range.exitY - range.entryY) * scrollState.cardProgress;
-    const morph = getTimelineCardMorph(range, routeY);
-    setTimelineCssVariable(item, "--card-activation", formatTimelineNumber(morph.presence));
-    setTimelineCssVariable(item, "--shadow-head-scale-x", formatTimelineNumber(0.08 + 0.92 * morph.enter));
-    setTimelineCssVariable(item, "--shadow-head-scale-y", formatTimelineNumber(0.22 + 0.78 * morph.enter));
-    setTimelineCssVariable(item, "--shadow-head-opacity", formatTimelineNumber(morph.headOpacity));
-    setTimelineCssVariable(item, "--shadow-tail-scale-x", formatTimelineNumber(0.08 + 0.92 * (1 - morph.exit)));
-    setTimelineCssVariable(item, "--shadow-tail-scale-y", formatTimelineNumber(0.22 + 0.78 * (1 - morph.exit)));
-    setTimelineCssVariable(item, "--shadow-tail-opacity", formatTimelineNumber(morph.tailOpacity));
-    setTimelineCssVariable(item, "--shadow-tail-offset", `${formatTimelineNumber(12 * morph.exit)}px`);
-    cursorMerge = Math.max(cursorMerge, morph.cursorMerge);
-  });
-
-  timelineMorphIndexes = nextIndexes;
-  return cursorMerge;
+  scrollSyncLockedStoryId = String(item.dataset.storyId || "");
+  scrollSyncLockExpiresAt = Date.now() + 1000;
+  const target = window.scrollY + rect.top + rect.height / 2 - getTimelineAnchor();
+  window.scrollTo({ top: Math.max(0, target), behavior });
 }
 
 function resetDetailScroll() {
@@ -1528,16 +1084,17 @@ function setStoryActionStatus(key) {
   }
 }
 
-function resetDetailPanel(options = {}) {
+function resetDetailPanel() {
   if (!detailContent || !detailDefaults) {
     return;
   }
 
-  const { preserveTimelineIndex = false } = options;
   activeStoryId = null;
-  if (!preserveTimelineIndex) {
-    activeTimelineIndex = -1;
-  }
+  timelineArmed = false;
+  timelineClosed = true;
+  scrollSyncLockedStoryId = null;
+  scrollSyncLockExpiresAt = 0;
+  lastScrollY = window.scrollY || 0;
   detailContent.innerHTML = detailDefaults.html;
   if (detailVisual) {
     detailVisual.style.backgroundImage = detailDefaults.visual || "";
@@ -1574,9 +1131,9 @@ function getTimelineStoryTitle(story) {
 function renderLiveTimelineItem(story, index) {
   const shift = ((index % 3) - 1) * 7;
   const timelineTitle = getTimelineStoryTitle(story);
-  const side = index % 2 === 0 ? "left" : "right";
   return `
-    <article class="signal-timeline__item" data-side="${side}" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+    <article class="signal-timeline__item" data-side="left" data-story-id="${escapeAttribute(story.id)}" data-timeline-index="${index}" style="--timeline-headline-size: 1.420rem; --timeline-headline-shift: ${shift}px; --timeline-node-size: 20.3px; --timeline-importance: 0.94; --timeline-widget-width: 520px; --timeline-widget-pad-x: 19.4px; --timeline-widget-pad-y: 13.6px;">
+      <div class="signal-timeline__node" aria-hidden="true"></div>
       <button type="button" class="signal-timeline__headline-button">
         <span class="signal-timeline__headline-text">${escapeHtml(timelineTitle)}</span>
       </button>
@@ -1632,7 +1189,6 @@ function refreshTimelineStoryBindings() {
   timelineItems = Array.from(timelineItemsContainer.querySelectorAll(".signal-timeline__item"));
   bindTimelineItemEvents();
   initTimelineReveal();
-  scheduleTimelineLayout();
 }
 
 function replaceTimelineStories(todayStories, olderStoryGroups = []) {
@@ -1648,16 +1204,14 @@ function replaceTimelineStories(todayStories, olderStoryGroups = []) {
   earlierLiveStoryGroups = olderStoryGroups.map((group) => [...group]);
   refreshTimelineStoryBindings();
   updateLoadEarlierButton(earlierLiveStoryGroups.length > 0);
-  if (!timelineRoot) {
-    const firstItem = timelineItems[0];
-    const firstStory = firstItem ? storyMap.get(String(firstItem.dataset.storyId)) : null;
-    if (firstStory && firstItem) {
-      applyStoryToDetail(firstStory, firstItem, { behavior: "auto" });
-      return;
-    }
+  const firstItem = timelineItems[0];
+  const firstStory = firstItem ? storyMap.get(String(firstItem.dataset.storyId)) : null;
+  if (firstStory && firstItem) {
+    applyStoryToDetail(firstStory, firstItem, { behavior: "auto" });
+    return;
   }
+
   resetDetailPanel();
-  scheduleTimelineLayout();
 }
 
 function applyStoryToDetail(story, item, options = {}) {
@@ -1668,6 +1222,8 @@ function applyStoryToDetail(story, item, options = {}) {
   const { scrollIntoView = false, behavior = "smooth" } = options;
   const storyId = String(story.id);
   const isNewStory = activeStoryId !== storyId;
+  timelineArmed = true;
+  timelineClosed = false;
   activeStoryId = storyId;
   if (detailVisual) {
     detailVisual.style.backgroundImage = "";
@@ -1686,43 +1242,66 @@ function applyStoryToDetail(story, item, options = {}) {
   }
 }
 
+function findBestVisibleStoryItem() {
+  const viewportAnchor = getTimelineAnchor();
+  let bestItem = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+
+  timelineItems.forEach((item) => {
+    if (item.hidden) {
+      return;
+    }
+
+    const story = storyMap.get(String(item.dataset.storyId));
+    if (!story) {
+      return;
+    }
+
+    const rect = getStoryNodeRect(item) ?? item.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+      return;
+    }
+
+    const distance = Math.abs(rect.top + rect.height / 2 - viewportAnchor);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestItem = item;
+    }
+  });
+
+  return bestItem;
+}
+
 function syncActiveStory() {
   activeUpdateFrame = 0;
-  if (!timelineCursor || !timelineLayout.samples.length || !timelineLayout.start) {
+  if (!timelineArmed || timelineClosed) {
+    lastScrollY = window.scrollY || 0;
     return;
   }
 
-  const scrollY = window.scrollY || 0;
-  const lastSample = timelineLayout.samples[timelineLayout.samples.length - 1];
-  const routeY = getTimelineRouteYForScroll(
-    scrollY,
-    getTimelineAnchor(),
-    timelineLayout.rootDocumentTop,
-    timelineLayout.start.y,
-    lastSample.y,
-  );
-  const point = findTimelinePointForY(timelineLayout.samples, routeY) ?? timelineLayout.start;
-  timelineStage?.style?.setProperty?.("--timeline-pan-y", "0px");
-  const cursorSize = window.matchMedia?.("(max-width: 780px)")?.matches === true ? 18 : 22;
-  timelineCursor.style.opacity = "1";
-  timelineCursor.style.transform = `translate3d(${formatTimelineNumber(point.x - cursorSize / 2)}px, ${formatTimelineNumber(point.y - cursorSize / 2)}px, 0)`;
-
-  const nextIndex = findActiveTimelineIndex(timelineLayout.activationYs, routeY);
-  if (nextIndex === activeTimelineIndex) {
+  const scrollSyncIsLocked =
+    scrollSyncLockedStoryId === activeStoryId && Date.now() < scrollSyncLockExpiresAt;
+  if (scrollSyncIsLocked) {
+    lastScrollY = window.scrollY || 0;
     return;
   }
-  activeTimelineIndex = nextIndex;
+  scrollSyncLockedStoryId = null;
+  scrollSyncLockExpiresAt = 0;
 
-  if (nextIndex < 0) {
-    resetDetailPanel({ preserveTimelineIndex: true });
+  const activeItem = findBestVisibleStoryItem();
+  if (!activeItem) {
+    lastScrollY = window.scrollY || 0;
     return;
   }
 
-  const activeItem = timelineLayout.items[nextIndex];
-  const story = activeItem ? storyMap.get(String(activeItem.dataset.storyId)) : null;
-  if (story && activeItem) {
-    applyStoryToDetail(story, activeItem);
+  const story = storyMap.get(String(activeItem.dataset.storyId));
+  if (!story) {
+    lastScrollY = window.scrollY || 0;
+    return;
   }
+
+  applyStoryToDetail(story, activeItem);
+  lastScrollY = window.scrollY || 0;
 }
 
 function scheduleActiveStorySync() {
@@ -1851,68 +1430,6 @@ function initTheme() {
     if (event.key === "Escape") {
       closeMenus();
     }
-  });
-}
-
-function createSortMenuController({ root, button, label, menu, options, eventTarget = document }) {
-  if (!root || !button || !label || !menu || !options?.length) {
-    return null;
-  }
-
-  const setOpen = (isOpen) => {
-    root.classList.toggle("is-open", isOpen);
-    button.setAttribute("aria-expanded", String(isOpen));
-    menu.hidden = !isOpen;
-    menu.setAttribute?.("aria-hidden", String(!isOpen));
-  };
-  const close = () => setOpen(false);
-  const select = (option) => {
-    const value = option?.dataset?.signalSortOption;
-    if (!value) return;
-    const nextLabel = option.dataset.signalSortLabel || option.textContent.trim();
-    button.dataset.signalSortValue = value;
-    label.textContent = nextLabel;
-    options.forEach((entry) => {
-      const isSelected = entry === option;
-      entry.classList.toggle("is-selected", isSelected);
-      entry.setAttribute("aria-selected", String(isSelected));
-    });
-    close();
-  };
-
-  button.addEventListener("click", (event) => {
-    event.stopPropagation();
-    setOpen(button.getAttribute("aria-expanded") !== "true");
-  });
-  options.forEach((option) => {
-    option.addEventListener("click", (event) => {
-      event.stopPropagation();
-      select(option);
-    });
-  });
-  eventTarget.addEventListener("click", (event) => {
-    if (!root.contains(event.target)) {
-      close();
-    }
-  });
-  eventTarget.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      close();
-      button.focus?.();
-    }
-  });
-
-  close();
-  return { close, select, setOpen };
-}
-
-function initSortMenu() {
-  createSortMenuController({
-    root: signalSortRoot,
-    button: signalSortButton,
-    label: signalSortLabel,
-    menu: signalSortMenu,
-    options: signalSortOptions,
   });
 }
 
@@ -2138,6 +1655,7 @@ function openNameModal() {
   }
 
   resetDetailPanel();
+  timelineClosed = false;
   nameModal.hidden = false;
   nameModal.classList.add("is-open");
   document.documentElement.classList.add("modal-open");
@@ -2221,7 +1739,7 @@ function initLoadEarlier() {
       loadEarlierButton.setAttribute("aria-disabled", "true");
       loadEarlierButton.setAttribute("tabindex", "-1");
     }
-    scheduleTimelineLayout();
+    scheduleActiveStorySync();
   });
 }
 
@@ -2260,48 +1778,25 @@ function initTimelineReveal() {
 
 function bindTimelineItemEvents() {
   timelineItems.forEach((item) => {
-    if (item.dataset.timelineBound === "true") {
-      return;
-    }
-    item.dataset.timelineBound = "true";
-    const openStory = () => {
-      const story = storyMap.get(String(item.dataset.storyId));
-      if (!story) {
-        return;
-      }
-      if (timelineLayout.samples.length) {
-        scrollStoryIntoView(item);
-        return;
-      }
-      applyStoryToDetail(story, item, { scrollIntoView: true });
-    };
     item.addEventListener("click", (event) => {
       if (event.target.closest(".signal-timeline__headline-button")) {
         return;
       }
-      openStory();
+      const story = storyMap.get(String(item.dataset.storyId));
+      if (!story) {
+        return;
+      }
+      applyStoryToDetail(story, item, { scrollIntoView: true });
     });
     const button = item.querySelector(".signal-timeline__headline-button");
-    button?.addEventListener("click", openStory);
+    button?.addEventListener("click", () => {
+      const story = storyMap.get(String(item.dataset.storyId));
+      if (!story) {
+        return;
+      }
+      applyStoryToDetail(story, item, { scrollIntoView: true });
+    });
   });
-}
-
-function initTimelineRoute() {
-  if (!timelineRoot || !timelineItemsContainer || !timelineCursor) {
-    return;
-  }
-
-  if (typeof ResizeObserver !== "undefined") {
-    timelineResizeObserver?.disconnect();
-    timelineResizeObserver = new ResizeObserver(scheduleTimelineLayout);
-    timelineResizeObserver.observe(timelineItemsContainer);
-    if (timelineStartAxis) {
-      timelineResizeObserver.observe(timelineStartAxis);
-    }
-  }
-
-  document.fonts?.ready?.then(scheduleTimelineLayout).catch(() => {});
-  scheduleTimelineLayout();
 }
 
 function initTimelineStories() {
@@ -2336,17 +1831,33 @@ function initTimelineStories() {
     }
 
     event.preventDefault();
-    resetDetailPanel({ preserveTimelineIndex: true });
+    resetDetailPanel();
   });
 
   bindTimelineItemEvents();
 
   window.addEventListener(
     "scroll",
-    scheduleActiveStorySync,
+    () => {
+      const currentScrollY = window.scrollY || 0;
+      const scrollingDownPastGate =
+        Number.isFinite(lastScrollY) &&
+        currentScrollY > lastScrollY &&
+        currentScrollY > window.innerHeight * 0.4;
+
+      lastScrollY = currentScrollY;
+
+      if (!timelineArmed && !timelineClosed && scrollingDownPastGate) {
+        timelineArmed = true;
+        scheduleActiveStorySync();
+        return;
+      }
+
+      scheduleActiveStorySync();
+    },
     { passive: true },
   );
-  window.addEventListener("resize", scheduleTimelineLayout);
+  window.addEventListener("resize", scheduleActiveStorySync);
 }
 
 async function loadLiveSignals(now = new Date()) {
@@ -2365,7 +1876,6 @@ async function loadLiveSignals(now = new Date()) {
     const payload = await response.json();
     const signals = Array.isArray(payload?.signals) ? payload.signals : [];
     const nextStories = signals
-      .filter((signal) => hasLocalizedSignalContent(signal))
       .map(normalizeLiveSignal)
       .filter(isPublishableSignal);
     if (!nextStories.length) {
@@ -2382,12 +1892,10 @@ async function loadLiveSignals(now = new Date()) {
 }
 
 initTheme();
-initSortMenu();
 initReaderGateAction();
 initNameForm();
 initTimelineReveal();
 initLoadEarlier();
-initTimelineRoute();
 initTimelineStories();
 initLibrary();
 loadLiveSignals();
@@ -2410,17 +1918,6 @@ globalThis.__ALOMAT_APP_TEST__ = {
   renderLibraryEntriesMarkup,
   renderLibraryFromStorage,
   renderLiveTimelineItem,
-  createTimelinePath,
-  findTimelinePointForY,
-  findActiveTimelineIndex,
-  getTimelineSceneProgress,
-  getTimelineCardRoutePoint,
-  getTimelineRouteYForScroll,
-  createTimelineScrollMap,
-  getTimelineScrollState,
-  getTimelineCardActivationY,
-  getTimelineCardMorph,
   renderStoryMarkup,
   shareStory,
-  createSortMenuController,
 };
